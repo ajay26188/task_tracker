@@ -13,4 +13,4 @@ const organizationSchema = new Schema<IOrganization>(
 
 const Organization = model<IOrganization>('Organization', organizationSchema);
 
-module.exports = Organization;
+export default Organization;

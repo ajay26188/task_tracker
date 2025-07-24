@@ -1,0 +1,38 @@
+import { Schema, model, Types} from 'mongoose';
+
+export interface IProject {
+    name: string,
+    description: string,
+    organizationId: Types.ObjectId,
+    createdBy: Types.ObjectId
+};
+
+const projectSchema = new Schema(
+    {
+        name: { 
+            type: String, 
+            required: true,
+            minLength: [2, 'Name must be at least 2 characters long.'],
+            maxLength: [100, 'Name must be at most 100 characters long.'],
+            trim: true
+        },
+        description: { 
+            type: String, 
+            required: true,
+            maxLength: [1000, 'Description must be at most 1000 character long.'],
+            trim: true 
+        },
+        organizationId: { 
+            type: Schema.Types.ObjectId, ref: 'Organization', 
+            required: true 
+        },
+        createdBy: { 
+            type: Schema.Types.ObjectId, ref: 'User', 
+            required: true }
+    },
+    { timestamps: true},
+);
+
+const Project = model<IProject>('Project', projectSchema);
+
+export default Project;
