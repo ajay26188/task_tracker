@@ -1,6 +1,13 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
 export interface IOrganization {
+    name: string
+};
+
+export interface ReturnedIOrganization {
+    _id?: Types.ObjectId,
+    __v?: number,
+    id?: string,
     name: string
 };
 
@@ -13,10 +20,9 @@ const organizationSchema = new Schema<IOrganization>(
 
 organizationSchema.set('toJSON', {
     transform: function (
-      _doc,
-      ret: Record<string, any>
+      _doc, ret: ReturnedIOrganization
     ) {
-      ret.id = ret._id.toString();
+      ret.id = ret._id?.toString();
       delete ret._id;
       delete ret.__v;
     }

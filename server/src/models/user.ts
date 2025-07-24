@@ -13,6 +13,17 @@ export interface IUser {
     role: Role,
 };
 
+export interface ReturnedIUser {
+    _id?: Types.ObjectId,
+    password?: string,
+    __v?: number,
+    id?: string,
+    name: string, 
+    email: string,
+    organization: Types.ObjectId,
+    role: Role,
+};
+
 const userSchema = new Schema(
     {
         name: { 
@@ -56,10 +67,9 @@ const userSchema = new Schema(
 
 userSchema.set('toJSON', {
     transform: function (
-      _doc,
-      ret: Record<string, any>
+      _doc, ret: ReturnedIUser
     ) {
-      ret.id = ret._id.toString();
+      ret.id = ret._id?.toString();
       delete ret._id;
       delete ret.__v;
       delete ret.password;
