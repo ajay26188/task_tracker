@@ -54,6 +54,18 @@ const userSchema = new Schema(
     { timestamps: true}
 );
 
+userSchema.set('toJSON', {
+    transform: function (
+      _doc,
+      ret: Record<string, any>
+    ) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      delete ret.password;
+    }
+});
+
 const User = model<IUser>('User', userSchema);
 
 export default User;

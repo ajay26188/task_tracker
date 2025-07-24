@@ -1,4 +1,4 @@
-import { Schema, model, Types} from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
 export interface IProject {
     name: string,
@@ -19,7 +19,7 @@ const projectSchema = new Schema(
         description: { 
             type: String, 
             required: true,
-            maxLength: [1000, 'Description must be at most 1000 character long.'],
+            maxLength: [1000, 'Description must be at most 1000 characters long.'],
             trim: true 
         },
         organizationId: { 
@@ -32,6 +32,18 @@ const projectSchema = new Schema(
     },
     { timestamps: true},
 );
+
+projectSchema.set('toJSON', {
+    transform: function (
+      _doc,
+      ret: Record<string, any>
+    ) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+    }
+});
+  
 
 const Project = model<IProject>('Project', projectSchema);
 
