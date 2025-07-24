@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-interface IOrganization {
+export interface IOrganization {
     name: string
 };
 
@@ -11,6 +11,6 @@ const organizationSchema = new Schema<IOrganization>(
     {timestamps: true}
 );
 
-const Organization = model('Organization', organizationSchema);
+const Organization = model<IOrganization>('Organization', organizationSchema);
 
 module.exports = Organization;
