@@ -9,18 +9,18 @@ export interface IUser {
     name: string, 
     email: string,
     password: string,
-    organization: Types.ObjectId,
+    organizationId: Types.ObjectId,
     role: Role,
 };
 
 export interface ReturnedIUser {
     _id?: Types.ObjectId,
     password?: string,
-    __v?: number,
+    __v?: number, // operand of 'delete' operator must be optional
     id?: string,
     name: string, 
     email: string,
-    organization: Types.ObjectId,
+    organizationId: Types.ObjectId,
     role: Role,
 };
 
@@ -52,7 +52,7 @@ const userSchema = new Schema(
                 message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
             } 
         },
-        organization: { 
+        organizationId: { 
             type: Schema.Types.ObjectId, ref: 'Organization', 
             required: true
         },

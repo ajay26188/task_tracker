@@ -9,7 +9,7 @@ export interface IProject {
 
 export interface ReturnedIProject {
     _id?: Types.ObjectId,
-    __v?: number,
+    __v?: number, // operand of 'delete' operator must be optional
     id?: string,
     name: string,
     description: string,

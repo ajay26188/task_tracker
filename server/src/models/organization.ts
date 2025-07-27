@@ -5,7 +5,7 @@ export interface IOrganization {
 };
 
 export interface ReturnedIOrganization {
-    _id?: Types.ObjectId,
+    _id?: Types.ObjectId, // operand of 'delete' operator must be optional
     __v?: number,
     id?: string,
     name: string
@@ -13,7 +13,7 @@ export interface ReturnedIOrganization {
 
 const organizationSchema = new Schema<IOrganization>(
     {
-    name: { type: String, required: true},
+    name: { type: String, required: true, unique: true },
     },
     {timestamps: true}
 );
