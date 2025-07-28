@@ -11,7 +11,7 @@ const router = express.Router();
 // GET /api/users/:id — get all users for an organization
 router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
     const orgId = req.params.id;
-    
+
     if (!Types.ObjectId.isValid(orgId)) {
         return res.status(400).json({error: 'Invalid organization ID'})
     }
@@ -25,7 +25,7 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response<ReturnedIUser>) => {
-    const newUser = await addUser(req.body);
+    const newUser: ReturnedIUser = await addUser(req.body);
     res.status(201).json(newUser);
 });
 

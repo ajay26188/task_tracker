@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IUser, ReturnedIUser, Role } from '../types/user';
+import { IUser, Role } from '../types/user';
 
 const userSchema = new Schema(
     {
@@ -36,7 +36,6 @@ const userSchema = new Schema(
         role: { 
             type: String,
             enum: Object.values(Role),
-            default: Role.Member
         },
     },
     { timestamps: true}
@@ -44,7 +43,7 @@ const userSchema = new Schema(
 
 userSchema.set('toJSON', {
     transform: function (
-      _doc, ret: ReturnedIUser
+      _doc, ret: any
     ) {
       ret.id = ret._id?.toString();
       delete ret._id;

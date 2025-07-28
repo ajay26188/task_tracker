@@ -6,3 +6,5 @@
 | 27 July 2025  | Establishing mongodb connection  | 0.5 hours |
 | 27 July 2025  | Refactoring mongodb connection into its own file  | 0.5 hours |
 | 27 July 2025  | Designing post /api/organization route with middlewares | 1 hour |
+| 28 July 2025  | Designing post and get /api/users with requests validation | 1 hour |
+| 28 July 2025  | Assigned role during user creation based on organization | 1 hour |
