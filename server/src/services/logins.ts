@@ -13,9 +13,9 @@ export const loginService = async(email: string, password: string) => {
     if (!correctPassword) return null;
 
     const userForToken = {
-        id: user._id,
+        id: user._id.toString(),
         role: user.role,
-        organizationId: user.organizationId
+        organizationId: user.organizationId.toString()
     };
 
     const token = jwt.sign(userForToken, SECRET);

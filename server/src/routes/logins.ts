@@ -14,7 +14,7 @@ router.post('/', loginParser, async(req: Request<unknown, unknown, LoginData>, r
         return res.status(401).json({error: 'Invalid login credentials.'})
     };
 
-    return res.json(result); //returns {token , user}
+    return res.json(result); //returns {email, name, token}
 })
 
 export default router;

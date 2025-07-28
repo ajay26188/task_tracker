@@ -24,9 +24,13 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
     }
 });
 
+//POST /api/users
 router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response) => {
     const newUser = await addUser(req.body);
     res.status(201).json(newUser);
 });
+
+//POST /api/delete
+router.delete('/', )
 
 export default router;
