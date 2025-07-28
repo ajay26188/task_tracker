@@ -2,7 +2,7 @@ import { newUserParser } from './../middlewares/validateRequest';
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
-import { newUserData, ReturnedIUser } from '../types/user';
+import { newUserData } from '../types/user';
 import { addUser, getAllUsers } from '../services/users';
 import { Types } from 'mongoose';
 
@@ -24,8 +24,8 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response<ReturnedIUser>) => {
-    const newUser: ReturnedIUser = await addUser(req.body);
+router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response) => {
+    const newUser = await addUser(req.body);
     res.status(201).json(newUser);
 });
 

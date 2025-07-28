@@ -8,3 +8,4 @@
 | 27 July 2025  | Designing post /api/organization route with middlewares | 1 hour |
 | 28 July 2025  | Designing post and get /api/users with requests validation | 1 hour |
 | 28 July 2025  | Assigned role during user creation based on organization | 1 hour |
+| 28 July 2025  | Designing POST /api/login with zod validation, login schemas and new loginData types | 1.5 hour |

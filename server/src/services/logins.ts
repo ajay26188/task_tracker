@@ -1,0 +1,28 @@
+import User from "../models/user"
+import bcrypt from 'bcrypt';
+import { SECRET } from "../config/env";
+import jwt from 'jsonwebtoken';
+
+export const loginService = async(email: string, password: string) => {
+    const user  = await User.findOne({email});
+
+    if (!user) return null;
+
+    const correctPassword = await bcrypt.compare(password, user.password!);
+
+    if (!correctPassword) return null;
+
+    const userForToken = {
+        id: user._id,
+        role: user.role,
+        organizationId: user.organizationId
+    };
+
+    const token = jwt.sign(userForToken, SECRET);
+
+    return {
+        email: user.email, 
+        name: user.name, 
+        token 
+    };
+};

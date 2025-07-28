@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IOrganization, ReturnedIOrganization } from '../types/organization';
+import { IOrganization } from '../types/organization';
 
 const organizationSchema = new Schema<IOrganization>(
     {
@@ -10,7 +10,7 @@ const organizationSchema = new Schema<IOrganization>(
 
 organizationSchema.set('toJSON', {
     transform: function (
-      _doc, ret: ReturnedIOrganization
+      _doc, ret: any
     ) {
       ret.id = ret._id?.toString();
       delete ret._id;

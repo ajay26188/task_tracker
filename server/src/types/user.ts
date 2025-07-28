@@ -24,6 +24,13 @@ export interface ReturnedIUser {
     email: string,
     organizationId: Types.ObjectId,
     role: Role,
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
-export type newUserData = Omit<IUser, 'role' | 'organizationId'>  & { organizationId: string ;}
+export type newUserData = Omit<IUser, 'role' | 'organizationId'>  & { organizationId: string };
+
+export interface LoginData {
+    email: string,
+    password: string
+};

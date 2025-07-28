@@ -14,7 +14,9 @@ export interface ReturnedIProject {
     name: string,
     description: string,
     organizationId: Types.ObjectId,
-    createdBy: Types.ObjectId
+    createdBy: Types.ObjectId,
+    createdAt?: Date,
+    updatedAt?: Date
 };
 
 const projectSchema = new Schema(
@@ -45,7 +47,7 @@ const projectSchema = new Schema(
 
 projectSchema.set('toJSON', {
     transform: function (
-      _doc, ret: ReturnedIProject
+      _doc, ret: any
     ) {
       ret.id = ret._id?.toString();
       delete ret._id;
