@@ -4,6 +4,7 @@ import express from 'express';
 import { errorHandler } from './middlewares/errorHandler';
 
 import organizationRouter from './routes/organizations';
+import userRouter from './routes/users';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/ping', (_req, res) => {
 });
 
 app.use('/api/organization', organizationRouter);
+app.use('/api/users', userRouter);
 
 app.use(errorHandler);
 

@@ -1,4 +1,4 @@
-// /types/organization.types.ts
+// /types/organization.ts
 
 import {Types} from 'mongoose';
 

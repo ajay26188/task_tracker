@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IOrganization, ReturnedIOrganization } from '../types/organization.types';
+import { IOrganization, ReturnedIOrganization } from '../types/organization';
 
 const organizationSchema = new Schema<IOrganization>(
     {

@@ -4,9 +4,9 @@ import express, {Request, Response} from 'express';
 
 const router = express.Router();
 
-import { IOrganization, ReturnedIOrganization } from '../types/organization.types';
+import { IOrganization, ReturnedIOrganization } from '../types/organization';
 import { newOrganizationParser } from '../middlewares/validateRequest';
-import { addOrganization } from '../services/organization';
+import { addOrganization } from '../services/organizations';
 
 //post /api/organization
 router.post('/', newOrganizationParser, async(req: Request<unknown, unknown, IOrganization>, res: Response<ReturnedIOrganization>) => {

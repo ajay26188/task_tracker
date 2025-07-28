@@ -1,4 +1,4 @@
-// /schemas/organization.schema.ts
+// /schemas/organization.ts
 
 import { z } from 'zod';
 
