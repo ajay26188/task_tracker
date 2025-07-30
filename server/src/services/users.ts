@@ -2,8 +2,9 @@
 
 import { Types } from "mongoose";
 import User from "../models/user"
-import { newUserData, Role } from "../types/user";
+import { IUser, newUserData, Role } from "../types/user";
 import bcrypt from 'bcrypt';
+import { Document } from "mongoose";
 
 export const getAllUsers = async(id: string) => {
     return await User.find({organizationId: new Types.ObjectId(id)});
@@ -25,4 +26,30 @@ export const addUser = async(data: newUserData) => {
         password,
         role
     });
+};
+
+export const removeUser = async(id: string) => {
+    const user = await User.findById(id);
+
+    if (!user) return null;
+
+    return await user.deleteOne();
+};
+
+export const updateUser = async (user: (IUser & Document), updates: {
+    name?: string;
+    email?: string;
+    password?: string;
+  }) => {
+    const { name, email, password } = updates;
+  
+    if (name) user.name = name;
+    if (email) user.email = email;
+  
+    if (password) {
+      const saltRounds = 10;
+      user.password = await bcrypt.hash(password, saltRounds);
+    }
+  
+    return await user.save();
 };

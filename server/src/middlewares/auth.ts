@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { SECRET } from "../config/env";
 import User from "../models/user";
+import { IUser } from "../types/user";
+import { Document } from "mongoose";
 
-interface Token extends Request {
+export interface Token extends Request {
     token?: string | null,
-    user?: object | null
+    user?: (IUser & Document) | null
 };
 
 interface DecodedToken {
@@ -70,7 +72,7 @@ export const userExtractor = async( req: Token, res: Response, next: NextFunctio
 
         req.user = user;
         return next();
-        
+
     } catch (err) {
         return next(err);
     }

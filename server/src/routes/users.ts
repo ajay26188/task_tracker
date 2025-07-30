@@ -1,10 +1,12 @@
-import { newUserParser } from './../middlewares/validateRequest';
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
+import { newUserParser } from './../middlewares/validateRequest';
 import { newUserData } from '../types/user';
-import { addUser, getAllUsers } from '../services/users';
+import { addUser, getAllUsers, removeUser, updateUser } from '../services/users';
 import { Types } from 'mongoose';
+import { adminStatus, userExtractor } from '../middlewares/auth';
+import { Token } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -25,12 +27,42 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
 });
 
 //POST /api/users
-router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response) => {
-    const newUser = await addUser(req.body);
-    res.status(201).json(newUser);
+router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response, next: NextFunction) => {
+    try {
+        const newUser = await addUser(req.body);
+        return res.status(201).json(newUser);
+    } catch (error) {
+        return next(error);
+    }
 });
 
-//POST /api/delete
-router.delete('/', )
+// Deleting a user only possible by the admin
+router.delete('/:id', adminStatus, async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await removeUser(req.params.id);
+
+        if (!result) {
+            return res.status(404).json({error: 'User not found.'})
+        }
+        return res.status(204).end();
+    } catch (error) {
+        return next(error);
+    }
+});
+
+//updating user's info 
+router.put('/:id', userExtractor, newUserParser, async(req: Token, res: Response, next: NextFunction) => {
+    try {
+      if (req.user?.id !== req.params.id) {
+        return res.status(403).json({ error: 'Unauthorized to perform this operation.' });
+      }
+  
+      const updatedUser = await updateUser(req.user, req.body);
+      return res.json(updatedUser);
+      
+    } catch (error) {
+      return next(error);
+    }
+});
 
 export default router;
