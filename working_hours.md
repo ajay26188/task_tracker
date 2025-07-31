@@ -10,3 +10,4 @@
 | 28.07  | Assigned role during user creation based on organization | 1 h |
 | 28.07  | Designing POST /api/login with zod validation, login schemas and new loginData types | 2h |
 | 30.07  | Designing PUT, DELETE for users and PUT, DELETE, GET for organization with authMIddleware for restriction control | 3h |
+| 31.07  | Error handling middleware updated with more error hadnlers | 0.5h |

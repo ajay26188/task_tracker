@@ -1,23 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-
-export interface IProject {
-    name: string,
-    description: string,
-    organizationId: Types.ObjectId,
-    createdBy: Types.ObjectId
-};
-
-export interface ReturnedIProject {
-    _id?: Types.ObjectId,
-    __v?: number, // operand of 'delete' operator must be optional
-    id?: string,
-    name: string,
-    description: string,
-    organizationId: Types.ObjectId,
-    createdBy: Types.ObjectId,
-    createdAt?: Date,
-    updatedAt?: Date
-};
+import { Schema, model } from 'mongoose';
+import { IProject } from '../types/project';
 
 const projectSchema = new Schema(
     {
