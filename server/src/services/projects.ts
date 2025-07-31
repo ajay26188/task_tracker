@@ -30,7 +30,7 @@ export const removeProject = async(id: string, user: (IUser & Document)) => {
     if (!project) return null;
 
     if (project.organizationId.toString() !== user.organizationId.toString()) {
-        return 'unauthorized'
+        return 'unauthorized';
     }
 
     return await project.deleteOne();
@@ -44,7 +44,7 @@ export const updateProject = async (projectId: string, updates: newProjectData, 
     if (!project) return null;
 
     if (project.organizationId.toString() !== user.organizationId.toString()) {
-        return 'unauthorized'
+        return 'unauthorized';
     }
   
     if (name) project.name = name;
@@ -53,5 +53,18 @@ export const updateProject = async (projectId: string, updates: newProjectData, 
     if (endDate) project.endDate = endDate;
   
     return await project.save();
+};
+
+export const fetchProject = async(projectId: string, user: (IUser & Document)) => {
+    
+    const project = await Project.findById(projectId);
+
+    if (!project) return null;
+
+    if (project.organizationId.toString() !== user.organizationId.toString()) {
+        return 'unauthorized';
+    } 
+
+    return project;
 };
 

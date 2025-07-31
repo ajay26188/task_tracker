@@ -26,7 +26,7 @@ export const removeOrganization = async(id: string) => {
 };
 
 export const updateOrganization = async (orgId: string, updates: IOrganization, user: (IUser & Document)) => {
-    if (orgId !== user.organizationId.toString()) return 'unauthorized'
+    if (orgId !== user.organizationId.toString()) return 'unauthorized';
 
     const { name } = updates;
 

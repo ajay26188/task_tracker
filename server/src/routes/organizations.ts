@@ -49,7 +49,7 @@ router.put('/:id', adminStatus, userExtractor, newOrganizationParser, async(req:
         const result = await updateOrganization(req.params.id, req.body, req.user!);
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You can only update your own organization information.'})
+            return res.status(403).json({error: 'You can only update your own organization information.'});
         }
 
         if (!result) {

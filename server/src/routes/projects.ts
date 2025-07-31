@@ -4,7 +4,7 @@ import express,{ Response, NextFunction } from 'express';
 import { adminStatus, userExtractor, AuthRequest } from '../middlewares/auth';
 import { newProjectParser } from '../middlewares/validateRequest';
 import { newProjectData } from '../types/project';
-import { addProject, fetchProjectsByOrg, removeProject, updateProject } from '../services/projects';
+import { addProject, fetchProject, fetchProjectsByOrg, removeProject, updateProject } from '../services/projects';
 
 const router = express.Router();
 
@@ -48,10 +48,29 @@ router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: R
         }
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You can only delete projects from your own organization.'})
+            return res.status(403).json({error: 'You can only delete projects from your own organization.'});
         }
         return res.status(204).end();
     } catch (error) {
+        return next(error);
+    }
+});
+
+//Fetching single project with their id
+router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const result = await fetchProject(req.params.id, req.user!);
+
+        if (result === 'unauthorized') {
+            return res.status(403).json({error: `You can only fetch your organization's projects.`});
+        }
+
+        if (!result) {
+            return res.status(404).json({error: 'Invalid project id.'});
+        }
+        return res.json(result);
+        
+        } catch (error) {
         return next(error);
     }
 });
@@ -62,7 +81,7 @@ router.put('/:id', adminStatus, userExtractor, newProjectParser, async(req: Auth
         const result = await updateProject(req.params.id, req.body, req.user!);
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: `You can only update your own organization's project information.`})
+            return res.status(403).json({error: `You can only update your own organization's project information.`});
         }
 
         if (!result) {
