@@ -6,7 +6,7 @@ import { newUserData } from '../types/user';
 import { addUser, getAllUsers, removeUser, updateUser } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
-import { Token } from '../middlewares/auth';
+import { AuthRequest } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
     const orgId = req.params.id;
 
     if (!Types.ObjectId.isValid(orgId)) {
-        return res.status(400).json({error: 'Invalid organization ID'})
+        return res.status(400).json({error: 'Invalid organization ID'});
     }
 
     try {
@@ -42,7 +42,7 @@ router.delete('/:id', adminStatus, async(req: Request, res: Response, next: Next
         const result = await removeUser(req.params.id);
 
         if (!result) {
-            return res.status(404).json({error: 'User not found.'})
+            return res.status(404).json({error: 'User not found.'});
         }
         return res.status(204).end();
     } catch (error) {
@@ -51,7 +51,7 @@ router.delete('/:id', adminStatus, async(req: Request, res: Response, next: Next
 });
 
 //updating user's info 
-router.put('/:id', userExtractor, newUserParser, async(req: Token, res: Response, next: NextFunction) => {
+router.put('/:id', userExtractor, newUserParser, async(req: AuthRequest<newUserData>, res: Response, next: NextFunction) => {
     try {
       if (req.user?.id !== req.params.id) {
         return res.status(403).json({ error: 'Unauthorized to perform this operation.' });

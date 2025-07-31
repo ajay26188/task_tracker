@@ -5,9 +5,11 @@ import User from "../models/user";
 import { IUser } from "../types/user";
 import { Document } from "mongoose";
 
-export interface Token extends Request {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface AuthRequest<T = any> extends Request {
     token?: string | null,
-    user?: (IUser & Document) | null
+    user?: (IUser & Document) | null,
+    body: T
 };
 
 interface DecodedToken {
@@ -16,7 +18,7 @@ interface DecodedToken {
     organizationId: string
 };
 
-export const tokenExtractor = (req: Token, _res: Response, next: NextFunction) => {
+export const tokenExtractor = (req: AuthRequest, _res: Response, next: NextFunction) => {
     const authorization = req.get('authorization');
 
     if (authorization && authorization.startsWith('Bearer ')) {
@@ -27,17 +29,17 @@ export const tokenExtractor = (req: Token, _res: Response, next: NextFunction) =
     next();
 };
 
-export const adminStatus = (req: Token, res: Response, next: NextFunction) => {
+export const adminStatus = (req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.token;
 
     if (!token) {
-        return res.status(401).json({error:'token missing.' })
+        return res.status(401).json({error:'token missing.' });
     }
 
     const decoded = jwt.verify(token, SECRET); 
 
     if (typeof decoded !== 'object' || decoded === null || !('role' in decoded)) {
-        return res.status(401).json({error: 'Invalid token.'})
+        return res.status(401).json({error: 'Invalid token.'});
     }
 
     const decodedToken = decoded as DecodedToken; // type guard
@@ -48,17 +50,17 @@ export const adminStatus = (req: Token, res: Response, next: NextFunction) => {
     return next(); //returns to routeHandler if the user is admin
 };
 
-export const userExtractor = async( req: Token, res: Response, next: NextFunction) => {
+export const userExtractor = async( req: AuthRequest, res: Response, next: NextFunction) => {
     const token = req.token;
 
     if (!token) {
-        return res.status(401).json({error:'token missing.' })
+        return res.status(401).json({error:'token missing.' });
     }
 
     const decoded = jwt.verify(token, SECRET); 
 
     if (typeof decoded !== 'object' || decoded === null || !('id' in decoded)) {
-        return res.status(401).json({error: 'Invalid token.'})
+        return res.status(401).json({error: 'Invalid token.'});
     }
 
     const decodedToken = decoded as DecodedToken; // type guard
@@ -67,7 +69,7 @@ export const userExtractor = async( req: Token, res: Response, next: NextFunctio
         const user = await User.findById(decodedToken.id);
 
         if (!user) {
-            return res.status(401).json({error: 'User not found.'})
+            return res.status(401).json({error: 'User not found.'});
         }
 
         req.user = user;

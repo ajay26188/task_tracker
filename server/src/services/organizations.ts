@@ -2,6 +2,8 @@
 
 import Organization from "../models/organization";
 import { IOrganization } from "../types/organization";
+import { IUser } from "../types/user";
+import { Document } from "mongoose";
 
 export const getOrganization = async(id: string) => {
     const org = await Organization.findById(id);
@@ -23,7 +25,8 @@ export const removeOrganization = async(id: string) => {
     return await organization.deleteOne();
 };
 
-export const updateOrganization = async (orgId: string, updates: IOrganization) => {
+export const updateOrganization = async (orgId: string, updates: IOrganization, user: (IUser & Document)) => {
+    if (orgId !== user.organizationId.toString()) return 'unauthorized'
 
     const { name } = updates;
 

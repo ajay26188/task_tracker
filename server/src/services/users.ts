@@ -1,7 +1,7 @@
 // /services/users.ts
 
 import { Types } from "mongoose";
-import User from "../models/user"
+import User from "../models/user";
 import { IUser, newUserData, Role } from "../types/user";
 import bcrypt from 'bcrypt';
 import { Document } from "mongoose";

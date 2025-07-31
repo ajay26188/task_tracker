@@ -1,3 +1,5 @@
+// /routes/login.ts
+
 import express, {Request, Response} from 'express';
 import { loginParser } from '../middlewares/validateRequest';
 import { loginService } from '../services/logins';
@@ -11,10 +13,10 @@ router.post('/', loginParser, async(req: Request<unknown, unknown, LoginData>, r
     const result = await loginService(email, password);
 
     if (!result) {
-        return res.status(401).json({error: 'Invalid login credentials.'})
+        return res.status(401).json({error: 'Invalid login credentials.'});
     };
 
     return res.json(result); //returns {email, name, token}
-})
+});
 
 export default router;

@@ -6,11 +6,13 @@ import { errorHandler } from './middlewares/errorHandler';
 import organizationRouter from './routes/organizations';
 import userRouter from './routes/users';
 import loginRouter from './routes/logins';
+import projectRouter from './routes/projects';
 import { tokenExtractor } from './middlewares/auth';
 
 const app = express();
 
-connectDB();
+//use void to silence lint warning as error is handled by connectDB function
+void connectDB();
 
 app.use(express.json());
 
@@ -23,6 +25,7 @@ app.use(tokenExtractor);
 app.use('/api/organization', organizationRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/projects', projectRouter);
 
 app.use(errorHandler);
 

@@ -1,4 +1,4 @@
-import User from "../models/user"
+import User from "../models/user";
 import bcrypt from 'bcrypt';
 import { SECRET } from "../config/env";
 import jwt from 'jsonwebtoken';
@@ -8,7 +8,7 @@ export const loginService = async(email: string, password: string) => {
 
     if (!user) return null;
 
-    const correctPassword = await bcrypt.compare(password, user.password!);
+    const correctPassword = await bcrypt.compare(password, user.password);
 
     if (!correctPassword) return null;
 

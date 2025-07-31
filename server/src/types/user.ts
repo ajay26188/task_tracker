@@ -28,6 +28,7 @@ export interface ReturnedIUser {
     updatedAt?: Date;
 };
 
+//removing organizationId field which is of Mongo_DB type but asking for 
 export type newUserData = Omit<IUser, 'role' | 'organizationId'>  & { organizationId: string };
 
 export interface LoginData {

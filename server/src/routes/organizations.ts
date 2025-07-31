@@ -7,7 +7,7 @@ const router = express.Router();
 import { IOrganization, ReturnedIOrganization } from '../types/organization';
 import { newOrganizationParser } from '../middlewares/validateRequest';
 import { addOrganization, getOrganization, removeOrganization, updateOrganization } from '../services/organizations';
-import { adminStatus } from '../middlewares/auth';
+import { adminStatus, AuthRequest, userExtractor } from '../middlewares/auth';
 
 //fetching an organization based on their id
 router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +15,7 @@ router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
         const organization = await getOrganization(req.params.id);
 
         if (!organization) {
-            return res.status(404).json({error: 'Invalid organization ID.'})
+            return res.status(404).json({error: 'Invalid organization ID.'});
         }
         return res.json(organization);
     } catch (error) {
@@ -35,7 +35,7 @@ router.delete('/:id', adminStatus, async(req: Request, res: Response, next: Next
         const result = await removeOrganization(req.params.id);
 
         if (!result) {
-            return res.status(404).json({error: 'Organization not found.'})
+            return res.status(404).json({error: 'Organization not found.'});
         }
         return res.status(204).end();
     } catch (error) {
@@ -44,17 +44,21 @@ router.delete('/:id', adminStatus, async(req: Request, res: Response, next: Next
 });
 
 //updating organization's info 
-router.put('/:id', adminStatus, newOrganizationParser, async(req: Request, res: Response, next: NextFunction) => {
+router.put('/:id', adminStatus, userExtractor, newOrganizationParser, async(req: AuthRequest<IOrganization>, res: Response, next: NextFunction) => {
     try {
-      const updatedOrganization = await updateOrganization(req.params.id, req.body);
+        const result = await updateOrganization(req.params.id, req.body, req.user!);
 
-      if (!updatedOrganization) {
-        return res.status(404).json({error: 'Invalid organization.'})
-      }
-      return res.json(updatedOrganization);
-      
-    } catch (error) {
-      return next(error);
+        if (result === 'unauthorized') {
+            return res.status(403).json({error: 'You can only update your own organization information.'})
+        }
+
+        if (!result) {
+            return res.status(404).json({error: 'Invalid organization.'});
+        }
+        return res.json(result);
+        
+        } catch (error) {
+        return next(error);
     }
 });
 
