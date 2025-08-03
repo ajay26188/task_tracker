@@ -14,5 +14,6 @@
 | 31.07  | Designing GET, POST, PUT & DELETE routes for projects with error handling | 2.5h |
 | 03.08  | Testing via Postman for all organization, users, login routes with updating errorHandler, DELETE /api/organization route  | 3h |
 | 03.08  | Testing via Postman for all projects route, adding more restrictions to route handlers and adding PATCH /api/users/:id/role to users  | 3h |
-|   | Total hours | 23h |
+| 03.08  | Fixing lint errors related to 'any' type | 0.5h |
+|   | Total hours | 23.5h |
 
