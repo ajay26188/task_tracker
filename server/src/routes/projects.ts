@@ -8,11 +8,11 @@ import { addProject, fetchProject, fetchProjectsByOrg, removeProject, updateProj
 
 const router = express.Router();
 
-//fetch all projects belonging to an organization 'id' param is organization's ID
-router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res, next) => {
+//fetch all projects belonging to an organization. 'id' param is organization's ID
+router.get('/org/:id', adminStatus, userExtractor, async(req: AuthRequest, res, next) => {
     try {
         if (req.user?.organizationId.toString() !== req.params.id) {
-            return res.status(401).json({error: 'Unauthorozed to perform this operation.'});
+            return res.status(401).json({error: 'Invalid ID.'});
         }
 
         const projects = await fetchProjectsByOrg(req.params.id);
@@ -57,7 +57,7 @@ router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: R
 });
 
 //Fetching single project with their id
-router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+router.get('/project/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const result = await fetchProject(req.params.id, req.user!);
 

@@ -53,3 +53,21 @@ export const updateUser = async (user: (IUser & Document), updates: {
   
     return await user.save();
 };
+
+export const updateRoleOfUser = async (id: string, updates: {
+    role: Role
+  }, admin: (IUser & Document)) => {
+    const { role } = updates;
+
+    const user = await User.findById(id);
+
+    if (!user) return null;
+
+    if (admin.organizationId.toString() !== user.organizationId.toString()) {
+        return 'unauthorized'
+    }
+
+    user.role = role;
+  
+    return await user.save();
+};

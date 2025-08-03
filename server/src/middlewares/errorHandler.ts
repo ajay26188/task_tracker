@@ -29,66 +29,34 @@ export const errorHandler = (
 ) => {
   // 1. Handle Zod validation errors
   if (error instanceof z.ZodError) {
-    return res.status(400).json({
-      error: error.issues.map(issue => ({
-        message: issue.message,
-        path: issue.path,
-        code: issue.code || 'invalid_input'
-      }))
-    });
+    return res.status(400).send({ error: error.issues[0].message });
   }
 
-  // 2. Handle MongoDB duplicate key
+  // 2. Handle Mongoose duplicate key error
   if (isMongoDuplicateKeyError(error)) {
     const field = Object.keys(error.keyValue)[0];
-    return res.status(400).json({
-      error: [
-        {
-          message: `${field} already exists.`,
-          path: [field],
-          code: 'duplicate_key'
-        }
-      ]
-    });
+    return res.status(400).json({ error: `${field} already exists.` });
   }
 
-  // 3. BSON error (e.g., invalid ObjectId)
-  if (error instanceof BSONError) {
-    return res.status(400).json({
-      error: [
-        {
-          message: "Invalid ID format (not a valid ObjectId).",
-          path: [],
-          code: "invalid_id"
-        }
-      ]
-    });
-  }
-
-  // 4. Mongoose cast error
+  // 3. Handle invalid ObjectId
   if (error instanceof mongoose.Error.CastError && error.kind === 'ObjectId') {
-    return res.status(400).json({
-      error: [
-        {
-          message: "Invalid ID format.",
-          path: [error.path],
-          code: "cast_error"
-        }
-      ]
-    });
+    return res.status(400).json({ error: "Invalid ID format." });
   }
 
-  // 5. Mongoose validation error
+  // 4. Handle Mongoose validation error
   if (error instanceof mongoose.Error.ValidationError) {
     return res.status(400).json({
-      error: Object.values(error.errors).map(err => ({
-        message: err.message,
-        path: [err.path],
-        code: 'validation_error'
-      }))
+      error: "Validation failed",
+      details: error.errors,
     });
   }
 
-  // 6. Fallback
+  // 5. Handle BSON invalid ObjectId error
+  if (error instanceof BSONError) {
+    return res.status(400).json({ error: "Invalid ID format (not a valid ObjectId)." });
+  }
+
+
+  // 6. Fallback: unknown/unexpected error
   return next(error);
 };

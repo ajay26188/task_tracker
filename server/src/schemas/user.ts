@@ -26,3 +26,7 @@ export const updateUserSchema = z.object({
         'Password must include upper, lower, number'
         ),
 });
+
+export const updateRoleSchema = z.object({
+    role: z.enum(['admin', 'member'])
+});

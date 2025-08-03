@@ -1,9 +1,9 @@
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
-import { newUserParser, updateUserParser } from './../middlewares/validateRequest';
-import { newUserData, updateUserData } from '../types/user';
-import { addUser, getAllUsers, removeUser, updateUser } from '../services/users';
+import { newUserParser, updateRoleParser, updateUserParser } from './../middlewares/validateRequest';
+import { newUserData, updateUserData, updateRole } from '../types/user';
+import { addUser, getAllUsers, removeUser, updateRoleOfUser, updateUser } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
 import { AuthRequest } from '../middlewares/auth';
@@ -64,5 +64,27 @@ router.put('/:id', userExtractor, updateUserParser, async(req: AuthRequest<updat
       return next(error);
     }
 });
+
+//To change role of an user
+// PATCH /api/users/:id/role
+router.patch('/:id/role', adminStatus, userExtractor,  updateRoleParser, async (req: AuthRequest<updateRole>, res: Response, next: NextFunction) => {
+    try {
+      const result = await updateRoleOfUser(req.params.id, req.body, req.user!);
+
+      if (!result) {
+        return res.status(404).json({error: "User not found."})
+      }
+
+      if (result === 'unauthorized') {
+        return res.status(403).json({error: 'YOu can only update role status of your organization user.'})
+      }
+
+      return res.json(result);
+
+    } catch (error) {
+      return next(error);
+    }
+  });
+  
 
 export default router;

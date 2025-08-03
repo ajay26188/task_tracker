@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import { createOrganizationSchema } from "../schemas/organization";
-import { createUserSchema, updateUserSchema } from "../schemas/user";
+import { createUserSchema, updateRoleSchema, updateUserSchema } from "../schemas/user";
 import { loginSchema } from "../schemas/login";
 import { createProjectSchema } from "../schemas/project";
 
@@ -45,6 +45,15 @@ export const loginParser = (req: Request, _res: Response, next: NextFunction) =>
 export const newProjectParser = (req: Request, _res: Response, next: NextFunction) => {
     try {
         createProjectSchema.parse(req.body);
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const updateRoleParser = (req: Request, _res: Response, next: NextFunction) => {
+    try {
+        updateRoleSchema.parse(req.body);
         next();
     } catch (err) {
         next(err);

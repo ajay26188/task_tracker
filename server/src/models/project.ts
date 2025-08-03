@@ -16,6 +16,14 @@ const projectSchema = new Schema(
             maxLength: [1000, 'Description must be at most 1000 characters long.'],
             trim: true 
         },
+        startDate: {
+            type: Date,
+            required: true
+          },
+        endDate: {
+            type: Date,
+            required: true
+        },
         organizationId: { 
             type: Schema.Types.ObjectId, ref: 'Organization', 
             required: true 

@@ -37,3 +37,7 @@ export interface LoginData {
 };
 
 export type updateUserData = Omit<IUser, 'role' | 'organizationId'> ;
+
+export interface updateRole {
+    role: Role
+};
