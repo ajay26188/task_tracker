@@ -1,10 +1,9 @@
 import Project from "../models/project";
-import { newProjectData, ReturnedIProject} from "../types/project";
+import { newProjectData } from "../types/project";
 import { IUser } from "../types/user";
 import { Document } from "mongoose";
 
-
-export const fetchProjectsByOrg = async(orgId: string): Promise<(Document<unknown, {}, ReturnedIProject> & ReturnedIProject)[]> => {
+export const fetchProjectsByOrg = async(orgId: string) => {
     const projects = await Project.find({organizationId: orgId});
 
     return projects;
@@ -12,9 +11,9 @@ export const fetchProjectsByOrg = async(orgId: string): Promise<(Document<unknow
 
 export const addProject = async(data: newProjectData, authenticatedUser: (IUser & Document))  => {
 
-    const orgId = authenticatedUser.organizationId.toString();
+    const orgId = authenticatedUser.organizationId;
 
-    const creator = authenticatedUser.id;
+    const creator = authenticatedUser._id;
 
     //add role field manually to database
     return await Project.create({

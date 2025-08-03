@@ -29,6 +29,7 @@ router.get('/org/:id', adminStatus, userExtractor, async(req: AuthRequest, res, 
 
 // POST /api/projects
 router.post('/', adminStatus, userExtractor, newProjectParser, async(req: AuthRequest<newProjectData>, res: Response, next: NextFunction) => {
+    
     try {
         const newProject = await addProject(req.body, req.user!);
         return res.status(201).json(newProject);

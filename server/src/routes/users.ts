@@ -72,11 +72,11 @@ router.patch('/:id/role', adminStatus, userExtractor,  updateRoleParser, async (
       const result = await updateRoleOfUser(req.params.id, req.body, req.user!);
 
       if (!result) {
-        return res.status(404).json({error: "User not found."})
+        return res.status(404).json({error: "User not found."});
       }
 
       if (result === 'unauthorized') {
-        return res.status(403).json({error: 'YOu can only update role status of your organization user.'})
+        return res.status(403).json({error: 'YOu can only update role status of your organization user.'});
       }
 
       return res.json(result);

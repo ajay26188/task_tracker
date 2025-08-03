@@ -64,7 +64,7 @@ export const updateRoleOfUser = async (id: string, updates: {
     if (!user) return null;
 
     if (admin.organizationId.toString() !== user.organizationId.toString()) {
-        return 'unauthorized'
+        return 'unauthorized';
     }
 
     user.role = role;

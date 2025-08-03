@@ -36,10 +36,11 @@ const projectSchema = new Schema(
 );
 
 projectSchema.set('toJSON', {
-    transform: function (
-      _doc, ret: any
-    ) {
-      ret.id = ret._id?.toString();
+    transform: function (_doc, ret: Record<string, unknown>) {
+      if (ret._id && typeof ret._id === 'object' && 'toString' in ret._id) {
+        ret.id = (ret._id as { toString(): string }).toString();
+      }
+  
       delete ret._id;
       delete ret.__v;
     }
