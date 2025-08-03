@@ -29,15 +29,21 @@ router.post('/', newOrganizationParser, async(req: Request<unknown, unknown, IOr
     res.status(201).json(newOrg);
 });
 
-// Deleting an organization only possible by the admin
-router.delete('/:id', adminStatus, async(req: Request, res: Response, next: NextFunction) => {
+// Deleting an organization only possible by the admin and admins can delete only respective organization
+router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-        const result = await removeOrganization(req.params.id);
+        const result = await removeOrganization(req.params.id, req.user!);
 
         if (!result) {
             return res.status(404).json({error: 'Organization not found.'});
         }
-        return res.status(204).end();
+        if (result === 'unauthorized') {
+            return res.status(404).json({error: 'Unauthorized to perform this operation.'});
+        }
+        if (result === 'deleted') {
+            return res.status(204).end();
+        }
+        
     } catch (error) {
         return next(error);
     }

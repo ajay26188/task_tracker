@@ -14,3 +14,15 @@ export const createUserSchema = z.object({
         ),
     organizationId: z.string(),
 });
+
+export const updateUserSchema = z.object({
+    name: z.string(),
+    email: z.email('Invalid email format.'),
+    password: z
+        .string()
+        .min(6)
+        .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must include upper, lower, number'
+        ),
+});

@@ -1,8 +1,8 @@
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
-import { newUserParser } from './../middlewares/validateRequest';
-import { newUserData } from '../types/user';
+import { newUserParser, updateUserParser } from './../middlewares/validateRequest';
+import { newUserData, updateUserData } from '../types/user';
 import { addUser, getAllUsers, removeUser, updateUser } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
@@ -50,8 +50,8 @@ router.delete('/:id', adminStatus, async(req: Request, res: Response, next: Next
     }
 });
 
-//updating user's info 
-router.put('/:id', userExtractor, newUserParser, async(req: AuthRequest<newUserData>, res: Response, next: NextFunction) => {
+//updating user's info as an user
+router.put('/:id', userExtractor, updateUserParser, async(req: AuthRequest<updateUserData>, res: Response, next: NextFunction) => {
     try {
       if (req.user?.id !== req.params.id) {
         return res.status(403).json({ error: 'Unauthorized to perform this operation.' });

@@ -13,8 +13,8 @@ export const getAllUsers = async(id: string) => {
 export const addUser = async(data: newUserData) => {
 
     //making sure that first user for an organization is the admin
-    const isFirstUser = await User.countDocuments({organizationId: new Types.ObjectId(data.organizationId)});
-    const role = isFirstUser ? Role.Admin : Role.Member;
+    const userCount = await User.countDocuments({organizationId: new Types.ObjectId(data.organizationId)});
+    const role = userCount === 0 ? Role.Admin : Role.Member;
 
     //next two lines for hashing password
     const saltRounds = 10;

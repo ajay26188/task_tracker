@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from 'zod';
 import mongoose from "mongoose";
+import {BSONError} from 'bson';
 
 interface MongoDuplicateKeyError {
   name: string;
@@ -28,28 +29,66 @@ export const errorHandler = (
 ) => {
   // 1. Handle Zod validation errors
   if (error instanceof z.ZodError) {
-    return res.status(400).send({ error: error.issues });
-  }
-
-  // 2. Handle Mongoose duplicate key error
-  if (isMongoDuplicateKeyError(error)) {
-    const field = Object.keys(error.keyValue)[0];
-    return res.status(400).json({ error: `${field} already exists.` });
-  }
-
-  // 3. Handle invalid ObjectId
-  if (error instanceof mongoose.Error.CastError && error.kind === 'ObjectId') {
-    return res.status(400).json({ error: "Invalid ID format." });
-  }
-
-  // 4. Handle Mongoose validation error
-  if (error instanceof mongoose.Error.ValidationError) {
     return res.status(400).json({
-      error: "Validation failed",
-      details: error.errors,
+      error: error.issues.map(issue => ({
+        message: issue.message,
+        path: issue.path,
+        code: issue.code || 'invalid_input'
+      }))
     });
   }
 
-  // 5. Fallback: unknown/unexpected error
+  // 2. Handle MongoDB duplicate key
+  if (isMongoDuplicateKeyError(error)) {
+    const field = Object.keys(error.keyValue)[0];
+    return res.status(400).json({
+      error: [
+        {
+          message: `${field} already exists.`,
+          path: [field],
+          code: 'duplicate_key'
+        }
+      ]
+    });
+  }
+
+  // 3. BSON error (e.g., invalid ObjectId)
+  if (error instanceof BSONError) {
+    return res.status(400).json({
+      error: [
+        {
+          message: "Invalid ID format (not a valid ObjectId).",
+          path: [],
+          code: "invalid_id"
+        }
+      ]
+    });
+  }
+
+  // 4. Mongoose cast error
+  if (error instanceof mongoose.Error.CastError && error.kind === 'ObjectId') {
+    return res.status(400).json({
+      error: [
+        {
+          message: "Invalid ID format.",
+          path: [error.path],
+          code: "cast_error"
+        }
+      ]
+    });
+  }
+
+  // 5. Mongoose validation error
+  if (error instanceof mongoose.Error.ValidationError) {
+    return res.status(400).json({
+      error: Object.values(error.errors).map(err => ({
+        message: err.message,
+        path: [err.path],
+        code: 'validation_error'
+      }))
+    });
+  }
+
+  // 6. Fallback
   return next(error);
 };

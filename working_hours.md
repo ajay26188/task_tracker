@@ -12,5 +12,6 @@
 | 30.07  | Designing PUT, DELETE for users and PUT, DELETE, GET for organization with authMIddleware for restriction control | 3h |
 | 31.07  | Error handling middleware updated with more error hadnlers | 0.5h |
 | 31.07  | Designing GET, POST, PUT & DELETE routes for projects with error handling | 2.5h |
-|   | Total hours | 17h |
+| 03.08  | Testing via Postman for all organization, users, login routes with updating errorHandler, DELETE /api/organization route  | 3h |
+|   | Total hours | 20h |
 

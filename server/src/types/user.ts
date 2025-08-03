@@ -35,3 +35,5 @@ export interface LoginData {
     email: string,
     password: string
 };
+
+export type updateUserData = Omit<IUser, 'role' | 'organizationId'> ;
