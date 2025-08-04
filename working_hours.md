@@ -17,5 +17,6 @@
 | 03.08  | Fixing lint errors related to 'any' type | 0.5h |
 | 04.08  | Creating Task model | 1h |
 | 04.08  | Designing POST /api/tasks | 1h |
+| 04.08  | Designing GET /api/tasks?projectId=xxx, GET /api/tasks/:id, PATCH /api/tasks/:id, DELETE /api/tasks/:id | 4h |
 |   | Total hours | 24.5h |
 

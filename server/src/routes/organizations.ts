@@ -38,7 +38,7 @@ router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: R
             return res.status(404).json({error: 'Organization not found.'});
         }
         if (result === 'unauthorized') {
-            return res.status(404).json({error: 'Unauthorized to perform this operation.'});
+            return res.status(403).json({error: 'Unauthorized to perform this operation.'});
         }
         if (result === 'deleted') {
             return res.status(204).end();

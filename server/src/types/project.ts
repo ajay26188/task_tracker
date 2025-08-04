@@ -8,6 +8,7 @@ export interface IProject {
     organizationId: Types.ObjectId,
     startDate: Date,
     endDate: Date,
+    tasks?: Types.ObjectId[],
     createdBy: Types.ObjectId
 };
 
@@ -20,6 +21,7 @@ export interface ReturnedIProject {
     organizationId: Types.ObjectId,
     startDate: Date,
     endDate: Date,
+    tasks?: Types.ObjectId[],
     createdBy: Types.ObjectId,
     createdAt?: Date,
     updatedAt?: Date

@@ -26,6 +26,15 @@ export interface ITask {
     dueDate: Date,
 };
 
+export interface updateTaskData {
+    title?: string, 
+    description?: string,
+    assignedTo?: Types.ObjectId,
+    status?: Status,
+    priority?: Priority,
+    dueDate?: Date, 
+};
+
 export interface ReturnedITask {
     _id?: Types.ObjectId,
     __v?: number, // operand of 'delete' operator must be optional
