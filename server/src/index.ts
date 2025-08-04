@@ -7,6 +7,7 @@ import organizationRouter from './routes/organizations';
 import userRouter from './routes/users';
 import loginRouter from './routes/logins';
 import projectRouter from './routes/projects';
+import taskRouter from './routes/tasks';
 import { tokenExtractor } from './middlewares/auth';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/organization', organizationRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/projects', projectRouter);
+app.use('/api/tasks', taskRouter);
 
 app.use(errorHandler);
 

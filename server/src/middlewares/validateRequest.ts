@@ -5,6 +5,7 @@ import { createOrganizationSchema } from "../schemas/organization";
 import { createUserSchema, updateRoleSchema, updateUserSchema } from "../schemas/user";
 import { loginSchema } from "../schemas/login";
 import { createProjectSchema } from "../schemas/project";
+import { createTaskSchema } from "../schemas/task";
 
 export const newOrganizationParser = (req: Request, _res: Response, next: NextFunction) => {
     try {
@@ -45,6 +46,15 @@ export const loginParser = (req: Request, _res: Response, next: NextFunction) =>
 export const newProjectParser = (req: Request, _res: Response, next: NextFunction) => {
     try {
         createProjectSchema.parse(req.body);
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const newTaskParser = (req: Request, _res: Response, next: NextFunction) => {
+    try {
+        createTaskSchema.parse(req.body);
         next();
     } catch (err) {
         next(err);

@@ -15,6 +15,7 @@
 | 03.08  | Testing via Postman for all organization, users, login routes with updating errorHandler, DELETE /api/organization route  | 3h |
 | 03.08  | Testing via Postman for all projects route, adding more restrictions to route handlers and adding PATCH /api/users/:id/role to users  | 3h |
 | 03.08  | Fixing lint errors related to 'any' type | 0.5h |
-| 04.08  | Create Task model | 1h |
+| 04.08  | Creating Task model | 1h |
+| 04.08  | Designing POST /api/tasks | 1h |
 |   | Total hours | 24.5h |
 
