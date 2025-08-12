@@ -8,7 +8,7 @@ import { Document, Types } from "mongoose";
 
 export const getOrganization = async(id: string, authnticatedUser: (IUser & Document)) => {
     if (authnticatedUser.organizationId.toString() !== id) {
-        return 'unauthorized'
+        return 'unauthorized';
     }
 
     const org = await Organization.findById(id);

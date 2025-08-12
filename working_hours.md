@@ -19,5 +19,6 @@
 | 04.08  | Designing POST /api/tasks | 1h |
 | 04.08  | Designing GET /api/tasks?projectId=xxx, GET /api/tasks/:id, PATCH /api/tasks/:id, DELETE /api/tasks/:id | 4h |
 | 12.08  | Updating GET /api/tasks?projectId=xxx, with GET /api/tasks?projectId="projectId"&status="Status"&priority="Priority"&assignedTo="userId"  | 3.5h |
-|   | Total hours | 33h |
+| 12.08  | Testing all 'tasks' routes with update on routes/services and adding user-restrictions on some routes and updating task types  | 4h |
+|   | Total hours | 37h |
 

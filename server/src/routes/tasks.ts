@@ -109,11 +109,11 @@ router.patch('/:id', adminStatus, userExtractor,  updateTaskParser, async (req: 
       const result = await updateTask( req.user!, req.body, req.params.id);
 
       if (!result) {
-        return res.status(404).json({error: "Task not found."});
+        return res.status(404).json({error: "Task not found or AssignedTo user not found."});
       }
 
       if (result === 'unauthorized') {
-        return res.status(403).json({error: 'You can only update task of your organization.'});
+        return res.status(403).json({error: 'You can only update task of your organization and assign task to a member of your organization.'});
       }
 
       return res.json(result);

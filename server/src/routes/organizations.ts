@@ -19,7 +19,7 @@ router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Resp
         }
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You only only view your own organization details.'})
+            return res.status(403).json({error: 'You only only view your own organization details.'});
         }
 
         return res.json(result);

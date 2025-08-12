@@ -45,7 +45,7 @@ export const adminStatus = (req: AuthRequest, res: Response, next: NextFunction)
     const decodedToken = decoded as DecodedToken; // type guard
 
     if (decodedToken.role !== 'admin') {
-        return res.status(401).json({error: 'Unauthorized to perform this operation.'});
+        return res.status(403).json({error: 'Forbidden to perform this operation.'});
     }
     return next(); //returns to routeHandler if the user is admin
 };

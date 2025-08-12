@@ -36,13 +36,23 @@ export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser &
 export const addTask = async(authenticatedUser: (IUser & Document), data: newTaskData) => {
     const project = await Project.findById(data.projectId);
 
+    console.log('project found!');
+
     if (!project) return null;
 
-    const assignedToUser = await User.findById(data.assignedTo);
+    let assignedToUser;
 
-    if (!assignedToUser) return null;
+    if (data.assignedTo) {
+        assignedToUser = await User.findById(data.assignedTo);
 
-    if (assignedToUser.organizationId.toString() !== authenticatedUser.organizationId.toString() || project.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
+        if (!assignedToUser) return null;
+
+        if (assignedToUser.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
+            return 'unauthorized';
+        }
+    }
+
+    if (project.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
         return 'unauthorized';
     }
 
@@ -76,7 +86,20 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
   
     if (title) task.title = title;
     if (description) task.description = description;
-    if (assignedTo) task.assignedTo = assignedTo;
+
+    if (assignedTo) {
+        const assignedToUser = await User.findById(assignedTo);
+
+        if (!assignedToUser) return null;
+
+        if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
+            return 'unauthorized'
+        }
+
+        task.assignedTo = assignedTo;
+
+    } 
+    
     if (status) task.status = status;
     if (priority) task.priority = priority;
     if (dueDate) task.dueDate = dueDate;
