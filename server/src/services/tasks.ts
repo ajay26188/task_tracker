@@ -1,13 +1,13 @@
 import Project from "../models/project";
 import Task from "../models/task";
 import User from "../models/user";
-import { newTaskData, updateTaskData } from "../types/task";
+import { newTaskData, TaskFilter, updateTaskData } from "../types/task";
 import { IUser } from "../types/user";
 import { Document } from "mongoose";
 
 //fetch all tasks in a project with req.query
-export const fetchAllTasks = async(projectId: string, authenticatedUser: (IUser & Document)) => {
-    const project = await Project.findById(projectId).populate('tasks');
+export const fetchAllTasks = async(filter: TaskFilter, authenticatedUser: (IUser & Document)) => {
+    const project = await Project.findById(filter.projectId);
 
     if (!project) return null;
 
@@ -15,7 +15,9 @@ export const fetchAllTasks = async(projectId: string, authenticatedUser: (IUser 
         return 'unauthorized';
     }
 
-    return project.tasks;
+    const tasks = await Task.find(filter);
+
+    return tasks;
 };
 
 //Fetching a single task 
@@ -40,7 +42,7 @@ export const addTask = async(authenticatedUser: (IUser & Document), data: newTas
 
     if (!assignedToUser) return null;
 
-    if (assignedToUser.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
+    if (assignedToUser.organizationId.toString() !== authenticatedUser.organizationId.toString() || project.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
         return 'unauthorized';
     }
 

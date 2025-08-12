@@ -10,14 +10,19 @@ import { addOrganization, getOrganization, removeOrganization, updateOrganizatio
 import { adminStatus, AuthRequest, userExtractor } from '../middlewares/auth';
 
 //fetching an organization based on their id
-router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
+router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-        const organization = await getOrganization(req.params.id);
+        const result = await getOrganization(req.params.id, req.user!);
 
-        if (!organization) {
+        if (!result) {
             return res.status(404).json({error: 'Invalid organization ID.'});
         }
-        return res.json(organization);
+
+        if (result === 'unauthorized') {
+            return res.status(403).json({error: 'You only only view your own organization details.'})
+        }
+
+        return res.json(result);
     } catch (error) {
         return next(error);
     }

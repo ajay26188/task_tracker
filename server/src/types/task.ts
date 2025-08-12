@@ -54,4 +54,23 @@ export interface ReturnedITask {
 
 export type newTaskData = Omit<ITask, 'createdBy' | 'organizationId' | 'status'>;
 
+// Raw query from req.query (always strings)
+export interface TaskQueryParams {
+    projectId?: string;
+    status?: string;
+    priority?: string;
+    assignedTo?: string;
+    dueDate?: string;
+}
+
+// Mongo filter object (correct types for DB)
+export interface TaskFilter {
+    projectId?: Types.ObjectId;
+    status?: string;
+    priority?: string;
+    assignedTo?: Types.ObjectId;
+    dueDate?: { $lte: Date }; //setting before or after date
+}
+
+
 

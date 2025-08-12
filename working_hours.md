@@ -18,5 +18,6 @@
 | 04.08  | Creating Task model | 1h |
 | 04.08  | Designing POST /api/tasks | 1h |
 | 04.08  | Designing GET /api/tasks?projectId=xxx, GET /api/tasks/:id, PATCH /api/tasks/:id, DELETE /api/tasks/:id | 4h |
-|   | Total hours | 28.5h |
+| 12.08  | Updating GET /api/tasks?projectId=xxx, with GET /api/tasks?projectId="projectId"&status="Status"&priority="Priority"&assignedTo="userId"  | 3.5h |
+|   | Total hours | 33h |
 

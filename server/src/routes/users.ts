@@ -11,11 +11,15 @@ import { AuthRequest } from '../middlewares/auth';
 const router = express.Router();
 
 // GET /api/users/:id — get all users for an organization
-router.get('/:id', async(req: Request, res: Response, next: NextFunction) => {
+router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     const orgId = req.params.id;
 
     if (!Types.ObjectId.isValid(orgId)) {
         return res.status(400).json({error: 'Invalid organization ID'});
+    }
+
+    if (req.user!.organizationId.toString() !== orgId) {
+      return res.status(403).json({error: 'You can only view users of your organization'});
     }
 
     try {

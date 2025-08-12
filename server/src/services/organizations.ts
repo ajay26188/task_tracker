@@ -6,7 +6,11 @@ import { IOrganization } from "../types/organization";
 import { IUser } from "../types/user";
 import { Document, Types } from "mongoose";
 
-export const getOrganization = async(id: string) => {
+export const getOrganization = async(id: string, authnticatedUser: (IUser & Document)) => {
+    if (authnticatedUser.organizationId.toString() !== id) {
+        return 'unauthorized'
+    }
+
     const org = await Organization.findById(id);
 
     if (!org) return null;

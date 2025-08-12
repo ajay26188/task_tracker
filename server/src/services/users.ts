@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt';
 import { Document } from "mongoose";
 
 export const getAllUsers = async(id: string) => {
-    return await User.find({organizationId: new Types.ObjectId(id)});
+    await User.find({organizationId: new Types.ObjectId(id)});
 };
 
 export const addUser = async(data: newUserData) => {

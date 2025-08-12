@@ -2,18 +2,18 @@
 
 import express, { Response, NextFunction } from 'express';
 import { adminStatus, AuthRequest, userExtractor } from '../middlewares/auth';
-import { newTaskData, updateTaskData } from '../types/task';
+import { newTaskData, Priority, Status, TaskFilter, TaskQueryParams, updateTaskData } from '../types/task';
 import { newTaskParser, updateTaskParser } from '../middlewares/validateRequest';
 import { addTask, fetchAllTasks, fetchSingleTask, removeTask, updateTask } from '../services/tasks';
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId, Types } from 'mongoose';
 
 const router = express.Router();
 
-// GET /api/tasks?projectId=xxx
+// GET /api/tasks?projectId="projectId"&status="Status"&priority="Priority"&assignedTo="userId"
 // fetch all tasks in a project
 router.get('/', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-        const { projectId } = req.query;
+        const { projectId, status, priority, assignedTo, dueDate } = req.query as TaskQueryParams;
 
         if (!projectId || typeof projectId !== 'string') {
             return res.status(400).json({ error: 'Missing or invalid projectId' });
@@ -22,8 +22,31 @@ router.get('/', adminStatus, userExtractor, async(req: AuthRequest, res: Respons
         if (!isValidObjectId(projectId)) {
             return res.status(400).json({ error: 'Invalid projectId format' });
         }
+
+        const filter: TaskFilter = {};
+
+        filter.projectId = new Types.ObjectId(projectId);
+
+        if (status && typeof status === 'string') {
+            filter.status = status as Status;
+        }
+
+        if (priority && typeof priority === 'string') {
+            filter.priority = priority as Priority;
+        }
+
+        if (assignedTo && typeof assignedTo === 'string' && isValidObjectId(assignedTo)) {
+            filter.assignedTo = new Types.ObjectId(assignedTo);
+        }
+      
+        if (dueDate && typeof dueDate === 'string') {
+            const parsedDate = new Date(dueDate);
+            if (!isNaN(parsedDate.getTime())) {
+                filter.dueDate = { $lte: parsedDate }; //before or equal to date
+            }
+        }
         
-        const result = await fetchAllTasks(projectId, req.user!);
+        const result = await fetchAllTasks(filter, req.user!);
         
         if (!result) {
             return res.status(404).json({error: 'Project not found.'});
@@ -58,6 +81,9 @@ router.get('/:id', userExtractor, async(req: AuthRequest, res: Response, next: N
     }
 });
 
+// GET /api/tasks/:id?status=todo&priority=high&assignedTo=userId
+
+
 // POST /api/tasks
 router.post('/', adminStatus, userExtractor, newTaskParser, async(req: AuthRequest<newTaskData>, res: Response, next:NextFunction) => {
     try {
@@ -68,7 +94,7 @@ router.post('/', adminStatus, userExtractor, newTaskParser, async(req: AuthReque
         }
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You can only assign task to a member of your organization.'});
+            return res.status(403).json({error: 'You can only add task to a project of your organization and assign task to a member of your organization'});
         }
 
         return res.status(201).json(result);
