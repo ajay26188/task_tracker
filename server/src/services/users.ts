@@ -5,6 +5,7 @@ import User from "../models/user";
 import { IUser, newUserData, Role } from "../types/user";
 import bcrypt from 'bcrypt';
 import { Document } from "mongoose";
+import Organization from "../models/organization";
 
 export const getAllUsers = async(id: string) => {
     await User.find({organizationId: new Types.ObjectId(id)});
@@ -12,8 +13,14 @@ export const getAllUsers = async(id: string) => {
 
 export const addUser = async(data: newUserData) => {
 
+    //First making sure that organization exists
+    const org = Organization.findById(data.organizationId);
+
+    if (!org) return null;
+
     //making sure that first user for an organization is the admin
     const userCount = await User.countDocuments({organizationId: new Types.ObjectId(data.organizationId)});
+    
     const role = userCount === 0 ? Role.Admin : Role.Member;
 
     //next two lines for hashing password

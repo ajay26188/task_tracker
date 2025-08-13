@@ -131,7 +131,10 @@ router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: R
         if (result === 'unauthorized') {
             return res.status(403).json({error: 'Unauthorized to perform this operation.'});
         }
-        return res.status(204).end();
+        
+        if (result === 'deleted') {
+            return res.status(204).end();
+        }
         
         
     } catch (error) {

@@ -2,6 +2,9 @@
 
 import { z } from 'zod';
 
+// Check if sent ObjectId is of correct type
+const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+
 export const createUserSchema = z.object({
     name: z.string(),
     email: z.email('Invalid email format.'),
@@ -12,7 +15,7 @@ export const createUserSchema = z.object({
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         'Password must include upper, lower, number'
         ),
-    organizationId: z.string(),
+    organizationId: z.string().regex(objectIdRegex, 'Invalid organizationId format.'),
 });
 
 export const updateUserSchema = z.object({

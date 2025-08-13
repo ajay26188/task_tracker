@@ -3,7 +3,8 @@ import Task from "../models/task";
 import User from "../models/user";
 import { newTaskData, TaskFilter, updateTaskData } from "../types/task";
 import { IUser } from "../types/user";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
+import Comment from '../models/comment';
 
 //fetch all tasks in a project with req.query
 export const fetchAllTasks = async(filter: TaskFilter, authenticatedUser: (IUser & Document)) => {
@@ -121,6 +122,12 @@ export const removeTask = async(id: string, authenticatedUser: (IUser & Document
         { $pull: { tasks: task._id} }
     );
 
-    return await task.deleteOne();
+    //Deleting task and their comments parallely
+    await Promise.all([
+        task.deleteOne(),
+        Comment.deleteMany({ taskId: new Types.ObjectId(id) }),
+    ]);
+
+    return 'deleted';
 };
 

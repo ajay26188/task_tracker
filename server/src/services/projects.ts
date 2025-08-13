@@ -1,7 +1,8 @@
 import Project from "../models/project";
+import Task from "../models/task";
 import { newProjectData } from "../types/project";
 import { IUser } from "../types/user";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export const fetchProjectsByOrg = async(orgId: string) => {
     const projects = await Project.find({organizationId: orgId});
@@ -31,7 +32,13 @@ export const removeProject = async(id: string, user: (IUser & Document)) => {
         return 'unauthorized';
     }
 
-    return await project.deleteOne();
+    //Deleting project and their tasks parallely
+    await Promise.all([
+        project.deleteOne(),
+        Task.deleteMany({ projectId: new Types.ObjectId(id) }),
+    ]);
+
+    return 'deleted';
 };
 
 export const updateProject = async (projectId: string, updates: newProjectData, user: (IUser & Document)) => {

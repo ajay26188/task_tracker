@@ -1,6 +1,7 @@
 // /services/organizations.ts
 
 import Organization from "../models/organization";
+import Project from "../models/project";
 import User from "../models/user";
 import { IOrganization } from "../types/organization";
 import { IUser } from "../types/user";
@@ -28,10 +29,11 @@ export const removeOrganization = async (id: string, user: IUser & Document) => 
     const organization = await Organization.findById(id);
     if (!organization) return null;
 
-    //Deleting organization and their users parallely
+    //Deleting organization and their users & projects parallely
     await Promise.all([
         organization.deleteOne(),
         User.deleteMany({ organizationId: new Types.ObjectId(id) }),
+        Project.deleteMany({ organizationId: new Types.ObjectId(id) }),
     ]);
 
     return 'deleted';

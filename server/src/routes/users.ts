@@ -33,8 +33,12 @@ router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Resp
 //POST /api/users
 router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response, next: NextFunction) => {
     try {
-        const newUser = await addUser(req.body);
-        return res.status(201).json(newUser);
+        const result = await addUser(req.body);
+
+        if (!result) {
+          res.status(400).json({error: 'Organization not found.'})
+        }
+        return res.status(201).json(result);
     } catch (error) {
         return next(error);
     }
