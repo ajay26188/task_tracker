@@ -81,9 +81,6 @@ router.get('/:id', userExtractor, async(req: AuthRequest, res: Response, next: N
     }
 });
 
-// GET /api/tasks/:id?status=todo&priority=high&assignedTo=userId
-
-
 // POST /api/tasks
 router.post('/', adminStatus, userExtractor, newTaskParser, async(req: AuthRequest<newTaskData>, res: Response, next:NextFunction) => {
     try {

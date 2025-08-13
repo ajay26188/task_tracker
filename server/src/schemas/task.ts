@@ -18,7 +18,7 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional(),
-    assignedTo: z.string().regex(objectIdRegex, 'Invalid assignedTo format.').optional(),
+    assignedTo: z.string().regex(objectIdRegex, 'Invalid projectId format.').optional(),
     status: z.enum(['todo','in-progress','done']).optional(),
     priority: z.enum(['low','medium','high']).optional(),
     dueDate: z.string().transform(val => new Date(val)).optional(),

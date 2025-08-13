@@ -86,7 +86,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
   
     if (title) task.title = title;
     if (description) task.description = description;
-
+     
     if (assignedTo) {
         const assignedToUser = await User.findById(assignedTo);
 
@@ -96,10 +96,9 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             return 'unauthorized'
         }
 
-        task.assignedTo = assignedTo;
-
+        task.assignedTo = [...new Set(task.assignedTo.concat(assignedTo))];
     } 
-    
+
     if (status) task.status = status;
     if (priority) task.priority = priority;
     if (dueDate) task.dueDate = dueDate;

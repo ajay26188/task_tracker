@@ -24,10 +24,10 @@ const projectSchema = new Schema(
             type: Date,
             required: true
         },
-        tasks: { 
+        tasks: [{ 
             type: Schema.Types.ObjectId, 
             ref: 'Task'
-        },
+        }],
         organizationId: { 
             type: Schema.Types.ObjectId, ref: 'Organization', 
             required: true 

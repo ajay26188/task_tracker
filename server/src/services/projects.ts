@@ -14,8 +14,7 @@ export const addProject = async(data: newProjectData, authenticatedUser: (IUser 
     const orgId = authenticatedUser.organizationId;
 
     const creator = authenticatedUser._id;
-
-    //add role field manually to database
+    
     return await Project.create({
         ...data,
         organizationId: orgId,

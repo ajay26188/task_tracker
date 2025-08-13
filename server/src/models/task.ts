@@ -33,11 +33,11 @@ const taskSchema = new Schema(
             ref: 'User', 
             required: true 
         },
-        assignedTo: { 
+        assignedTo: [{ 
             type: Schema.Types.ObjectId, 
             ref: 'User',
             required: false
-        },
+        }],
         status: {
             type: String,
             enum: Object.values(Status),
