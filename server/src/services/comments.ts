@@ -18,7 +18,7 @@ export const fetchAllComments = async(taskId: string, authenticatedUser: (IUser 
 
     //fetching all comments in reverse chat-style newest first
     const comments = await Comment.find({ taskId })
-    .sort({ createdAt: -1 }); //newest -> oldest 
+    .sort({ createdAt: 1 }); // oldest -> newest 
 
     return comments;
 };

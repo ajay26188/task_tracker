@@ -113,6 +113,10 @@ router.patch('/:id', adminStatus, userExtractor,  updateTaskParser, async (req: 
         return res.status(403).json({error: 'You can only update task of your organization and assign task to a member of your organization.'});
       }
 
+      if (result === 'duplicate user') {
+        return res.status(400).json({error: 'User is already assigned to this task.'});
+      }
+
       return res.json(result);
 
     } catch (error) {

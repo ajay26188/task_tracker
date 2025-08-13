@@ -22,5 +22,6 @@
 | 12.08  | Testing all 'tasks' routes with update on routes/services and adding user-restrictions on some routes and updating task types  | 4h |
 | 13.08  | Designing Comment model and creating API endpoints for POST /api/comments, GET /api/comments?taskId=xxxx, and DELETE /api/comments/:id with minor adjustment on updateTask function and Task model | 6.5h |
 | 13.08  | Updating /services/ removeProject, removeOrganization, removeTask functions for allowing cascading delete operations and also adding organization restriction while adding a new user in addUser function | 1h |
-| 13.08  | Total hours | 44.5h |
+| 13.08  | Testing via postman all comments API endpoints and making minor changes to existing services and routes folder | 1h |
+| 13.08  | Total hours | 45.5h |
 

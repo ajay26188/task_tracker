@@ -97,7 +97,11 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             return 'unauthorized'
         }
 
-        task.assignedTo = [...new Set(task.assignedTo.concat(assignedTo))];
+        if (task.assignedTo.map(id => id.toString()).includes(assignedTo.toString())) {
+            return 'duplicate user';
+        }
+
+        task.assignedTo.push(assignedTo);
     } 
 
     if (status) task.status = status;
