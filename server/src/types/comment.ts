@@ -16,7 +16,7 @@ export interface ReturnedIComment {
     comment: string,
     taskId: Types.ObjectId,
     userId: Types.ObjectId,
-    orgId: Types.ObjectId
+    organizationId: Types.ObjectId
     createdAt?: Date;
 };
 

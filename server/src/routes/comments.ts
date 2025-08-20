@@ -6,6 +6,7 @@ import { newCommentData } from '../types/comment';
 import { newCommentParser } from '../middlewares/validateRequest';
 import { addComment, fetchAllComments, removeComment } from '../services/comments';
 import { isValidObjectId } from 'mongoose';
+import { emitCommentAdded } from '..';
 
 const router = express.Router();
 
@@ -50,6 +51,9 @@ router.post('/', userExtractor, newCommentParser, async(req: AuthRequest<newComm
         if (result === 'unauthorized') {
             return res.status(403).json({error: 'You are unauthorized to comment on this task.'});
         }
+
+        // Notify all users in that task room
+        emitCommentAdded(req.body.taskId.toString(), result);
 
         return res.status(201).json(result);
 

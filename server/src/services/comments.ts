@@ -40,7 +40,6 @@ export const addComment = async(data: newCommentData, authenticatedUser: (IUser 
         return 'unauthorized';
     }
 
-
     const orgId = authenticatedUser.organizationId;
 
     const user = authenticatedUser._id;
