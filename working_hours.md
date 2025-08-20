@@ -24,5 +24,5 @@
 | 13.08  | Updating /services/ removeProject, removeOrganization, removeTask functions for allowing cascading delete operations and also adding organization restriction while adding a new user in addUser function | 1h |
 | 13.08  | Testing via postman all comments API endpoints and making minor changes to existing services and routes folder | 1h |
 | 19.08 | Setup Socket.IO in backend for real-time comments, emit commentAdded on comment creation, and tested using Postman's socket.io environment | 5.5h |
-| 13.08  | Total hours | 51h |
+| 19.08  | Total hours | 51h |
 
