@@ -5,6 +5,8 @@ import { newTaskData, TaskFilter, updateTaskData } from "../types/task";
 import { IUser } from "../types/user";
 import { Document, Types } from "mongoose";
 import Comment from '../models/comment';
+import Notification from "../models/notification";
+import { emitNewNotification } from "..";
 
 //fetch all tasks in a project with req.query
 export const fetchAllTasks = async(filter: TaskFilter, authenticatedUser: (IUser & Document)) => {
@@ -67,6 +69,17 @@ export const addTask = async(authenticatedUser: (IUser & Document), data: newTas
         createdBy: creator
     });
 
+    if (data.assignedTo) {
+        const message = `A task titled ${data.title} has been assigned to you.`;
+
+        const savedNotification = await Notification.create({
+            message,
+            userId: data.assignedTo
+        });
+
+        emitNewNotification(data.assignedTo.toString(), savedNotification);
+    }
+
     await Project.findByIdAndUpdate(data.projectId, {
         $push: {tasks: newTask._id}
     });
@@ -84,31 +97,110 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
     }
 
     const { title, description, assignedTo, status, priority, dueDate } = updates;
-  
-    if (title) task.title = title;
-    if (description) task.description = description;
-     
-    if (assignedTo) {
-        const assignedToUser = await User.findById(assignedTo);
 
-        if (!assignedToUser) return null;
+    // Notifications list to send
+    let notifications: { message: string; userId: string }[] = [];
 
-        if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
-            return 'unauthorized'
+    if (user.role === 'admin') {
+
+        if (title) {
+            const oldTitle = task.title; // store old title
+            task.title = title;
+        
+            task.assignedTo.forEach(uid => {
+                notifications.push({
+                  message: `Task "${oldTitle}" has been renamed to "${title}".`,
+                  userId: uid.toString()
+                });
+            });
+        }
+         
+
+        if (description) {
+            task.description = description;
+            task.assignedTo.forEach(uid => {
+                notifications.push({
+                  message: `Task ${task.title} description has been updated.`,
+                  userId: uid.toString()
+                });
+            });
+        };
+        
+        if (assignedTo) {
+            const assignedToUser = await User.findById(assignedTo);
+
+            if (!assignedToUser) return null;
+
+            if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
+                return 'unauthorized'
+            }
+
+            if (task.assignedTo.map(id => id.toString()).includes(assignedTo.toString())) {
+                return 'duplicate user';
+            }
+
+            task.assignedTo.push(assignedTo);
+
+            //notifying the new assignee
+            notifications.push({
+                message: `A task titled ${task.title} has been assigned to you.`,
+                userId: assignedTo.toString()
+            });
+
+            //Notifying existing assignee new member has been assigned
+            task.assignedTo.forEach(uid => {
+                if (uid.toString() !== assignedTo.toString()) {
+                  notifications.push({
+                    message: `A new member has been assigned to ${task.title}.`,
+                    userId: uid.toString()
+                  });
+                }
+            });
+        } 
+
+        if (priority) {
+            task.priority = priority;
+            task.assignedTo.forEach(uid => {
+              notifications.push({
+                message: `Task "${task.title}" priority changed to ${priority}.`,
+                userId: uid.toString()
+              });
+            });
+        };
+        
+        if (dueDate) {
+            task.dueDate = dueDate;
+            task.assignedTo.forEach(uid => {
+              notifications.push({
+                message: `Task "${task.title}" due date changed to ${dueDate.toDateString()}.`,
+                userId: uid.toString()
+              });
+            });
         }
 
-        if (task.assignedTo.map(id => id.toString()).includes(assignedTo.toString())) {
-            return 'duplicate user';
+    }
+
+    if (task.assignedTo.includes(user.id) || user.role === 'admin') {
+        if (status) {
+            task.status = status;
+            task.assignedTo.forEach(uid => {
+              notifications.push({
+                message: `Task "${task.title}" status changed to ${status}.`,
+                userId: uid.toString()
+              });
+            });
         }
+    };
+    
+    await task.save();
 
-        task.assignedTo.push(assignedTo);
-    } 
+    // Save + emit notifications
+    for (const notif of notifications) {
+        const savedNotification = await Notification.create(notif);
+        emitNewNotification(notif.userId, savedNotification);
+    }
 
-    if (status) task.status = status;
-    if (priority) task.priority = priority;
-    if (dueDate) task.dueDate = dueDate;
-  
-    return await task.save();
+    return task;
 };
 
 export const removeTask = async(id: string, authenticatedUser: (IUser & Document)) => {

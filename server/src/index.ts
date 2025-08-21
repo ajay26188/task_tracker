@@ -11,8 +11,10 @@ import loginRouter from './routes/logins';
 import projectRouter from './routes/projects';
 import taskRouter from './routes/tasks';
 import commentRouter from './routes/comments';
+import notificationRouter from './routes/notifications';
 import { tokenExtractor } from './middlewares/auth';
 import { ReturnedIComment } from './types/comment';
+import { ReturnedINotification } from './types/notification';
 
 const app = express();
 
@@ -44,6 +46,7 @@ app.use('/api/login', loginRouter);
 app.use('/api/projects', projectRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/comments', commentRouter);
+app.use('/api/notifications', notificationRouter);
 
 app.use(errorHandler);
 
@@ -56,6 +59,12 @@ io.on('connection', (socket) => {
       socket.join(taskId);
       console.log(`User ${socket.id} joined task ${taskId}`);
     });
+
+    // Join room to receive notifications
+    socket.on('loggedInUser', (userId) => {
+      socket.join(userId);
+      console.log(`User ${socket.id} loggen in.`);
+    });
   
     socket.on('disconnect', () => {
       console.log('❌ Client disconnected:', socket.id);
@@ -65,6 +74,11 @@ io.on('connection', (socket) => {
 //Helper function to emit comment updates
 export const emitCommentAdded = (taskId: string, comment: ReturnedIComment) => {
     io.to(taskId).emit('commentAdded', comment);
+};
+
+//Helper function to emit new notification
+export const emitNewNotification = (userId: string, notification: ReturnedINotification) => {
+  io.to(userId).emit('newNotification', notification);
 };
 
 httpServer.listen(PORT, () => {

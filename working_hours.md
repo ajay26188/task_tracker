@@ -23,6 +23,7 @@
 | 13.08  | Designing Comment model and creating API endpoints for POST /api/comments, GET /api/comments?taskId=xxxx, and DELETE /api/comments/:id with minor adjustment on updateTask function and Task model | 6.5h |
 | 13.08  | Updating /services/ removeProject, removeOrganization, removeTask functions for allowing cascading delete operations and also adding organization restriction while adding a new user in addUser function | 1h |
 | 13.08  | Testing via postman all comments API endpoints and making minor changes to existing services and routes folder | 1h |
-| 19.08 | Setup Socket.IO in backend for real-time comments, emit commentAdded on comment creation, and tested using Postman's socket.io environment | 5.5h |
-| 19.08  | Total hours | 51h |
+| 20.08 | Setup Socket.IO in backend for real-time comments, emit commentAdded on comment creation, and tested using Postman's socket.io environment | 5.5h |
+| 21.08 | Setup Notifications model & controller, implemented GET /api/notifications and PATCH /api/notifications/:id/read, and added triggers for task assignment, comment creation, and task updates | 7.5h |
+| 21.08  | Total hours | 58.5h |
 

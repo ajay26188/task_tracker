@@ -101,7 +101,7 @@ router.post('/', adminStatus, userExtractor, newTaskParser, async(req: AuthReque
 });
 
 // PATCH /api/tasks/:id
-router.patch('/:id', adminStatus, userExtractor,  updateTaskParser, async (req: AuthRequest<updateTaskData>, res: Response, next: NextFunction) => {
+router.patch('/:id', userExtractor,  updateTaskParser, async (req: AuthRequest<updateTaskData>, res: Response, next: NextFunction) => {
     try {
       const result = await updateTask( req.user!, req.body, req.params.id);
 
@@ -122,7 +122,7 @@ router.patch('/:id', adminStatus, userExtractor,  updateTaskParser, async (req: 
     } catch (error) {
       return next(error);
     }
-  });
+});
 
 // DELETE /api/tasks/:id
 router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {

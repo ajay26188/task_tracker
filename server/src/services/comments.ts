@@ -5,6 +5,8 @@ import { IUser } from "../types/user";
 import { Document } from "mongoose";
 import Comment from "../models/comment";
 import Task from "../models/task";
+import Notification from "../models/notification";
+import { emitNewNotification } from "..";
 
 //fetch all comments for a task with req.query
 export const fetchAllComments = async(taskId: string, authenticatedUser: (IUser & Document)) => {
@@ -44,11 +46,31 @@ export const addComment = async(data: newCommentData, authenticatedUser: (IUser 
 
     const user = authenticatedUser._id;
 
-    return await Comment.create({
+    const savedComment =  await Comment.create({
         ...data,
         userId: user,
         organizationId: orgId,
     });
+
+    // Notifications list to send
+    let notifications: { message: string; userId: string }[] = [];
+
+    task.assignedTo.forEach(uid => {
+        if (uid.toString() !== authenticatedUser.id) {
+          notifications.push({
+            message: `A new message received in Task "${task.title}".`,
+            userId: uid.toString()
+          });
+        }
+      });      
+
+    // Save + emit notifications
+    for (const notif of notifications) {
+        const savedNotification = await Notification.create(notif);
+        emitNewNotification(notif.userId, savedNotification);
+    }
+
+    return savedComment;
 };
 
 export const removeComment = async(id: string, authenticatedUser: (IUser & Document)) => {
