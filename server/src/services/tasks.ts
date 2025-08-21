@@ -184,11 +184,19 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
         if (status) {
             task.status = status;
             task.assignedTo.forEach(uid => {
-              notifications.push({
-                message: `Task "${task.title}" status changed to ${status}.`,
-                userId: uid.toString()
-              });
+                if (uid.toString() !== user.id) {
+                    notifications.push({
+                        message: `Task "${task.title}" status changed to ${status}.`,
+                        userId: uid.toString()
+                      });
+                }
             });
+            if (user.role !== 'admin') {
+                notifications.push({
+                    message: `Task "${task.title}" status changed to ${status}.`,
+                    userId: task.createdBy.toString()
+                });
+            }
         }
     };
     
