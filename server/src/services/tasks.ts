@@ -98,6 +98,11 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
 
     const { title, description, assignedTo, status, priority, dueDate } = updates;
 
+    // If user is not admin but tries to update admin-only fields → reject early
+    if (user.role !== 'admin' && (title || description || assignedTo || priority || dueDate)) {
+        return 'forbidden'; 
+    }
+
     // Notifications list to send
     let notifications: { message: string; userId: string }[] = [];
 
