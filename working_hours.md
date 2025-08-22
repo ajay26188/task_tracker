@@ -26,5 +26,7 @@
 | 20.08 | Setup Socket.IO in backend for real-time comments, emit commentAdded on comment creation, and tested using Postman's socket.io environment | 5.5h |
 | 21.08 | Setup Notifications model & controller, implemented GET /api/notifications and PATCH /api/notifications/:id/read, and added triggers for task assignment, comment creation, and task updates | 7.5h |
 | 21.08 | Testing via Postman Notifications routes and using socket.io functionality for checking real-time notifications | 1.5h |
-| 21.08  | Total hours | 60h |
+| 22.08 | Creating an endpoint for grouping tasks by status (todo, in-progress, done) for a given project. Implemented GET /api/projects/:id/kanban
+ | 3h |
+| 21.08  | Total hours | 63h |
 

@@ -1,6 +1,7 @@
 import Project from "../models/project";
 import Task from "../models/task";
 import { newProjectData } from "../types/project";
+import { ReturnedITask } from "../types/task";
 import { IUser } from "../types/user";
 import { Document, Types } from "mongoose";
 
@@ -71,5 +72,45 @@ export const fetchProject = async(projectId: string, user: (IUser & Document)) =
     } 
 
     return project;
+};
+
+export const groupedTasks = async(projectId: string, user: (IUser & Document)) => {
+
+    //Fetch project
+  const project = await Project.findById(projectId);
+
+  if (!project) return null;
+
+  //Ensure project belongs to user's organization
+  if (project.organizationId.toString() !== user.organizationId.toString()) {
+    return 'forbidden'
+  }
+    
+    // Fetch all tasks for this project
+    const tasks = await Task.find({
+        projectId
+    });
+      
+
+    // Group tasks by status
+    const grouped: {
+        todo: ReturnedITask[];
+        inProgress: ReturnedITask[];
+        done: ReturnedITask[];
+      } = {
+        todo: [],
+        inProgress: [],
+        done: [],
+      };
+      
+
+    for (const task of tasks) {
+        if (task.status === 'todo') grouped.todo.push(task);
+        else if (task.status === 'in-progress') grouped.inProgress.push(task);
+        else if (task.status === 'done') grouped.done.push(task);
+    }
+
+    return grouped;
+
 };
 

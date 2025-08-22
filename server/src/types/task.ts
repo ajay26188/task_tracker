@@ -44,7 +44,7 @@ export interface ReturnedITask {
     projectId: Types.ObjectId,
     organizationId: Types.ObjectId,
     createdBy: Types.ObjectId,
-    assignedTo: Types.ObjectId,
+    assignedTo: Types.ObjectId[],
     status: Status,
     priority: Priority,
     dueDate: Date,

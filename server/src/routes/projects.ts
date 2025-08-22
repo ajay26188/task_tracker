@@ -4,7 +4,7 @@ import express,{ Response, NextFunction } from 'express';
 import { adminStatus, userExtractor, AuthRequest } from '../middlewares/auth';
 import { newProjectParser } from '../middlewares/validateRequest';
 import { newProjectData } from '../types/project';
-import { addProject, fetchProject, fetchProjectsByOrg, removeProject, updateProject } from '../services/projects';
+import { addProject, fetchProject, fetchProjectsByOrg, groupedTasks, removeProject, updateProject } from '../services/projects';
 
 const router = express.Router();
 
@@ -96,5 +96,26 @@ router.put('/:id', adminStatus, userExtractor, newProjectParser, async(req: Auth
         return next(error);
     }
 });
+
+// Fetching tasks grouped by status (todo, in-progress, done) for a given project
+// kanband board view
+router.get('/:id/kanban', userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
+      try {
+        const result = await groupedTasks(req.params.id, req.user!);
+
+        if (!result) {
+            return res.status(404).json({error: 'Project not found.'});
+        }
+
+        if (result === 'forbidden') {
+            return res.status(403).json({error: 'Project does not belong to your organization.'});
+        }
+  
+        return res.json(result);
+      } catch (err) {
+        return next(err)
+      }
+    }
+);
 
 export default router;
