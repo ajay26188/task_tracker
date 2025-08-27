@@ -28,5 +28,6 @@
 | 21.08 | Testing via Postman Notifications routes and using socket.io functionality for checking real-time notifications | 1.5h |
 | 22.08 | Creating an endpoint for grouping tasks by status (todo, in-progress, done) for a given project. Implemented GET /api/projects/:id/kanban
  | 3h |
-| 21.08  | Total hours | 63h |
+ | 27.08 | Implementing real-time task status updates with Socket.IO (backend only, tested via Postman) | 4h |
+| 27.08  | Total hours | 6h |
 

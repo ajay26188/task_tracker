@@ -6,7 +6,7 @@ import { IUser } from "../types/user";
 import { Document, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
-import { emitNewNotification } from "..";
+import { emitNewNotification, emitTaskStatusUpdate } from "..";
 
 //fetch all tasks in a project with req.query
 export const fetchAllTasks = async(filter: TaskFilter, authenticatedUser: (IUser & Document)) => {
@@ -185,15 +185,20 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
 
     }
 
-    if (task.assignedTo.includes(user.id) || user.role === 'admin') {
+    let statusChanged = false;
+
+    if (task.assignedTo.some(uid => uid.toString() === user.id.toString()) || user.role === 'admin') {
+
         if (status) {
             task.status = status;
+            statusChanged = true;
+
             task.assignedTo.forEach(uid => {
                 if (uid.toString() !== user.id) {
                     notifications.push({
                         message: `Task "${task.title}" status changed to ${status}.`,
                         userId: uid.toString()
-                      });
+                    });
                 }
             });
             if (user.role !== 'admin') {
@@ -206,6 +211,11 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
     };
     
     await task.save();
+
+    // Emit only if status was changed for kanban board
+    if (statusChanged) {
+        emitTaskStatusUpdate(task.projectId.toString(), task);
+    }
 
     // Save + emit notifications
     for (const notif of notifications) {

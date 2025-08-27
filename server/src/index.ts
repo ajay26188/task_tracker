@@ -15,6 +15,7 @@ import notificationRouter from './routes/notifications';
 import { tokenExtractor } from './middlewares/auth';
 import { ReturnedIComment } from './types/comment';
 import { ReturnedINotification } from './types/notification';
+import { ReturnedITask } from './types/task';
 
 const app = express();
 
@@ -65,6 +66,12 @@ io.on('connection', (socket) => {
       socket.join(userId);
       console.log(`User ${socket.id} loggen in.`);
     });
+
+    // Join project dashboard where all tasks are seen in kaban form (so only viewers of that project get updates)
+    socket.on('joinProject', (projectId) => {
+      socket.join(projectId);
+      console.log(`User ${socket.id} joined project ${projectId}`);
+    });
   
     socket.on('disconnect', () => {
       console.log('❌ Client disconnected:', socket.id);
@@ -79,6 +86,11 @@ export const emitCommentAdded = (taskId: string, comment: ReturnedIComment) => {
 //Helper function to emit new notification
 export const emitNewNotification = (userId: string, notification: ReturnedINotification) => {
   io.to(userId).emit('newNotification', notification);
+};
+
+//Helper function to emit task status updates
+export const emitTaskStatusUpdate = (projectId: string, task: ReturnedITask) => {
+  io.to(projectId).emit('taskStatusUpdated', task);
 };
 
 httpServer.listen(PORT, () => {
