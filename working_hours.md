@@ -30,5 +30,6 @@
  | 3h |
 | 27.08 | Implementing real-time task status updates with Socket.IO (backend only, tested via Postman) | 4h |
 | 30.08 | Setup React + TypeScript project with Vite, install React Router and Axios, and prepare basic folder structure | 2h |
-| 27.08  | Total hours | 69h |
+| 30.08 | Implement login page with Redux-based notification system, integrate API error handling, configure store, reducers, and custom dispatch typing, debug TypeScript thunk errors, and test notification flow. | 8h |
+| 30.08  | Total hours | 77h |
 
