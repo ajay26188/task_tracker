@@ -1,4 +1,4 @@
-import type { AlertState } from "../reducers/alertReducer";
+import type { AlertState } from "../reducers/alertMessageReducer";
 
 const AlertMessage = ({ message, type }: AlertState) => {
   if (!message) return null;

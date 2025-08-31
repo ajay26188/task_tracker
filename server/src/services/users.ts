@@ -14,7 +14,7 @@ export const getAllUsers = async(id: string) => {
 export const addUser = async(data: newUserData) => {
 
     //First making sure that organization exists
-    const org = Organization.findById(data.organizationId);
+    const org = await Organization.findById(data.organizationId);
 
     if (!org) return null;
 

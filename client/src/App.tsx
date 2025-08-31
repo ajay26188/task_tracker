@@ -4,16 +4,18 @@ import Dashboard from "./pages/Dashboard";
 import AlertMessage from "./components/AlertMessage";
 import { useSelector} from "react-redux";
 import type { RootState } from "./store";
+import Signup from "./pages/Signup";
 
 function App() {
-  const message = useSelector((state: RootState) => state.alertMessage);
+  const alertMessage = useSelector((state: RootState) => state.alertMessage);
   return (
     <div>
-      <AlertMessage {...message} />
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-    </Routes>
+      <AlertMessage {...alertMessage} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
     </div>
     
   );

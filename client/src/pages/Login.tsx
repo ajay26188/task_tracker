@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import loginService from "../services/login";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { alertMessageHandler } from "../reducers/alertReducer";
+import { alertMessageHandler } from "../reducers/alertMessageReducer";
 import type { AppDispatch } from "../store";
 
 const Login = () => {
@@ -63,6 +63,7 @@ const Login = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
+          required
         />
         <input
           type="password"
@@ -70,6 +71,7 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
+          required
         />
         <button
           type="submit"

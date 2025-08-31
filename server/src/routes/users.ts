@@ -36,9 +36,13 @@ router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData
         const result = await addUser(req.body);
 
         if (!result) {
-          res.status(400).json({error: 'Organization not found.'})
+          return res.status(400).json({error: 'Organization not found.'})
         }
-        return res.status(201).json(result);
+
+        // remove password from response
+        const { password, ...safeUser } = result.toObject();
+
+        return res.status(201).json(safeUser);
     } catch (error) {
         return next(error);
     }

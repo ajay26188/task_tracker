@@ -6,10 +6,10 @@ export type AlertState = {
     type: "success" | "error" | "info";
   };
   
-  const initialState: AlertState = {
+const initialState: AlertState = {
     message: null,
     type: "info",
-  };
+};
 
 const alertMessageSlicer = createSlice({
     name: 'alert',
