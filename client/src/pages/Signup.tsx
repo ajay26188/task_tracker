@@ -6,118 +6,115 @@ import { useDispatch } from "react-redux";
 import { alertMessageHandler } from "../reducers/alertMessageReducer";
 import type { AppDispatch } from "../store";
 import { Eye, EyeOff } from "lucide-react";
+import FormLayout from "../components/layouts/FormLayout";
 
 const Signup = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [organizationId, setOrganizationId] = useState("");
-  const [showPassword, setShowPassword] = useState(false); 
-
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signupService.signup({
-        name,
-        email,
-        password,
-        organizationId,
-      });
+      await signupService.signup({ name, email, password, organizationId });
 
-      dispatch(
-        alertMessageHandler(
-          { message: "Signup successful. Welcome!", type: "success" },
-          5
-        )
-      );
-
-      console.log("Signed up with:", { name, email, password, organizationId });
+      // Only success redirects to login
       navigate("/login");
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error("Backend error:", error.response.data.error);
-
-          dispatch(
-            alertMessageHandler(
-              { message: error.response.data.error, type: "error" },
-              5
-            )
-          );
-        } else {
-          console.error("Network error:", error.message);
-        }
-      } else {
-        console.error("Unexpected error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        dispatch(
+          alertMessageHandler(
+            { message: error.response.data.error, type: "error" },
+            5
+          )
+        );
       }
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSignup}
-        className="w-96 bg-white p-8 rounded-2xl shadow-md space-y-4"
-      >
-        <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+    <FormLayout
+      title="Create Your Account"
+      onSubmit={handleSignup}
+      fields={
+        <>
+          <p className="text-gray-500 text-center text-sm mb-4">
+            Sign up to join your organization and start tracking tasks.
+          </p>
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          required
-        />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          required
-        />
-
-        {/* Password field with toggle */}
-        <div className="relative">
           <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 pr-10" // extra padding for icon
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-400 outline-none"
             required
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
 
-        <input
-          type="text"
-          placeholder="Organization ID"
-          value={organizationId}
-          onChange={(e) => setOrganizationId(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          required
-        />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-400 outline-none"
+            required
+          />
 
+          {/* Password field */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-400 outline-none"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {/* Org ID input */}
+          <div className="flex flex-col">
+            <input
+              type="text"
+              placeholder="Organization ID"
+              value={organizationId}
+              onChange={(e) => setOrganizationId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-400 outline-none"
+              required
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Don’t have an Organization ID? Ask your employer or{" "}
+              <span
+                className="text-indigo-600 hover:underline cursor-pointer"
+                onClick={() => navigate("/addOrg")}
+              >
+                create a new organization
+              </span>.
+            </p>
+          </div>
+        </>
+      }
+      actions={
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+          className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition"
         >
           Sign Up
         </button>
-      </form>
-    </div>
+      }
+    />
   );
 };
 

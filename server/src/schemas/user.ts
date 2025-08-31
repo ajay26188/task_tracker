@@ -13,7 +13,7 @@ export const createUserSchema = z.object({
         .min(6, { message: "Password must be at least 6 characters long." })
         .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        'Password must include upper, lower, number'
+        'Password must include uppercase, lowercase, number'
         ),
     organizationId: z.string().regex(objectIdRegex, 'Invalid organizationId format.'),
 });

@@ -5,82 +5,90 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { alertMessageHandler } from "../reducers/alertMessageReducer";
 import type { AppDispatch } from "../store";
+import { Eye, EyeOff } from "lucide-react";
+import FormLayout from "../components/layouts/FormLayout";
 
 const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleLogin = async(e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    //Call backend API
     try {
-      const user = await loginService.login({email, password});
+      const user = await loginService.login({ email, password });
+      window.localStorage.setItem("loggedUser", JSON.stringify(user));
 
-      //save the value to local storage using stringify method
-      window.localStorage.setItem('loggedUser',JSON.stringify(user));
-
-      dispatch(alertMessageHandler(
-        { message: 'Login successful.', type: "success" }, 
-        5
-      ));
-
-      console.log("Login with:", { email, password });
+      //On successful login, navigate to dashboard
       navigate("/dashboard");
-
-  }
-  catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        console.error("Backend error:", error.response.data.error);
-
-        dispatch(alertMessageHandler(
-          { message: error.response.data.error, type: "error" }, 
-          5
-        ));
-        
-      } else {
-        console.error("Network error:", error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        dispatch(
+          alertMessageHandler({ message: error.response.data.error, type: "error" }, 5)
+        );
       }
-    } else {
-      console.error("Unexpected error:", error);
     }
-  }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="w-96 bg-white p-8 rounded-2xl shadow-md space-y-4"
-      >
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-        >
-          Login
-        </button>
-      </form>
-    </div>
+    <FormLayout
+      title="Welcome Back"
+      onSubmit={handleLogin}
+      fields={
+        <>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-400 outline-none"
+            required
+          />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-400 outline-none"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+        </>
+      }
+      actions={
+        <>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+          >
+            Login
+          </button>
+
+          <p className="text-sm text-center text-gray-500 mt-2">
+            Forgot your password?{" "}
+            <span
+              className="text-blue-500 hover:underline cursor-pointer"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Reset here
+            </span>
+          </p>
+        </>
+      }
+    />
+
   );
 };
 

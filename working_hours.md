@@ -32,5 +32,6 @@
 | 30.08 | Setup React + TypeScript project with Vite, install React Router and Axios, and prepare basic folder structure | 2h |
 | 30.08 | Implement login page with Redux-based notification system, integrate API error handling, configure store, reducers, and custom dispatch typing, debug TypeScript thunk errors, and test notification flow. | 8h |
 | 31.08 | Implement signup page with form validation and API integration, create signup service, update backend routes for improved error handling, connect frontend to backend signup flow, and test end-to-end user registration. | 7h |
-| 31.08  | Total hours | 84h |
+| 31.08 | Created reusable FormLayout component for consistent styling and alert placement across all forms, built AddOrganization page, split Landing page into separate Login/Signup/Organization routes, and modernized existing Signup and Login pages for improved UX and maintainability. | 5h |
+| 31.08  | Total hours | 89h |
 
