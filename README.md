@@ -27,14 +27,15 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React + TypeScript *(coming soon)*
-- **Backend:** Node.js, Express
-- **Database:** MongoDB + Mongoose
-- **Validation:** Zod
-- **Authentication:** JWT (with access control)
-- **Dev Tools:** ESLint, TypeScript, Nodemon
+- **Frontend:** React + TypeScript  
+- **State Management:** Redux Toolkit (typed store, slices, and a global notification system for login/signup)  
+- **Backend:** Node.js, Express  
+- **Database:** MongoDB + Mongoose  
+- **Validation:** Zod (schema-based input validation on signup/login)  
+- **Authentication:** JWT (with access control for protected routes)  
+- **Error Handling:** Centralized backend error middleware + Redux-powered frontend alerts  
+- **Dev Tools:** ESLint, TypeScript, Nodemon  
 
----
 
 ## Next Up (Roadmap)
 

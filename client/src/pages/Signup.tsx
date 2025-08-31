@@ -5,7 +5,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { alertMessageHandler } from "../reducers/alertMessageReducer";
 import type { AppDispatch } from "../store";
-import { Eye, EyeOff } from "lucide-react"; // 👁️ icons
+import { Eye, EyeOff } from "lucide-react";
 
 const Signup = () => {
   const dispatch = useDispatch<AppDispatch>();
