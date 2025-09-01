@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import signupService from "../services/signup";
+import signupService from "../../services/authServices/signup";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { alertMessageHandler } from "../reducers/alertMessageReducer";
-import type { AppDispatch } from "../store";
+import { alertMessageHandler } from "../../reducers/alertMessageReducer";
+import type { AppDispatch } from "../../store";
 import { Eye, EyeOff } from "lucide-react";
-import FormLayout from "../components/layouts/FormLayout";
+import FormLayout from "../../components/layouts/FormLayout";
 
 const Signup = () => {
   const dispatch = useDispatch<AppDispatch>();

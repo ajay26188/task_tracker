@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import loginService from "../services/login";
+import loginService from "../../services/authServices/login";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { alertMessageHandler } from "../reducers/alertMessageReducer";
-import type { AppDispatch } from "../store";
+import { alertMessageHandler } from "../../reducers/alertMessageReducer";
+import type { AppDispatch } from "../../store";
 import { Eye, EyeOff } from "lucide-react";
-import FormLayout from "../components/layouts/FormLayout";
+import FormLayout from "../../components/layouts/FormLayout";
 
 const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
