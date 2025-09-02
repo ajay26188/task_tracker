@@ -53,7 +53,7 @@ export const addComment = async(data: newCommentData, authenticatedUser: (IUser 
     });
 
     // Notifications list to send
-    let notifications: { message: string; userId: string }[] = [];
+    const notifications: { message: string; userId: string }[] = [];
 
     task.assignedTo.forEach(uid => {
         if (uid.toString() !== authenticatedUser.id) {

@@ -2,7 +2,7 @@ import Project from "../models/project";
 import Task from "../models/task";
 import User from "../models/user";
 import { newTaskData, TaskFilter, updateTaskData } from "../types/task";
-import { IUser } from "../types/user";
+import { IUser, Role } from "../types/user";
 import { Document, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
@@ -99,14 +99,14 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
     const { title, description, assignedTo, status, priority, dueDate } = updates;
 
     // If user is not admin but tries to update admin-only fields → reject early
-    if (user.role !== 'admin' && (title || description || assignedTo || priority || dueDate)) {
+    if (user.role !== Role.Admin && (title || description || assignedTo || priority || dueDate)) {
         return 'forbidden'; 
     }
 
     // Notifications list to send
-    let notifications: { message: string; userId: string }[] = [];
+    const notifications: { message: string; userId: string }[] = [];
 
-    if (user.role === 'admin') {
+    if (user.role === Role.Admin) {
 
         if (title) {
             const oldTitle = task.title; // store old title
@@ -137,7 +137,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             if (!assignedToUser) return null;
 
             if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
-                return 'unauthorized'
+                return 'unauthorized';
             }
 
             if (task.assignedTo.map(id => id.toString()).includes(assignedTo.toString())) {
@@ -187,7 +187,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
 
     let statusChanged = false;
 
-    if (task.assignedTo.some(uid => uid.toString() === user.id.toString()) || user.role === 'admin') {
+    if (task.assignedTo.some(uid => String(uid) === String(user.id)) || user.role === Role.Admin) {
 
         if (status) {
             task.status = status;
@@ -201,7 +201,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
                     });
                 }
             });
-            if (user.role !== 'admin') {
+            if (user.role !== Role.Admin) {
                 notifications.push({
                     message: `Task "${task.title}" status changed to ${status}.`,
                     userId: task.createdBy.toString()

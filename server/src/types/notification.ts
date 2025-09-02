@@ -5,7 +5,7 @@ import { Types } from "mongoose";
 export interface INotification {
     message: string,
     userId: Types.ObjectId,
-    isRead: Boolean,
+    isRead: boolean,
 };
 
 export interface ReturnedINotification {
@@ -14,6 +14,6 @@ export interface ReturnedINotification {
     id?: string,
     message: string,
     userId: Types.ObjectId,
-    isRead: Boolean,
+    isRead: boolean,
     createdAt?: Date;
 };

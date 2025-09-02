@@ -56,20 +56,20 @@ io.on('connection', (socket) => {
     console.log('🔌 New client connected:', socket.id);
   
     // Join task room (so only viewers of that task get updates)
-    socket.on('joinTask', (taskId) => {
-      socket.join(taskId);
+    socket.on('joinTask', (taskId: string) => {
+      void socket.join(taskId); // `void` to ignore returned Promise
       console.log(`User ${socket.id} joined task ${taskId}`);
     });
 
     // Join room to receive notifications
-    socket.on('loggedInUser', (userId) => {
-      socket.join(userId);
+    socket.on('loggedInUser', (userId: string) => {
+      void socket.join(userId); // `void` to ignore returned Promise
       console.log(`User ${socket.id} loggen in.`);
     });
 
     // Join project dashboard where all tasks are seen in kaban form (so only viewers of that project get updates)
-    socket.on('joinProject', (projectId) => {
-      socket.join(projectId);
+    socket.on('joinProject', (projectId: string) => {
+      void socket.join(projectId); // `void` to ignore returned Promise
       console.log(`User ${socket.id} joined project ${projectId}`);
     });
   

@@ -19,7 +19,7 @@ export const updateNotification = async( notificationId: string, authenticatedUs
     if (!notification) return null;
 
     if (notification.userId.toString() !== authenticatedUser.id) {
-        return 'unauthorized'
+        return 'unauthorized';
     }
 
     notification.isRead = true;

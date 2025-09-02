@@ -113,7 +113,7 @@ router.get('/:id/kanban', userExtractor, async (req: AuthRequest, res: Response,
   
         return res.json(result);
       } catch (err) {
-        return next(err)
+        return next(err);
       }
     }
 );
