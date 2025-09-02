@@ -1,6 +1,6 @@
 import connectDB from './config/db';
 import { PORT } from './config/env';
-import express from 'express';
+import express, { Response } from 'express';
 import { errorHandler } from './middlewares/errorHandler';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -35,7 +35,7 @@ void connectDB();
 
 app.use(express.json());
 
-app.get('/ping', (_req, res) => {
+app.get('/ping', (_req, res: Response) => {
     res.send('pong');
 });
 
