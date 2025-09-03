@@ -21,7 +21,7 @@ import { ReturnedITask } from './types/task';
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:4173', 'https://task-tracker-seven-green.vercel.app/'], // 4173 is for testing frontend prod loccaly and other for vercelal prod
+  origin: ['http://localhost:4173', 'https://task-tracker-seven-green.vercel.app'], // 4173 is for testing frontend prod loccaly and other for vercelal prod
   credentials: true,  
 }));
 
