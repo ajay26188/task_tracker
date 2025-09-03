@@ -33,5 +33,6 @@
 | 31.08 | Implement signup page with form validation and API integration, create signup service, update backend routes for improved error handling, connect frontend to backend signup flow, and test end-to-end user registration. | 7h |
 | 31.08 | Created reusable FormLayout component for consistent styling and alert placement across all forms, built AddOrganization page, split Landing page into separate Login/Signup/Organization routes, and modernized existing Signup and Login pages for improved UX and maintainability. | 5h |
 | 02.09 | Fixinf lint errors. | 1h |
-| 02.09  | Total hours | 90h |
+| 02.09 | Deploying backend to Render. Faced issues with devDependencies and TypeScript compilation. Debugging the build process was time-consuming due to differences between local and production environments.| 3h |
+| 02.09  | Total hours | 93h |
 

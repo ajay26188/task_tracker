@@ -13,6 +13,12 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ---
 
+## 🚀 Deployment
+
+- **Backend API (Render):** [https://tasktracker-fr5h.onrender.com](https://tasktracker-fr5h.onrender.com)  
+
+---
+
 ## 🔧 Features Built So Far
 
 - Auth system with JWT + role-based middleware
@@ -35,30 +41,6 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - **Authentication:** JWT (with access control for protected routes)  
 - **Error Handling:** Centralized backend error middleware + Redux-powered frontend alerts  
 - **Dev Tools:** ESLint, TypeScript, Nodemon  
-
-
-## Next Up (Roadmap)
-
-- [ ] Connect frontend (React) to backend API  
-- [ ] Build Kanban-style task board  
-- [ ] Task completion tracking & history  
-- [ ] Team dashboards with charts  
-- [ ] File uploads for tasks  
-
----
-
-## 📌 Why I Built This
-
-I'm building TaskTracker as a **real-world, production-style web project** to:
-
-- Deepen my understanding of full-stack development
-- Practice clean API design and scalable backend patterns
-- Simulate company-like development (tickets, role-based control, etc.)
-- Showcase a complete project to potential employers and recruiters
-
----
-
-## 📬 Contact
 
 Built by **Ajay Sah**  
 
