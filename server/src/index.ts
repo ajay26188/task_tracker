@@ -39,6 +39,11 @@ app.get('/ping', (_req, res: Response) => {
     res.send('pong');
 });
 
+app.get('/', (_req, res: Response) => {
+  res.send('TaskTracker server is running');
+});
+
+
 app.use(tokenExtractor);
 
 app.use('/api/organization', organizationRouter);
