@@ -15,11 +15,10 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ## 🚀 Deployment
 
-## 🚀 Deployment
-
 - **Backend API (Render):** [https://tasktracker-fr5h.onrender.com](https://tasktracker-fr5h.onrender.com)  
   - Healthcheck endpoint: [https://tasktracker-fr5h.onrender.com/ping](https://tasktracker-fr5h.onrender.com/ping) → returns `"pong"`  
 
+- **Frontend (Vercel):** [https://task-tracker-seven-green.vercel.app/](https://task-tracker-seven-green.vercel.app/)
 ---
 
 ## 🔧 Features Built So Far

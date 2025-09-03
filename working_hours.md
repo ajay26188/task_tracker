@@ -34,5 +34,6 @@
 | 31.08 | Created reusable FormLayout component for consistent styling and alert placement across all forms, built AddOrganization page, split Landing page into separate Login/Signup/Organization routes, and modernized existing Signup and Login pages for improved UX and maintainability. | 5h |
 | 02.09 | Fixinf lint errors. | 1h |
 | 02.09 | Deploying backend to Render. Faced issues with devDependencies and TypeScript compilation. Debugging the build process was time-consuming due to differences between local and production environments.| 3h |
-| 02.09  | Total hours | 93h |
+| 03.09 | Deploying frontend to Vercel. Configured environment variables for production, connected to Render backend, and resolved API base URL and CORS issues. Tested local production build to ensure proper API integration. | 2h |
+| 03.09  | Total hours | 95h |
 
