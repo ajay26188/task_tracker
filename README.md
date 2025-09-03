@@ -6,7 +6,7 @@
 
 ## Project Status: In Progress
 
-> Backend development is currently **in progress** (~90 hours logged so far).  
+> Backend development is currently **in progress** (~100 hours logged so far).  
 > Auth system, organization-specific task/project APIs, and role-based access are functional.
 
 You can track my development log here: [working_hours.md](./working_hours.md)
