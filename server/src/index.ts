@@ -1,3 +1,4 @@
+import cors from 'cors';
 import connectDB from './config/db';
 import { PORT } from './config/env';
 import express, { Response } from 'express';
@@ -18,6 +19,11 @@ import { ReturnedINotification } from './types/notification';
 import { ReturnedITask } from './types/task';
 
 const app = express();
+
+app.use(cors({
+  origin: ['http://localhost:4173', 'https://tasktracker.vercel.app'], // allow prod frontend
+  credentials: true,  
+}));
 
 //HTTP server for both Express + Socket.Io
 const httpServer = createServer(app);
