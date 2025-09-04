@@ -1,0 +1,38 @@
+name: TaskTracker Backend Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+
+jobs:
+  build_and_deploy_backend:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: server
+
+      - name: Run backend lint
+        run: npm run lint
+        working-directory: server
+
+      # Uncomment this later when tests are added
+      # - name: Run backend tests
+      #   run: npm test
+      #   working-directory: server
+
+      - name: Deploy backend to Render
+        uses: sws2apps/render-deployment@main
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          multipleDeployment: false
