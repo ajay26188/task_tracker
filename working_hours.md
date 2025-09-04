@@ -36,5 +36,6 @@
 | 02.09 | Deploying backend to Render. Faced issues with devDependencies and TypeScript compilation. Debugging the build process was time-consuming due to differences between local and production environments.| 3h |
 | 03.09 | Deploying frontend to Vercel. Configured environment variables for production, connected to Render backend, and resolved API base URL and CORS issues. Tested local production build to ensure proper API integration. | 2h |
 | 03.09 | Set up GitHub Actions pipeline for frontend deployment to Vercel. Added linting and build steps to ensure code quality before release, configured Vercel project ID and secrets for secure deployment, and verified that deployments only trigger after successful CI checks. | 3h |
-| 03.09  | Total hours | 98h |
+| 04.09 | Set up GitHub Actions pipeline for backend deployment to Render. Added linting step to ensure code quality, configured Render service ID and API key secrets for secure deployment, and verified that deployments trigger automatically only when backend code changes. | 2h |
+| 04.09  | Total hours | 100h |
 

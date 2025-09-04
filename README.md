@@ -6,8 +6,19 @@
 
 ## Project Status: In Progress
 
-> Backend development is currently **in progress** (~100 hours logged so far).  
-> Auth system, organization-specific task/project APIs, and role-based access are functional.
+- **Backend**: Development is well underway (~100 hours logged so far).  
+  - Authentication system implemented  
+  - Organization-specific task/project APIs functional  
+  - Role-based access control active  
+
+- **Frontend**: Live and integrated with backend authentication.  
+  - Secure login enabled  
+  - Users can access backend data through the UI  
+
+- **CI/CD**: Automated pipelines configured.  
+  - Backend deployed on **Render**  
+  - Frontend deployed on **Vercel**  
+  - Deployments only trigger after successful CI checks
 
 You can track my development log here: [working_hours.md](./working_hours.md)
 
