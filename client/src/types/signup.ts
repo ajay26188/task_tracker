@@ -4,3 +4,10 @@ export interface SignupData {
     password: string,
     organizationId: string
 }
+
+export interface VerifiedUser {
+    name: string;
+    email: string;
+    isVerified: boolean;
+    role: string;
+  }

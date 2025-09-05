@@ -23,8 +23,8 @@ const Signup = () => {
     try {
       await signupService.signup({ name, email, password, organizationId });
 
-      // Only success redirects to login
-      navigate("/login");
+      //Redirect to verify notice page 
+    navigate("/verify-notice");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         dispatch(

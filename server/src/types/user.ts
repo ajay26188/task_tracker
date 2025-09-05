@@ -1,43 +1,45 @@
-// /types/user.ts
-
-import { Types } from 'mongoose';
+import { Types } from "mongoose";
 
 export enum Role {
-    Admin = "admin",
-    Member = "member"
-};
+  Admin = "admin",
+  Member = "member",
+}
 
 export interface IUser {
-    name: string, 
-    email: string,
-    password: string,
-    organizationId: Types.ObjectId,
-    role: Role,
-};
+  name: string;
+  email: string;
+  password: string;
+  organizationId: Types.ObjectId;
+  role: Role;
+  isVerified: boolean; 
+}
 
 export interface ReturnedIUser {
-    _id?: Types.ObjectId,
-    password?: string,
-    __v?: number, // operand of 'delete' operator must be optional
-    id?: string,
-    name: string, 
-    email: string,
-    organizationId: Types.ObjectId,
-    role: Role,
-    createdAt?: Date;
-    updatedAt?: Date;
-};
+  _id?: Types.ObjectId;
+  password?: string;
+  __v?: number; // operand of 'delete' operator must be optional
+  id?: string;
+  name: string;
+  email: string;
+  organizationId: Types.ObjectId;
+  role: Role;
+  isVerified?: boolean; 
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-//removing organizationId field which is of Mongo_DB type but asking for 
-export type newUserData = Omit<IUser, 'role' | 'organizationId'>  & { organizationId: string };
+// removing organizationId field which is of Mongo_DB type but asking for string
+export type newUserData = Omit<IUser, "role" | "organizationId" | "isVerified"> & {
+  organizationId: string;
+};
 
 export interface LoginData {
-    email: string,
-    password: string
-};
+  email: string;
+  password: string;
+}
 
-export type updateUserData = Omit<IUser, 'role' | 'organizationId'> ;
+export type updateUserData = Omit<IUser, "role" | "organizationId">;
 
 export interface updateRole {
-    role: Role
-};
+  role: Role;
+}

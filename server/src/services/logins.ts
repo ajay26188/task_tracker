@@ -8,6 +8,10 @@ export const loginService = async(email: string, password: string) => {
 
     if (!user) return null;
 
+    if (!user.isVerified) {
+        return "unverified email";
+    }
+
     const correctPassword = await bcrypt.compare(password, user.password);
 
     if (!correctPassword) return null;

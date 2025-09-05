@@ -3,7 +3,7 @@
 import express, {NextFunction, Request, Response} from 'express';
 import { newUserParser, updateRoleParser, updateUserParser } from './../middlewares/validateRequest';
 import { newUserData, updateUserData, updateRole } from '../types/user';
-import { addUser, getAllUsers, removeUser, updateRoleOfUser, updateUser } from '../services/users';
+import { addUser, getAllUsers, removeUser, updateRoleOfUser, updateUser, verifyUserEmail } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
 import { AuthRequest } from '../middlewares/auth';
@@ -39,13 +39,27 @@ router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData
           return res.status(400).json({error: 'Organization not found.'});
         }
 
-        // remove password from response
-        //const { password, ...safeUser } = result.toObject();
-
         return res.status(201).json(result);
     } catch (error) {
         return next(error);
     }
+});
+
+// this route is for handling email verification while signing up
+// GET /api/users/verify/:token
+router.get("/verify/:token", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token } = req.params;
+    const result = await verifyUserEmail(token);
+
+    if (!result) {
+      return res.status(400).json({ error: "User not found." });
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return next(error);
+  }
 });
 
 // Deleting a user only possible by the admin

@@ -37,6 +37,10 @@ const userSchema = new Schema(
             type: String,
             enum: Object.values(Role),
         },
+        isVerified: { 
+            type: Boolean, 
+            default: false 
+        },
     },
     { timestamps: true}
 );

@@ -16,6 +16,10 @@ router.post('/', loginParser, async(req: Request<unknown, unknown, LoginData>, r
         return res.status(401).json({error: 'Invalid login credentials.'});
     };
 
+    if (result === "unverified email") {
+        return res.status(403).json({ error: "Please verify your email before logging in." });
+      }
+
     return res.json(result); //returns {email, name, token}
 });
 
