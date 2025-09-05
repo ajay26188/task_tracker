@@ -16,7 +16,7 @@ export default function VerifyEmail() {
         const verifiedUser = await verifyService.verifyEmail(token);
         setUser(verifiedUser);
         setStatus("success");
-      } catch (err) {
+      } catch {
         setStatus("error");
       }
     };
