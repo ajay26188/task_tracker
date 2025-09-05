@@ -39,5 +39,6 @@
 | 04.09 | Set up GitHub Actions pipeline for backend deployment to Render. Added linting step to ensure code quality, configured Render service ID and API key secrets for secure deployment, and verified that deployments trigger automatically only when backend code changes. | 2h |
 | 05.09 | Backend: Implemented user email verification system. Added isVerified field to User model/types, updated signup service to hash password, assign role, and generate JWT verification token. Created reusable sendVerificationEmail utility using Nodemailer. Added /api/users/verify/:token route with service-layer business logic and error handling. Configured environment secrets for secure email sending. | 5h |
 | 05.09 | Frontend: Integrated verification flow. Updated signup to show VerifyNotice page after registration instead of logging in directly. Built VerifyEmail.tsx page to handle token verification and display user info once verified. Refactored to keep business logic in services/signup.ts. UX discussion on flow after verification (closing tab vs redirect). | 3h |
-| 05.09  | Total hours | 108h |
+| 05.09 | Fixed Vercel production issue where `/verify-email/:token` returned 404. Added `vercel.json` rewrite to ensure React Router handles dynamic routes. Verified working in production. | 1h |
+| 05.09  | Total hours | 109h |
 
