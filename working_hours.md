@@ -40,5 +40,7 @@
 | 05.09 | Backend: Implemented user email verification system. Added isVerified field to User model/types, updated signup service to hash password, assign role, and generate JWT verification token. Created reusable sendVerificationEmail utility using Nodemailer. Added /api/users/verify/:token route with service-layer business logic and error handling. Configured environment secrets for secure email sending. | 5h |
 | 05.09 | Frontend: Integrated verification flow. Updated signup to show VerifyNotice page after registration instead of logging in directly. Built VerifyEmail.tsx page to handle token verification and display user info once verified. Refactored to keep business logic in services/signup.ts. UX discussion on flow after verification (closing tab vs redirect). | 3h |
 | 05.09 | Fixed Vercel production issue where `/verify-email/:token` returned 404. Added `vercel.json` rewrite to ensure React Router handles dynamic routes. Verified working in production. | 1h |
-| 05.09  | Total hours | 109h |
+| 06.09 | Backend: Implemented password reset flow. Added `POST /request-reset` to send reset email and `POST /reset-password/:token` to update password. Built service logic for token generation, email sending, password hashing, and error handling. Tested endpoints via Postman and verified payload handling. | 4h |
+| 06.09 | Frontend: Built `RequestReset.tsx` and `ResetPassword.tsx` pages using modern `FormLayout`. Added password/confirm fields, visibility toggles, loading states, and Redux alert messages. Integrated with backend, handled errors on form, and redirect to `/login` after successful reset. | 3h |
+| 06.09  | Total hours | 116h |
 

@@ -8,6 +8,7 @@ import { Document } from "mongoose";
 import Organization from "../models/organization";
 import { sendVerificationEmail } from "../utils/mailer";
 import jwt from "jsonwebtoken";
+import { sendPasswordResetEmail } from "../utils/mailer";
 
 export const getAllUsers = async(id: string) => {
     await User.find({organizationId: new Types.ObjectId(id)});
@@ -104,4 +105,33 @@ export const updateRoleOfUser = async (id: string, updates: {
     user.role = role;
   
     return await user.save();
+};
+
+// Generate and send reset token
+export const requestPasswordReset = async (email: string) => {
+  const user = await User.findOne({ email });
+  if (!user) return null;
+
+  const token = jwt.sign({ userId: user._id }, process.env.EMAIL_SECRET!, { expiresIn: "1h" });
+
+  await sendPasswordResetEmail(user.email, token);
+  return true;
+};
+
+// Verify token & reset password
+export const resetUserPassword = async (token: string, newPassword: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET!) as { userId: string };
+
+    const user = await User.findById(decoded.userId);
+    if (!user) return null;
+
+    const saltRounds = 10;
+    user.password = await bcrypt.hash(newPassword, saltRounds);
+    await user.save();
+
+    return true;
+  } catch  {
+    return null;
+  }
 };

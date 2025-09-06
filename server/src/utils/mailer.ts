@@ -27,7 +27,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     const link = `${baseUrl}/verify-email/${token}`;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM, // Must be a verified sender in Brevo
+    from: process.env.EMAIL_FROM, 
     to: email,
     subject: "Verify your TaskTracker account",
     html: `
@@ -46,5 +46,39 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   } catch (error) {
     console.error("Failed to send verification email:", error);
     throw new Error("Email could not be sent");
+  }
+};
+
+/**
+ * Send password reset link to a user.
+ */
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const baseUrl =
+    process.env.NODE_ENV === 'production'
+      ? process.env.FRONTEND_URL_PROD
+      : process.env.FRONTEND_URL_DEV;
+
+  const link = `${baseUrl}/reset-password/${token}`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: 'Reset your TaskTracker password',
+    html: `
+      <h2>Password Reset Request 🔑</h2>
+      <p>You requested to reset your TaskTracker password. Click below to continue:</p>
+      <a href="${link}" style="background:#e11d48;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;">
+        Reset Password
+      </a>
+      <p>If you didn’t request this, you can safely ignore this email.</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Password reset email sent to ${email}`);
+  } catch (error) {
+    console.error('Failed to send password reset email:', error);
+    throw new Error('Email could not be sent');
   }
 };

@@ -1,12 +1,13 @@
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
-import { newUserParser, updateRoleParser, updateUserParser } from './../middlewares/validateRequest';
-import { newUserData, updateUserData, updateRole } from '../types/user';
+import { newUserParser, passwordResetParser, updateRoleParser, updateUserParser } from './../middlewares/validateRequest';
+import { newUserData, updateUserData, updateRole, emailVerification, resetPassword } from '../types/user';
 import { addUser, getAllUsers, removeUser, updateRoleOfUser, updateUser, verifyUserEmail } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
 import { AuthRequest } from '../middlewares/auth';
+import { requestPasswordReset, resetUserPassword } from "../services/users";
 
 const router = express.Router();
 
@@ -110,7 +111,45 @@ router.patch('/:id/role', adminStatus, userExtractor,  updateRoleParser, async (
     } catch (error) {
       return next(error);
     }
-  });
-  
+});
+
+// Request password reset (send email)
+router.post("/request-reset", async (req: AuthRequest<emailVerification>, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const result = await requestPasswordReset(email);
+
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.json({ message: "Password reset email sent." });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// Reset password using token
+router.post("/reset-password/:token", passwordResetParser, async (req: AuthRequest<resetPassword>, res: Response, next: NextFunction) => {
+  try {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match." });
+    }
+
+    const result = await resetUserPassword(token, password);
+
+    if (!result) {
+      return res.status(400).json({ error: "Invalid or expired token." });
+    }
+
+    return res.json({ message: "Password reset successful." });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 
 export default router;

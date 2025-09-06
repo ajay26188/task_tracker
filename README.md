@@ -6,7 +6,7 @@
 
 ## Project Status: In Progress
 
-- **Backend**: Development is well underway (~100 hours logged so far).  
+- **Backend**: Development is well underway (~120 hours logged so far).  
   - Authentication system implemented  
   - Organization-specific task/project APIs functional  
   - Role-based access control active  
@@ -41,6 +41,8 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Query-based filtering (e.g., `GET /api/tasks?projectId=...`)
 - Zod validation schemas
 - Error handling & response conventions
+- Email verification: send verification link on signup, verify token to activate user
+- Password reset: request reset link via email, reset password using secure token
 
 ---
 
@@ -52,8 +54,10 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - **Database:** MongoDB + Mongoose  
 - **Validation:** Zod (schema-based input validation on signup/login)  
 - **Authentication:** JWT (with access control for protected routes)  
+- **Email Service:** Nodemailer (for sending verification and password reset emails)  
 - **Error Handling:** Centralized backend error middleware + Redux-powered frontend alerts  
 - **Dev Tools:** ESLint, TypeScript, Nodemon  
+  
 
 Built by **Ajay Sah**  
 

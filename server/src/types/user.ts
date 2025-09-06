@@ -43,3 +43,12 @@ export type updateUserData = Omit<IUser, "role" | "organizationId">;
 export interface updateRole {
   role: Role;
 }
+
+export interface emailVerification {
+  email: string
+}
+
+export interface resetPassword {
+  password: string;
+  confirmPassword: string
+}

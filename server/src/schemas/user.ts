@@ -23,7 +23,7 @@ export const updateUserSchema = z.object({
     email: z.email('Invalid email format.'),
     password: z
         .string()
-        .min(6)
+        .min(6, { message: "Password must be at least 6 characters long." })
         .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         'Password must include upper, lower, number'
@@ -32,4 +32,14 @@ export const updateUserSchema = z.object({
 
 export const updateRoleSchema = z.object({
     role: z.enum(['admin', 'member'])
+});
+
+export const passwordResetSchema = z.object({
+    password: z
+        .string()
+        .min(6, { message: "Password must be at least 6 characters long." })
+        .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must include upper, lower, number'
+        ),
 });

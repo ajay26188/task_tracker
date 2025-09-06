@@ -15,16 +15,27 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      dispatch(
+        alertMessageHandler(
+          { message: "Passwords do not match", type: "error" },
+          5
+        )
+      );
+      return;
+    }
+
     try {
       await signupService.signup({ name, email, password, organizationId });
-
-      //Redirect to verify notice page 
-    navigate("/verify-notice");
+      navigate("/verify-notice"); // Redirect to verify notice page
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         dispatch(
@@ -66,7 +77,7 @@ const Signup = () => {
           />
 
           {/* Password field */}
-          <div className="relative">
+          <div className="relative mb-4">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -81,6 +92,25 @@ const Signup = () => {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {/* Confirm Password field */}
+          <div className="relative mb-4">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-400 outline-none"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
 
