@@ -7,6 +7,7 @@ import { alertMessageHandler } from "../../reducers/alertMessageReducer";
 import type { AppDispatch } from "../../store";
 import { Eye, EyeOff } from "lucide-react";
 import FormLayout from "../../components/layouts/FormLayout";
+import { setUser } from "../../reducers/loggedUserReducer";
 
 const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +22,9 @@ const Login = () => {
     try {
       const user = await loginService.login({ email, password });
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
+
+      //setting current user state to loggen in user
+      dispatch(setUser(user));
 
       //On successful login, navigate to dashboard
       navigate("/dashboard");

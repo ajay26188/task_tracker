@@ -8,8 +8,31 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import VerifyNotice from "./pages/auth/VerifyNotice";
 import RequestReset from "./pages/auth/RequestReset";
 import ResetPassword from "./pages/auth/ResetPassword";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "./store";
+import { setUser } from "./reducers/loggedUserReducer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(true);
+
+  //this is used for page refreshment
+  //when page is refershed without looging out 
+  useEffect(() => {
+    const loggedUser = window.localStorage.getItem('loggedUser')
+    if (loggedUser) {
+      const user = JSON.parse(loggedUser) //parse when you get local storage items
+      dispatch(setUser(user));
+    }
+    setLoading(false);
+  },[dispatch])
+
+  if (loading) {
+    return <p>Loading...</p>; 
+  }
+
   return (
     <div>
       <Routes>
@@ -21,7 +44,16 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/request-reset" element={<RequestReset />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Protect dashboard */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
     

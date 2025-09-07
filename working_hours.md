@@ -42,5 +42,10 @@
 | 05.09 | Fixed Vercel production issue where `/verify-email/:token` returned 404. Added `vercel.json` rewrite to ensure React Router handles dynamic routes. Verified working in production. | 1h |
 | 06.09 | Backend: Implemented password reset flow. Added `POST /request-reset` to send reset email and `POST /reset-password/:token` to update password. Built service logic for token generation, email sending, password hashing, and error handling. Tested endpoints via Postman and verified payload handling. | 4h |
 | 06.09 | Frontend: Built `RequestReset.tsx` and `ResetPassword.tsx` pages using modern `FormLayout`. Added password/confirm fields, visibility toggles, loading states, and Redux alert messages. Integrated with backend, handled errors on form, and redirect to `/login` after successful reset. | 3h |
-| 06.09  | Total hours | 116h |
+| 07.09 | Built `DashboardLayout.tsx` with sidebar, topbar, and main content area. Added dynamic sidebar for admin and regular users. | 2h |
+| 07.09 | Added avatar with initials and dropdown menu containing Profile, Logout, Account settings and Help links. | 1.5h |
+| 07.09 | Connected Redux `loggedUserReducer` to store current user. Handled setting and clearing user in localStorage. | 2h |
+| 07.09 | Implemented Logout functionality to clear Redux and localStorage, then redirect to `/login`. | 1h |
+| 07.09 | Tested dashboard UI, sidebar active link, avatar dropdown, and Logout behavior. | 0.5h |
+| 07.09  | Total hours | 123h |
 

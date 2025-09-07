@@ -1,13 +1,17 @@
+// src/store.ts
+
 import { configureStore } from "@reduxjs/toolkit";
 import alertMessageReducer from "./reducers/alertMessageReducer";
+import loggedUserReducer from "./reducers/loggedUserReducer";
 
 const store = configureStore({
     reducer: {
-        alertMessage: alertMessageReducer
+        alertMessage: alertMessageReducer,
+        user: loggedUserReducer
     }
 })
 
-console.log(store.getState());
+//console.log(store.getState());
 
 export default store;
 

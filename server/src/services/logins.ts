@@ -27,6 +27,8 @@ export const loginService = async(email: string, password: string) => {
     return {
         email: user.email, 
         name: user.name, 
+        role: user.role,
+        organizationId: user.organizationId.toString(),
         token 
     };
 };
