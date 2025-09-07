@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, Users, BarChart3, User, LogOut, Bell } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  CheckSquare,
+  MessageSquare,
+  BarChart3,
+  Settings,
+  Bell,
+  LogOut
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store";
 import { clearUser } from "../../reducers/loggedUserReducer";
@@ -34,22 +44,21 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
   const navItems: NavItem[] = isAdmin
   ? [
-      { label: "Dashboard", icon: <Home size={18} />, href: "#" },
+      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "#" },
       { label: "Users", icon: <Users size={18} />, href: "#" },
-      { label: "Projects", icon: <BarChart3 size={18} />, href: "#" },
-      { label: "Tasks", icon: <BarChart3 size={18} />, href: "#" },
-      { label: "Comments", icon: <Users size={18} />, href: "#" },
+      { label: "Projects", icon: <FolderKanban size={18} />, href: "#" },
+      { label: "Tasks", icon: <CheckSquare size={18} />, href: "#" },
+      { label: "Comments", icon: <MessageSquare size={18} />, href: "#" },
       { label: "Reports", icon: <BarChart3 size={18} />, href: "#" },
-      { label: "Settings", icon: <BarChart3 size={18} />, href: "#" },
     ]
   : [
-      { label: "Dashboard", icon: <Home size={18} />, href: "#" },
-      { label: "My Tasks", icon: <Users size={18} />, href: "#" },
-      { label: "My Projects", icon: <BarChart3 size={18} />, href: "#" },
-      { label: "Comments", icon: <Users size={18} />, href: "#" },
+      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "#" },
+      { label: "My Tasks", icon: <CheckSquare size={18} />, href: "#" },
+      { label: "My Projects", icon: <FolderKanban size={18} />, href: "#" },
+      { label: "Comments", icon: <MessageSquare size={18} />, href: "#" },
       { label: "Reports", icon: <BarChart3 size={18} />, href: "#" },
-      { label: "Settings", icon: <BarChart3 size={18} />, href: "#" },
     ];
+
 
 
   const handleLogOut = () => {
@@ -112,7 +121,10 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             {/* Notifications */}
             <div className="relative">
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setDropdownOpen(false); //close avatar dropdown
+                }}
                 className="relative w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
               >
                 <Bell size={20} />
@@ -142,7 +154,10 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             {/* Avatar */}
             <div className="relative">
               <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={() => {
+                  setDropdownOpen(!dropdownOpen);
+                  setShowNotifications(false); // 👈 close notifications
+                }}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-500 text-white font-semibold shadow hover:opacity-90 transition"
               >
                 {initials}
@@ -161,14 +176,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         href="#"
                         className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
                     >
-                        <User size={16} /> Profile
+                        <Users size={16} /> Profile
                     </a>
 
                     <a
                         href="#"
                         className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
                     >
-                        <Users size={16} /> Account Settings
+                        <Settings size={16} /> Account Settings
                     </a>
 
                     <button

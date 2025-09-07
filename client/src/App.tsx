@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/Login";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/dashboard/Home";
 import Signup from "./pages/auth/Signup";
 import AddOrganization from "./pages/AddOrganization";
 import Landing from "./pages/Landing";
@@ -50,7 +50,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Home />
             </ProtectedRoute>
           }
         />

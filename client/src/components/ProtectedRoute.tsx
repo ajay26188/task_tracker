@@ -1,4 +1,5 @@
 // src/components/ProtectedRoute.tsx
+
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";

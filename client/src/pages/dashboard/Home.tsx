@@ -1,9 +1,8 @@
-import DashboardLayout from "../components/layouts/DashboardLayout";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
 
-const Dashboard = () => {
+const Home = () => {
   return (
     <DashboardLayout>
-      {/* Later we’ll insert User Details card and other sections here */}
       <div className="bg-white shadow rounded-2xl p-6">
         <h2 className="text-lg font-semibold">Welcome Ajay!</h2>
         <p>This is your dashboard main content area.</p>
@@ -12,4 +11,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Home;
