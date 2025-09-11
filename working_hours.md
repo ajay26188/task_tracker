@@ -47,5 +47,6 @@
 | 07.09 | Connected Redux `loggedUserReducer` to store current user. Handled setting and clearing user in localStorage. | 2h |
 | 07.09 | Implemented Logout functionality to clear Redux and localStorage, then redirect to `/login`. | 1h |
 | 07.09 | Tested dashboard UI, sidebar active link, avatar dropdown, and Logout behavior. | 0.5h |
-| 07.09  | Total hours | 123h |
+| 11.09 | Built `ProjectModal` and `Project.tsx` for creating/updating projects on frontend using all service functions (`fetchProjectsByOrg`, `fetchAssignedProjects`, `fetchProject`, `createProject`, `updateProject`, `deleteProject`) and `authHeader` helper; updated backend `Project` schema with name, description, start/end date validations, pre-save hooks to prevent past dates or end-before-start, enhanced error handling middleware, integrated frontend API calls, handled server errors in modal, added `/projects/assigned` route for authenticated user, and tested full create/update project flows. | 9h |
+| 11.09  | Total hours | 132h |
 

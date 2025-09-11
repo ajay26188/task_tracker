@@ -10,10 +10,12 @@
   - Authentication system implemented  
   - Organization-specific task/project APIs functional  
   - Role-based access control active  
+  - Project creation/updating with start/end date validation, past date prevention, and robust error handling
 
 - **Frontend**: Live and integrated with backend authentication.  
   - Secure login enabled  
-  - Users can access backend data through the UI  
+  - Users can access backend data through the UI
+  - Admins can create/update projects with fields, validations, loading states, and Redux alert messages  
 
 - **CI/CD**: Automated pipelines configured.  
   - Backend deployed on **Render**  

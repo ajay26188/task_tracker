@@ -1,3 +1,4 @@
+// src/components/FormLayout.tsx
 import type { ReactNode } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
@@ -8,11 +9,30 @@ type FormLayoutProps = {
   fields: ReactNode;
   actions: ReactNode;
   onSubmit?: (e: React.FormEvent) => void;
+  variant?: "page" | "modal"; // new prop
 };
 
-const FormLayout = ({ title, fields, actions, onSubmit }: FormLayoutProps) => {
+const FormLayout = ({
+  title,
+  fields,
+  actions,
+  onSubmit,
+  variant = "page",
+}: FormLayoutProps) => {
   const alertMessage = useSelector((state: RootState) => state.alertMessage);
 
+  if (variant === "modal") {
+    return (
+      <form onSubmit={onSubmit} className="px-6 py-4 space-y-5">
+        <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+        {fields}
+        {alertMessage.message && <AlertMessage {...alertMessage} />}
+        {actions}
+      </form>
+    );
+  }
+
+  // fallback → full page (default layout)
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
       <div className="flex flex-col items-center space-y-6">

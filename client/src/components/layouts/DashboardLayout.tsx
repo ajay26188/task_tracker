@@ -44,19 +44,19 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
   const navItems: NavItem[] = isAdmin
   ? [
-      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "#" },
-      { label: "Users", icon: <Users size={18} />, href: "#" },
-      { label: "Projects", icon: <FolderKanban size={18} />, href: "#" },
-      { label: "Tasks", icon: <CheckSquare size={18} />, href: "#" },
-      { label: "Comments", icon: <MessageSquare size={18} />, href: "#" },
-      { label: "Reports", icon: <BarChart3 size={18} />, href: "#" },
+      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
+      { label: "Users", icon: <Users size={18} />, href: "/users" },
+      { label: "Projects", icon: <FolderKanban size={18} />, href: "/projects" },
+      { label: "Tasks", icon: <CheckSquare size={18} />, href: "tasks" },
+      { label: "Comments", icon: <MessageSquare size={18} />, href: "/comments" },
+      { label: "Reports", icon: <BarChart3 size={18} />, href: "/reports" },
     ]
   : [
-      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "#" },
-      { label: "My Tasks", icon: <CheckSquare size={18} />, href: "#" },
-      { label: "My Projects", icon: <FolderKanban size={18} />, href: "#" },
-      { label: "Comments", icon: <MessageSquare size={18} />, href: "#" },
-      { label: "Reports", icon: <BarChart3 size={18} />, href: "#" },
+      { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
+      { label: "My Tasks", icon: <CheckSquare size={18} />, href: "/tasks" },
+      { label: "My Projects", icon: <FolderKanban size={18} />, href: "/projects" },
+      { label: "Comments", icon: <MessageSquare size={18} />, href: "/comments" },
+      { label: "Reports", icon: <BarChart3 size={18} />, href: "/reports" },
     ];
 
 
@@ -96,19 +96,23 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-            {navItems.map((item) => (
+          {navItems.map((item) => (
             <button
-                key={item.label}
-                onClick={() => setActive(item.label)}
-                className={`flex items-center gap-2 w-full text-left p-2 rounded-lg transition
+              key={item.label}
+              onClick={() => {
+                setActive(item.label); // keep topbar title updated
+                navigate(item.href);    // navigate to the route
+              }}
+              className={`flex items-center gap-2 w-full text-left p-2 rounded-lg transition
                 ${active === item.label ? "bg-indigo-100 text-indigo-600 font-medium" : "hover:bg-gray-100"}
-                `}
+              `}
             >
-                {item.icon}
-                {item.label}
+              {item.icon}
+              {item.label}
             </button>
-            ))}
+          ))}
         </nav>
+
         </aside>
 
 

@@ -4,7 +4,7 @@ import express,{ Response, NextFunction } from 'express';
 import { adminStatus, userExtractor, AuthRequest } from '../middlewares/auth';
 import { newProjectParser } from '../middlewares/validateRequest';
 import { newProjectData } from '../types/project';
-import { addProject, fetchProject, fetchProjectsByOrg, groupedTasks, removeProject, updateProject } from '../services/projects';
+import { addProject, fetchAssignedProjects, fetchProject, fetchProjectsByOrg, groupedTasks, removeProject, updateProject } from '../services/projects';
 
 const router = express.Router();
 
@@ -75,6 +75,16 @@ router.get('/project/:id', adminStatus, userExtractor, async(req: AuthRequest, r
         
         } catch (error) {
         return next(error);
+    }
+});
+
+// Fetch projects assigned to the authenticated user
+router.get("/assigned", userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const projects = await fetchAssignedProjects(req.user!);
+      return res.json(projects);
+    } catch (error) {
+      return next(error);
     }
 });
 

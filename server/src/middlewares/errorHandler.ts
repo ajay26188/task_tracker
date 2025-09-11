@@ -57,6 +57,12 @@ export const errorHandler = (
   }
 
 
-  // 6. Fallback: unknown/unexpected error
+  // 6. Handle plain Error (custom validation, etc.)
+  if (error instanceof Error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  // 7. Fallback: pass unexpected errors to Express
   return next(error);
+
 };

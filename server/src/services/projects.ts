@@ -1,3 +1,5 @@
+// srs/services/projects.ts
+
 import Project from "../models/project";
 import Task from "../models/task";
 import { newProjectData } from "../types/project";
@@ -73,6 +75,25 @@ export const fetchProject = async(projectId: string, user: (IUser & Document)) =
 
     return project;
 };
+
+// Fetch projects that the user is assigned to through tasks
+export const fetchAssignedProjects = async (user: IUser & Document) => {
+    const userId = user._id;
+  
+    // Find tasks assigned to the user
+    const tasks = await Task.find({ assignedTo: userId }).select("projectId");
+  
+    // Extract unique projectIds
+    const projectIds = [...new Set(tasks.map((t) => t.projectId.toString()))];
+  
+    if (projectIds.length === 0) return [];
+  
+    // Fetch only those projects
+    const projects = await Project.find({ _id: { $in: projectIds } });
+  
+    return projects;
+};
+  
 
 export const groupedTasks = async(projectId: string, user: (IUser & Document)) => {
 
