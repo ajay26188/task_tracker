@@ -25,9 +25,9 @@ export const createProject = async (data: Partial<Project>): Promise<Project> =>
 
 // Fetch single project by id
 export const fetchProject = async (id: string): Promise<Project> => {
-    const res = await axios.get(`${apiBaseUrl}/project/${id}`, authHeader());
+    const res = await axios.get(`${apiBaseUrl}/projects/project/${id}`, authHeader());
     return res.data;
-  };
+};
   
   // Update project
   export const updateProject = async (id: string, data: Partial<Project>): Promise<Project> => {

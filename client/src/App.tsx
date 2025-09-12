@@ -14,6 +14,8 @@ import type { AppDispatch, RootState } from "./store";
 import { setUser } from "./reducers/loggedUserReducer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Projects from "./pages/project/Projects";
+import ProjectPage from "./pages/project/Project";
+
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,6 +68,14 @@ function App() {
                 isAdmin={loggedUser?.role === "admin"} 
                 orgId={loggedUser?.organizationId || ""}
               />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects/project/:id"
+          element={
+            <ProtectedRoute>
+              <ProjectPage />
             </ProtectedRoute>
           }
         />

@@ -4,11 +4,11 @@ export interface Project {
     name: string;
     description: string;
     organizationId: string;
-    startDate: string; // ISO date string ("2025-09-07T00:00:00.000Z")
+    startDate: string;
     endDate: string;
-    tasks?: string[]; // array of task IDs
-    createdBy: string; // user ID
-    createdAt?: string;      // optional timestamps if your schema has them
+    tasks?: (string | {id: string, title: string})[];
+    createdBy: string | { name: string; email: string } | null;
+    createdAt?: string;
     updatedAt?: string;
-  }
+}
   

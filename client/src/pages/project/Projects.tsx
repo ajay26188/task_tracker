@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { fetchProjectsByOrg, fetchAssignedProjects, deleteProject } from "../../services/project";
+import {
+  fetchProjectsByOrg,
+  fetchAssignedProjects,
+  deleteProject,
+} from "../../services/project";
 import ProjectModal from "./ProjectModal";
 import type { Project } from "../../types/project";
+import { Link } from "react-router-dom";
 
 interface ProjectsProps {
   isAdmin: boolean;
@@ -59,16 +64,21 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
       ) : (
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <div
+            <Link
               key={project.id}
-              className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden"
+              to={`/projects/project/${project.id}`}
+              className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden"
             >
               {/* Gradient Accent */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-2xl"></div>
 
               <div className="mt-3">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{project.name}</h2>
-                <p className="text-sm text-gray-500 line-clamp-3">{project.description}</p>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                  {project.name}
+                </h2>
+                <p className="text-sm text-gray-500 line-clamp-3">
+                  {project.description}
+                </p>
                 <div className="mt-3 text-sm text-gray-400 flex justify-between">
                   <span>📅 {project.startDate?.slice(0, 10) || "-"}</span>
                   <span>⏰ {project.endDate?.slice(0, 10) || "-"}</span>
@@ -78,7 +88,8 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
               {isAdmin && (
                 <div className="flex gap-2 mt-4">
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault(); // stop link navigation
                       setSelectedProject(project);
                       setShowModal(true);
                     }}
@@ -87,14 +98,17 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
                     ✏️ Edit
                   </button>
                   <button
-                    onClick={() => setDeleteProjectId(project.id)}
+                    onClick={(e) => {
+                      e.preventDefault(); // stop link navigation
+                      setDeleteProjectId(project.id);
+                    }}
                     className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium transition-colors"
                   >
                     🗑️ Delete
                   </button>
                 </div>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       )}
@@ -121,7 +135,9 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-transform duration-200 scale-95 animate-scale-in">
             <h2 className="text-lg font-semibold mb-4">Delete Project</h2>
-            <p className="mb-4 text-gray-600">Are you sure you want to delete this project?</p>
+            <p className="mb-4 text-gray-600">
+              Are you sure you want to delete this project?
+            </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setDeleteProjectId(null)}

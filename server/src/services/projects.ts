@@ -65,7 +65,9 @@ export const updateProject = async (projectId: string, updates: newProjectData, 
 
 export const fetchProject = async(projectId: string, user: (IUser & Document)) => {
     
-    const project = await Project.findById(projectId);
+    const project = await Project.findById(projectId)
+    .populate("createdBy", "name")
+    .populate("tasks", "title");
 
     if (!project) return null;
 
