@@ -49,5 +49,6 @@
 | 07.09 | Tested dashboard UI, sidebar active link, avatar dropdown, and Logout behavior. | 0.5h |
 | 11.09 | Built `ProjectModal` and `Project.tsx` for creating/updating projects on frontend using all service functions (`fetchProjectsByOrg`, `fetchAssignedProjects`, `fetchProject`, `createProject`, `updateProject`, `deleteProject`) and `authHeader` helper; updated backend `Project` schema with name, description, start/end date validations, pre-save hooks to prevent past dates or end-before-start, enhanced error handling middleware, integrated frontend API calls, handled server errors in modal, added `/projects/assigned` route for authenticated user, and tested full create/update project flows. | 9h |
 | 12.09 | Built `ProjectPage` for single project view and updated `Projects.tsx` to make project cards clickable with improved UI. | 4h |
-| 12.09  | Total hours | 136h |
+| 12.09 | Enhanced `Projects.tsx` by adding status filter (Active/Completed) and status badges for each project card. Updated `Project.tsx` with task board improvements, including per-status counts (To Do, In Progress, Done) and clickable task cards. | 3h |
+| 12.09  | Total hours | 139h |
 

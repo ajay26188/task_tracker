@@ -1,4 +1,5 @@
-// types/project.ts
+import type { Task } from "./task";
+
 export interface Project {
     id: string;            
     name: string;
@@ -6,7 +7,7 @@ export interface Project {
     organizationId: string;
     startDate: string;
     endDate: string;
-    tasks?: (string | {id: string, title: string})[];
+    tasks?: (string | Partial<Task>)[];
     createdBy: string | { name: string; email: string } | null;
     createdAt?: string;
     updatedAt?: string;

@@ -67,7 +67,7 @@ export const fetchProject = async(projectId: string, user: (IUser & Document)) =
     
     const project = await Project.findById(projectId)
     .populate("createdBy", "name")
-    .populate("tasks", "title");
+    .populate("tasks", "title status");
 
     if (!project) return null;
 
