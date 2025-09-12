@@ -16,8 +16,8 @@ const ProjectPage: React.FC = () => {
       try {
         const data = await fetchProject(id);
         setProject(data);
-      } catch (err: any) {
-        setError(err.response?.data?.error || "Failed to load project");
+      } catch  {
+        setError("Failed to load project");
       } finally {
         setLoading(false);
       }
