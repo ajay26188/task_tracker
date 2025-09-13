@@ -11,7 +11,7 @@ const router = express.Router();
 
 // GET /api/tasks?projectId="projectId"&status="Status"&priority="Priority"&assignedTo="userId"
 // fetch all tasks in a project
-router.get('/', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+router.get('/', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const { projectId, status, priority, assignedTo, dueDate } = req.query as TaskQueryParams;
 

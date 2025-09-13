@@ -52,7 +52,7 @@ export interface ReturnedITask {
     updatedAt?: Date,
 };
 
-export type newTaskData = Omit<ITask, 'createdBy' | 'organizationId' | 'status'>;
+export type newTaskData = Omit<ITask, 'createdBy' | 'organizationId' >;
 
 // Raw query from req.query (always strings)
 export interface TaskQueryParams {

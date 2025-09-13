@@ -5,12 +5,15 @@ import { useParams, Link } from "react-router-dom";
 import { fetchProject } from "../../services/project";
 import type { Project } from "../../types/project";
 import type { Task } from "../../types/task";
+import TaskModal from "../task/TaskModal";
 
 const ProjectPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+
 
   useEffect(() => {
     const loadProject = async () => {
@@ -117,8 +120,13 @@ const ProjectPage: React.FC = () => {
                   ⏰ <strong>End:</strong>{" "}
                   {project.endDate?.slice(0, 10) || "-"}
                 </span>
+
                 <span>
-                  🏢 <strong>Org:</strong> {project.organizationId || "N/A"}
+                  🏢 <strong>Organization:</strong> 
+                  {" "}
+                  {project.organizationId && typeof project.organizationId === "object"
+                    ? project.organizationId
+                    : "N/A"}
                 </span>
                 <span>
                   👤 <strong>Created By:</strong>{" "}
@@ -142,10 +150,11 @@ const ProjectPage: React.FC = () => {
             </h2>
             <button
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              onClick={() => alert("Add Task coming soon!")}
+              onClick={() => setShowTaskModal(true)}
             >
               + Add Task
             </button>
+
           </div>
 
           {project.tasks && project.tasks.length > 0 ? (
@@ -196,6 +205,21 @@ const ProjectPage: React.FC = () => {
           ) : (
             <p className="text-gray-500 italic">No tasks added yet.</p>
           )}
+          {showTaskModal && (
+          <TaskModal
+            task={null}
+            projectId={project.id}
+            orgId={project.organizationId}
+            onClose={() => setShowTaskModal(false)}
+            onSuccess={(newTask) => {
+              setProject((prev) =>
+                prev
+                  ? { ...prev, tasks: [...(prev.tasks || []), newTask] }
+                  : prev
+              );
+            }}
+          />
+        )}
         </div>
       </div>
     </div>

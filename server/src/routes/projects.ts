@@ -60,7 +60,7 @@ router.delete('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: R
 });
 
 //Fetching single project with their id
-router.get('/project/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+router.get('/project/:id', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         const result = await fetchProject(req.params.id, req.user!);
 

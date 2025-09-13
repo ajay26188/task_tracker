@@ -57,6 +57,18 @@ const taskSchema = new Schema(
     { timestamps: true},
 );
 
+// Custom validation
+taskSchema.pre("save", function (next) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // normalize to midnight so only date matters
+  
+    if (this.dueDate < today) {
+      return next(new Error("Due date cannot be in the past."));
+    }
+
+    next();
+});
+
 taskSchema.set('toJSON', {
     transform: function (_doc, ret: Record<string, unknown>) {
       if (ret._id && typeof ret._id === 'object' && 'toString' in ret._id) {

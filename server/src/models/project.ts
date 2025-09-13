@@ -57,7 +57,7 @@ projectSchema.pre("save", function (next) {
     }
   
     next();
-  });
+});
   
 
 projectSchema.set('toJSON', {

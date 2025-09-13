@@ -71,7 +71,7 @@ export const fetchProject = async(projectId: string, user: (IUser & Document)) =
 
     if (!project) return null;
 
-    if (project.organizationId.toString() !== user.organizationId.toString()) {
+    if (project.organizationId._id.toString() !== user.organizationId.toString()) {
         return 'unauthorized';
     } 
 

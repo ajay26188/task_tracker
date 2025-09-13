@@ -1,6 +1,6 @@
 // /services/users.ts
 
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import User from "../models/user";
 import { IUser, newUserData, Role } from "../types/user";
 import bcrypt from 'bcrypt';
@@ -10,8 +10,14 @@ import { sendVerificationEmail } from "../utils/mailer";
 import jwt from "jsonwebtoken";
 import { sendPasswordResetEmail } from "../utils/mailer";
 
-export const getAllUsers = async(id: string) => {
-    await User.find({organizationId: new Types.ObjectId(id)});
+export const getAllUsers = async (orgId: string, search?: string): Promise<IUser[]> => {
+  const query: FilterQuery<IUser> = { organizationId: new Types.ObjectId(orgId) };
+
+  if (search) {
+    query.name = { $regex: search, $options: "i" }; // contains search, case-insensitive
+  }
+
+  return await User.find(query).select("id name email");
 };
 
 export const addUser = async(data: newUserData) => {

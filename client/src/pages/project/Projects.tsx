@@ -7,6 +7,7 @@ import {
 import ProjectModal from "./ProjectModal";
 import type { Project } from "../../types/project";
 import { Link } from "react-router-dom";
+import TaskModal from "../task/TaskModal";
 
 interface ProjectsProps {
   isAdmin: boolean;
@@ -25,6 +26,10 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+
+  //For adding new task
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [selectedProjectForTask, setSelectedProjectForTask] = useState<Project | null>(null);
 
   // Load projects
   useEffect(() => {
@@ -181,13 +186,15 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
                   </button>
                   <button
                     onClick={(e) => {
-                      e.preventDefault();
-                      alert("Add Task coming soon!");
+                        e.preventDefault();
+                        setSelectedProjectForTask(project);
+                        setShowTaskModal(true);
                     }}
                     className="flex items-center gap-1 text-green-600 hover:text-green-800 font-medium transition-colors"
-                  >
+                    >
                     ➕ Task
-                  </button>
+                    </button>
+
                 </div>
               )}
             </Link>
@@ -246,10 +253,32 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
               >
                 Delete
               </button>
+
             </div>
           </div>
         </div>
       )}
+      {showTaskModal && selectedProjectForTask && (
+                <TaskModal
+                    task={null}
+                    projectId={selectedProjectForTask.id}
+                    orgId={selectedProjectForTask.organizationId
+                    }
+                    onClose={() => {
+                    setShowTaskModal(false);
+                    setSelectedProjectForTask(null);
+                    }}
+                    onSuccess={(newTask) => {
+                    setProjects((prev) =>
+                        prev.map((p) =>
+                        p.id === selectedProjectForTask.id
+                            ? { ...p, tasks: [...(p.tasks || []), newTask] }
+                            : p
+                        )
+                    );
+                    }}
+                />
+                )}
     </div>
   );
 };

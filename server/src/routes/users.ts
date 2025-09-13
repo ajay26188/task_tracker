@@ -12,24 +12,26 @@ import { requestPasswordReset, resetUserPassword } from "../services/users";
 const router = express.Router();
 
 // GET /api/users/:id — get all users for an organization
-router.get('/:id', adminStatus, userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
-    const orgId = req.params.id;
+router.get('/:id', adminStatus, userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const orgId = req.params.id;
+  const { search } = req.query;
 
-    if (!Types.ObjectId.isValid(orgId)) {
-        return res.status(400).json({error: 'Invalid organization ID'});
-    }
+  if (!Types.ObjectId.isValid(orgId)) {
+    return res.status(400).json({ error: 'Invalid organization ID' });
+  }
 
-    if (req.user!.organizationId.toString() !== orgId) {
-      return res.status(403).json({error: 'You can only view users of your organization'});
-    }
+  if (req.user!.organizationId.toString() !== orgId) {
+    return res.status(403).json({ error: 'You can only view users of your organization' });
+  }
 
-    try {
-        const allUsers = await getAllUsers(orgId);
-        return res.json(allUsers);
-    } catch (err) {
-        return next(err);
-    }
+  try {
+    const allUsers = await getAllUsers(orgId, typeof search === "string" ? search : undefined);
+    return res.json(allUsers);
+  } catch (err) {
+    return next(err);
+  }
 });
+
 
 //POST /api/users
 router.post('/', newUserParser, async(req: Request<unknown, unknown, newUserData>, res: Response, next: NextFunction) => {

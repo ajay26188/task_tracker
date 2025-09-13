@@ -39,21 +39,22 @@ export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser &
 export const addTask = async(authenticatedUser: (IUser & Document), data: newTaskData) => {
     const project = await Project.findById(data.projectId);
 
-    console.log('project found!');
+    //console.log('project found!');
 
     if (!project) return null;
 
-    let assignedToUser;
-
-    if (data.assignedTo) {
-        assignedToUser = await User.findById(data.assignedTo);
-
-        if (!assignedToUser) return null;
-
-        if (assignedToUser.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
-            return 'unauthorized';
+    if (data.assignedTo && data.assignedTo.length > 0) {
+        const users = await User.find({ _id: { $in: data.assignedTo } });
+    
+        if (users.length !== data.assignedTo.length) return null; // invalid user(s)
+    
+        for (const user of users) {
+            if (user.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
+                return 'unauthorized';
+            }
         }
     }
+    
 
     if (project.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
         return 'unauthorized';
@@ -70,14 +71,17 @@ export const addTask = async(authenticatedUser: (IUser & Document), data: newTas
     });
 
     if (data.assignedTo) {
-        const message = `A task titled ${data.title} has been assigned to you.`;
-
-        const savedNotification = await Notification.create({
-            message,
-            userId: data.assignedTo
-        });
-
-        emitNewNotification(data.assignedTo.toString(), savedNotification);
+        // Notify each assigned user
+        for (const userId of data.assignedTo) {
+            const message = `A task titled ${data.title} has been assigned to you.`;
+    
+            const savedNotification = await Notification.create({
+                message,
+                userId
+            });
+    
+            emitNewNotification(userId.toString(), savedNotification);
+        }
     }
 
     await Project.findByIdAndUpdate(data.projectId, {
