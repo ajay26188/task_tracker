@@ -44,8 +44,9 @@ projectSchema.pre("save", function (next) {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // normalize to midnight so only date matters
   
-    if (this.startDate < today) {
-      return next(new Error("Start date cannot be in the past."));
+    // Only enforce future startDate if this is a NEW document
+    if (this.isNew && this.startDate < today) {
+        return next(new Error("Start date cannot be in the past."));
     }
   
     if (this.endDate < today) {
