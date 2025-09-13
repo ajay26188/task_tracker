@@ -75,7 +75,7 @@ function App() {
           path="/projects/project/:id"
           element={
             <ProtectedRoute>
-              <ProjectPage />
+              <ProjectPage isAdmin={loggedUser?.role === "admin"} />
             </ProtectedRoute>
           }
         />

@@ -7,7 +7,11 @@ import type { Project } from "../../types/project";
 import type { Task } from "../../types/task";
 import TaskModal from "../task/TaskModal";
 
-const ProjectPage: React.FC = () => {
+interface ProjectPageProps {
+  isAdmin: boolean; 
+}
+
+const ProjectPage: React.FC<ProjectPageProps> = ({isAdmin}) => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -148,13 +152,14 @@ const ProjectPage: React.FC = () => {
                 {todo} To Do · {inprogress} In Progress · {done} Done
               </span>
             </h2>
-            <button
-              className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              onClick={() => setShowTaskModal(true)}
-            >
-              + Add Task
-            </button>
-
+            {isAdmin && (   // ✅ only admins see this button
+              <button
+                className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                onClick={() => setShowTaskModal(true)}
+              >
+                + Add Task
+              </button>
+            )}
           </div>
 
           {project.tasks && project.tasks.length > 0 ? (
@@ -206,20 +211,20 @@ const ProjectPage: React.FC = () => {
             <p className="text-gray-500 italic">No tasks added yet.</p>
           )}
           {showTaskModal && (
-          <TaskModal
-            task={null}
-            projectId={project.id}
-            orgId={project.organizationId}
-            onClose={() => setShowTaskModal(false)}
-            onSuccess={(newTask) => {
-              setProject((prev) =>
-                prev
-                  ? { ...prev, tasks: [...(prev.tasks || []), newTask] }
-                  : prev
-              );
-            }}
-          />
-        )}
+            <TaskModal
+              task={null}
+              projectId={project.id}
+              orgId={project.organizationId}
+              onClose={() => setShowTaskModal(false)}
+              onSuccess={(newTask) => {
+                setProject((prev) =>
+                  prev
+                    ? { ...prev, tasks: [...(prev.tasks || []), newTask] }
+                    : prev
+                );
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
