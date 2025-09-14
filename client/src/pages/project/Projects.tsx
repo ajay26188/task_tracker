@@ -8,15 +8,12 @@ import ProjectModal from "./ProjectModal";
 import type { Project } from "../../types/project";
 import { Link } from "react-router-dom";
 import TaskModal from "../task/TaskModal";
-
-interface ProjectsProps {
-  isAdmin: boolean;
-  orgId: string;
-}
+import { useAuth } from "../../context/AuthContext";
 
 type StatusFilter = "all" | "completed" | "active" | "upcoming";
 
-const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
+const Projects: React.FC = () => {
+  const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,8 +32,8 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const data = isAdmin
-          ? await fetchProjectsByOrg(orgId)
+        const data = user?.role === 'admin'
+          ? await fetchProjectsByOrg(user?.organizationId)
           : await fetchAssignedProjects();
 
         setProjects(data);
@@ -48,7 +45,7 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
       }
     };
     loadProjects();
-  }, [isAdmin, orgId]);
+  }, [user]);
 
   // Filter projects based on search & status
   useEffect(() => {
@@ -120,7 +117,7 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
             <option value="completed">Completed</option>
             <option value="upcoming">Upcoming</option>
           </select>
-          {isAdmin && (
+          {user?.role === 'admin' && (
             <button
               onClick={() => {
                 setSelectedProject(null);
@@ -163,7 +160,7 @@ const Projects: React.FC<ProjectsProps> = ({ isAdmin, orgId }) => {
                 </div>
               </div>
 
-              {isAdmin && (
+              {user?.role === 'admin'  && (
                 <div className="flex gap-2 mt-4">
                   <button
                     onClick={(e) => {

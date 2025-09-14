@@ -96,7 +96,6 @@ export const fetchAssignedProjects = async (user: IUser & Document) => {
     return projects;
 };
   
-
 export const groupedTasks = async(projectId: string, user: (IUser & Document)) => {
 
     //Fetch project

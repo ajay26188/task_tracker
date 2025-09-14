@@ -9,20 +9,18 @@ import VerifyNotice from "./pages/auth/VerifyNotice";
 import RequestReset from "./pages/auth/RequestReset";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "./store";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "./store";
 import { setUser } from "./reducers/loggedUserReducer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Projects from "./pages/project/Projects";
 import ProjectPage from "./pages/project/Project";
+import Tasks from "./pages/task/Tasks";
 
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(true);
-
-  // Grab logged user from Redux
-  const loggedUser = useSelector((state: RootState) => state.user.currentUser);
 
   //this is used for page refreshment
   //when page is refershed without looging out 
@@ -67,10 +65,7 @@ function App() {
           path="/projects"
           element={
             <ProtectedRoute>
-              <Projects
-                isAdmin={loggedUser?.role === "admin"} 
-                orgId={loggedUser?.organizationId || ""}
-              />
+              <Projects />
             </ProtectedRoute>
           }
         />
@@ -78,7 +73,15 @@ function App() {
           path="/projects/project/:id"
           element={
             <ProtectedRoute>
-              <ProjectPage isAdmin={loggedUser?.role === "admin"} />
+              <ProjectPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <Tasks />
             </ProtectedRoute>
           }
         />

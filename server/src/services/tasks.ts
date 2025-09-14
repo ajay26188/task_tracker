@@ -1,25 +1,29 @@
 import Project from "../models/project";
 import Task from "../models/task";
 import User from "../models/user";
-import { newTaskData, TaskFilter, updateTaskData } from "../types/task";
+import { newTaskData, updateTaskData } from "../types/task";
 import { IUser, Role } from "../types/user";
 import { Document, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
 import { emitNewNotification, emitTaskStatusUpdate } from "..";
 
-//fetch all tasks in a project with req.query
-export const fetchAllTasks = async(filter: TaskFilter, authenticatedUser: (IUser & Document)) => {
-    const project = await Project.findById(filter.projectId);
-
-    if (!project) return null;
-
-    if (project.organizationId.toString() !== authenticatedUser.organizationId.toString()) {
+export const fetchTasksByOrg = async(orgId: string, user: IUser & Document) => {
+    if (user.organizationId.toString() !== orgId) {
         return 'unauthorized';
     }
+    const tasks = await Task.find({organizationId: orgId}).populate("assignedTo", "name email");
 
-    const tasks = await Task.find(filter);
+    return tasks;
+};
 
+// Fetch tasks that the user is assigned to
+export const fetchAssignedTasks = async (user: IUser & Document) => {
+    const userId = user._id;
+  
+    // Find tasks assigned to the user
+    const tasks = await Task.find({ assignedTo: { $in: userId } });
+  
     return tasks;
 };
 

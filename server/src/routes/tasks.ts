@@ -2,68 +2,45 @@
 
 import express, { Response, NextFunction } from 'express';
 import { adminStatus, AuthRequest, userExtractor } from '../middlewares/auth';
-import { newTaskData, Priority, Status, TaskFilter, TaskQueryParams, updateTaskData } from '../types/task';
+import { newTaskData, updateTaskData } from '../types/task';
 import { newTaskParser, updateTaskParser } from '../middlewares/validateRequest';
-import { addTask, fetchAllTasks, fetchSingleTask, removeTask, updateTask } from '../services/tasks';
-import { isValidObjectId, Types } from 'mongoose';
+import { addTask, fetchAssignedTasks, fetchSingleTask, fetchTasksByOrg, removeTask, updateTask } from '../services/tasks';
 
 const router = express.Router();
 
-// GET /api/tasks?projectId="projectId"&status="Status"&priority="Priority"&assignedTo="userId"
-// fetch all tasks in a project
-router.get('/', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+//fetch all tasks belonging to an organization. 'id' param is organization's ID
+router.get('/org/:id', adminStatus, userExtractor, async(req: AuthRequest, res, next) => {
     try {
-        const { projectId, status, priority, assignedTo, dueDate } = req.query as TaskQueryParams;
 
-        if (!projectId || typeof projectId !== 'string') {
-            return res.status(400).json({ error: 'Missing or invalid projectId' });
-        }
-
-        if (!isValidObjectId(projectId)) {
-            return res.status(400).json({ error: 'Invalid projectId format' });
-        }
-
-        const filter: TaskFilter = {};
-
-        filter.projectId = new Types.ObjectId(projectId);
-
-        if (status && typeof status === 'string') {
-            filter.status = status as Status;
-        }
-
-        if (priority && typeof priority === 'string') {
-            filter.priority = priority as Priority;
-        }
-
-        if (assignedTo && typeof assignedTo === 'string' && isValidObjectId(assignedTo)) {
-            filter.assignedTo = new Types.ObjectId(assignedTo);
-        }
-      
-        if (dueDate && typeof dueDate === 'string') {
-            const parsedDate = new Date(dueDate);
-            if (!isNaN(parsedDate.getTime())) {
-                filter.dueDate = { $lte: parsedDate }; //before or equal to date
-            }
-        }
-        
-        const result = await fetchAllTasks(filter, req.user!);
-        
-        if (!result) {
-            return res.status(404).json({error: 'Project not found.'});
-        }
+        const result = await fetchTasksByOrg(req.params.id, req.user!);
 
         if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You can only view tasks of projects that belongs to your organization.'});
+            return res.status(403).json({error: 'You are not allowed to view tasks for this organization.'});
         }
-        return res.status(200).json(result);
+        
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'No tasks found for this organization.' });
+        }
+          
+        return res.json(result);
     } catch (error) {
         return next(error);
     }
 });
 
+// Fetch projects task to the authenticated user
+router.get("/assigned", userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+      const tasks = await fetchAssignedTasks(req.user!);
+      return res.json(tasks);
+    } catch (error) {
+      return next(error);
+    }
+});
+
 // GET /api/tasks/:id
 // Viewing a single task and it's details
-router.get('/:id', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+router.get('/task/:id', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
     try {
        const result = await fetchSingleTask(req.params.id, req.user!);
         

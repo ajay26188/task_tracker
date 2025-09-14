@@ -51,5 +51,7 @@
 | 12.09 | Built `ProjectPage` for single project view and updated `Projects.tsx` to make project cards clickable with improved UI. | 4h |
 | 12.09 | Enhanced `Projects.tsx` by adding status filter (Active/Completed) and status badges for each project card. Updated `Project.tsx` with task board improvements, including per-status counts (To Do, In Progress, Done) and clickable task cards. | 3h |
 | 13.09 | Added task services (`fetchTasksByProject`, `fetchTask`, `createTask`, `updateTask`, `deleteTask`). Built `TaskModal` for creating/updating tasks with title, description, status, priority, due date, and user assignment (autocomplete search). Updated backend to support assigned users.| 6h |
-| 12.09  | Total hours | 145h |
+| 14.09 | Fixed cold start issue on Vercel | 0.5h |
+| 14.09 | Built `Tasks.tsx` with listing, filters, TaskModal integration, and role-based restrictions. | 4h |
+| 14.09  | Total hours | 149.5h |
 

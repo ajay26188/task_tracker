@@ -6,12 +6,11 @@ import { fetchProject } from "../../services/project";
 import type { Project } from "../../types/project";
 import type { Task } from "../../types/task";
 import TaskModal from "../task/TaskModal";
+import { useAuth } from "../../context/AuthContext";
 
-interface ProjectPageProps {
-  isAdmin: boolean; 
-}
 
-const ProjectPage: React.FC<ProjectPageProps> = ({isAdmin}) => {
+const ProjectPage: React.FC = () => {
+  const {user} =useAuth();
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -152,7 +151,7 @@ const ProjectPage: React.FC<ProjectPageProps> = ({isAdmin}) => {
                 {todo} To Do · {inprogress} In Progress · {done} Done
               </span>
             </h2>
-            {isAdmin && (   // ✅ only admins see this button
+            {user?.role === 'admin' && (   // only admins see this button
               <button
                 className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 onClick={() => setShowTaskModal(true)}

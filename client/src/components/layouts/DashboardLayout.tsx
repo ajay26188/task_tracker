@@ -47,7 +47,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
       { label: "Users", icon: <Users size={18} />, href: "/users" },
       { label: "Projects", icon: <FolderKanban size={18} />, href: "/projects" },
-      { label: "Tasks", icon: <CheckSquare size={18} />, href: "tasks" },
+      { label: "Tasks", icon: <CheckSquare size={18} />, href: "/tasks" },
       { label: "Comments", icon: <MessageSquare size={18} />, href: "/comments" },
       { label: "Reports", icon: <BarChart3 size={18} />, href: "/reports" },
     ]

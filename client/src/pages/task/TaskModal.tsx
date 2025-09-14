@@ -30,6 +30,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onSuccess,
   orgId,
 }) => {
+  console.log(task);
   const dispatch = useDispatch<AppDispatch>();
   const [form, setForm] = useState({
     title: task?.title || "",
