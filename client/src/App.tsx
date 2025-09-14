@@ -36,8 +36,11 @@ function App() {
   },[dispatch])
 
   if (loading) {
-    return <p>Loading...</p>; 
+    return <div className="flex items-center justify-center h-screen">
+      <p>Initializing app...</p>
+    </div>
   }
+  
 
   return (
     <div>

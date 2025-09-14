@@ -11,14 +11,15 @@ import { setUser } from "../../reducers/loggedUserReducer";
 
 const Login = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoggingIn(true);
     try {
       const user = await loginService.login({ email, password });
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
@@ -33,7 +34,11 @@ const Login = () => {
         dispatch(
           alertMessageHandler({ message: error.response.data.error, type: "error" }, 5)
         );
+      } else {
+        dispatch(alertMessageHandler({ message: "Login failed. Please retry.", type: "error" }, 5));
       }
+    } finally {
+      setLoggingIn(false);
     }
   };
 
@@ -75,10 +80,16 @@ const Login = () => {
         <>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+            disabled={loggingIn}
+            className={`w-full py-3 rounded-xl font-semibold transition-colors ${
+              loggingIn
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
           >
-            Login
+            {loggingIn ? "Logging in..." : "Login"}
           </button>
+
 
           <p className="text-sm text-center text-gray-500 mt-2">
             Forgot your password?{" "}
