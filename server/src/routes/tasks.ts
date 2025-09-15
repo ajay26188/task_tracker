@@ -94,10 +94,6 @@ router.patch('/:id', userExtractor,  updateTaskParser, async (req: AuthRequest<u
         return res.status(403).json({error: 'You are not allowed to update these fields.'});
       }
 
-      if (result === 'duplicate user') {
-        return res.status(400).json({error: 'User is already assigned to this task.'});
-      }
-
       return res.json(result);
 
     } catch (error) {

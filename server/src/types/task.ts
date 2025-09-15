@@ -29,7 +29,7 @@ export interface ITask {
 export interface updateTaskData {
     title?: string, 
     description?: string,
-    assignedTo?: Types.ObjectId,
+    assignedTo?: Types.ObjectId[],
     status?: Status,
     priority?: Priority,
     dueDate?: Date, 

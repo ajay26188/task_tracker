@@ -20,6 +20,7 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional(),
+    projectId: z.string().regex(objectIdRegex, 'Invalid projectId format.'),
     assignedTo: z.array(
         z.string().regex(objectIdRegex, "Invalid userId format.")
       ).optional(),      

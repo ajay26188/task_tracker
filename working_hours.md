@@ -53,5 +53,6 @@
 | 13.09 | Added task services (`fetchTasksByProject`, `fetchTask`, `createTask`, `updateTask`, `deleteTask`). Built `TaskModal` for creating/updating tasks with title, description, status, priority, due date, and user assignment (autocomplete search). Updated backend to support assigned users.| 6h |
 | 14.09 | Fixed cold start issue on Vercel | 0.5h |
 | 14.09 | Built `Tasks.tsx` with listing, filters, TaskModal integration, and role-based restrictions. | 4h |
-| 14.09  | Total hours | 149.5h |
+| 15.09 | Fixed cold vercel start with uptime , updated task update flow to support multiple assignees, resolved due date bug, and migrated MongoDB data. | 2h |
+| 15.09  | Total hours | 151.5h |
 

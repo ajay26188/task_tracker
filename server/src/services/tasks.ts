@@ -139,37 +139,40 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             });
         };
         
-        if (assignedTo) {
-            const assignedToUser = await User.findById(assignedTo);
-
-            if (!assignedToUser) return null;
-
-            if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
+        if (Array.isArray(assignedTo) && assignedTo.length > 0) {
+            for (const userId of assignedTo) {
+              const assignedToUser = await User.findById(userId);
+          
+              if (!assignedToUser) continue; // skip invalid users
+          
+              if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
                 return 'unauthorized';
-            }
-
-            if (task.assignedTo.map(id => id.toString()).includes(assignedTo.toString())) {
-                return 'duplicate user';
-            }
-
-            task.assignedTo.push(assignedTo);
-
-            //notifying the new assignee
-            notifications.push({
+              }
+          
+              if (task.assignedTo.map(id => id.toString()).includes(userId.toString())) {
+                continue; // skip duplicates
+              }
+          
+              task.assignedTo.push(userId);
+          
+              // Notify the new assignee
+              notifications.push({
                 message: `A task titled ${task.title} has been assigned to you.`,
-                userId: assignedTo.toString()
-            });
-
-            //Notifying existing assignee new member has been assigned
-            task.assignedTo.forEach(uid => {
-                if (uid.toString() !== assignedTo.toString()) {
+                userId: userId.toString()
+              });
+          
+              // Notify all existing assignees about new member
+              task.assignedTo.forEach(uid => {
+                if (uid.toString() !== userId.toString()) {
                   notifications.push({
                     message: `A new member has been assigned to ${task.title}.`,
                     userId: uid.toString()
                   });
                 }
-            });
-        } 
+              });
+            }
+          }
+           
 
         if (priority) {
             task.priority = priority;
@@ -182,14 +185,17 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
         };
         
         if (dueDate) {
-            task.dueDate = dueDate;
+            const parsedDate = new Date(dueDate); // Ensure it's a Date object
+            task.dueDate = parsedDate;
+          
             task.assignedTo.forEach(uid => {
               notifications.push({
-                message: `Task "${task.title}" due date changed to ${dueDate.toDateString()}.`,
+                message: `Task "${task.title}" due date changed to ${parsedDate.toDateString()}.`,
                 userId: uid.toString()
               });
             });
-        }
+          }
+          
 
     }
 
