@@ -59,7 +59,15 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - **Email Service:** Nodemailer (for sending verification and password reset emails)  
 - **Error Handling:** Centralized backend error middleware + Redux-powered frontend alerts  
 - **Dev Tools:** ESLint, TypeScript, Nodemon  
-  
+
+### Challenges & Learnings
+- Balancing API flexibility with consistent contracts.  
+- Ensuring organization-based isolation early for scalability.  
+- Using Zod schemas to enforce strict validation and reduce runtime errors.  
+- Designing CI/CD pipelines to simulate real-world team workflows.  
+- Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
+- Handling task edit flows in TaskModal, especially replacing assignees and ensuring immediate frontend updates.  
+
 
 Built by **Ajay Sah**  
 
