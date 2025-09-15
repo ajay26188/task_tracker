@@ -139,39 +139,29 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             });
         };
         
-        if (Array.isArray(assignedTo) && assignedTo.length > 0) {
+        if (Array.isArray(assignedTo)) {
+            // validate all new assignees first
             for (const userId of assignedTo) {
               const assignedToUser = await User.findById(userId);
-          
               if (!assignedToUser) continue; // skip invalid users
           
               if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
                 return 'unauthorized';
               }
-          
-              if (task.assignedTo.map(id => id.toString()).includes(userId.toString())) {
-                continue; // skip duplicates
-              }
-          
-              task.assignedTo.push(userId);
-          
-              // Notify the new assignee
-              notifications.push({
-                message: `A task titled ${task.title} has been assigned to you.`,
-                userId: userId.toString()
-              });
-          
-              // Notify all existing assignees about new member
-              task.assignedTo.forEach(uid => {
-                if (uid.toString() !== userId.toString()) {
-                  notifications.push({
-                    message: `A new member has been assigned to ${task.title}.`,
-                    userId: uid.toString()
-                  });
-                }
-              });
             }
+          
+            // Replace the array instead of pushing
+            task.assignedTo = assignedTo;
+          
+            // Notify all assignees about the updated assignment list
+            assignedTo.forEach(uid => {
+              notifications.push({
+                message: `Task "${task.title}" assignees have been updated.`,
+                userId: uid.toString()
+              });
+            });
           }
+          
            
 
         if (priority) {
@@ -237,7 +227,9 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
         emitNewNotification(notif.userId, savedNotification);
     }
 
-    return task;
+    //Return populated task
+    const populatedTask = await task.populate("assignedTo", "name email");
+    return populatedTask;
 };
 
 export const removeTask = async(id: string, authenticatedUser: (IUser & Document)) => {

@@ -54,5 +54,6 @@
 | 14.09 | Fixed cold start issue on Vercel | 0.5h |
 | 14.09 | Built `Tasks.tsx` with listing, filters, TaskModal integration, and role-based restrictions. | 4h |
 | 15.09 | Fixed cold vercel start with uptime , updated task update flow to support multiple assignees, resolved due date bug, and migrated MongoDB data. | 2h |
-| 15.09  | Total hours | 151.5h |
+| 15.09  | TaskModal edit features fixed with assignee replacement, instant frontend update via populated task on backend. | 1.5h |
+| 15.09  | Total hours | 153h |
 

@@ -7,7 +7,7 @@ import {
   deleteTask,
 } from "../../services/task";
 import TaskModal from "./TaskModal";
-import type { Task, TaskStatus, TaskPriority } from "../../types/task";
+import type { Task, TaskStatus, TaskPriority, TaskPayload } from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
 
 type StatusFilter = "all" | TaskStatus;
@@ -66,7 +66,7 @@ const Tasks: React.FC = () => {
   }, [search, statusFilter, priorityFilter, tasks]);
 
   // Update task
-  const handleUpdate = async (task: Task, updates: Partial<Task>) => {
+  const handleUpdate = async (task: Task, updates: Partial<TaskPayload>) => {
     try {
       const updated = await updateTask(task.id, updates);
       setTasks((prev) => prev.map((t) => (t.id === task.id ? updated : t)));

@@ -1,12 +1,11 @@
 import axios from "axios";
-import type { Task } from "../types/task";
+import type { Task, TaskPayload } from "../types/task";
 import { apiBaseUrl } from "../constants";
 import { authHeader } from "../utils/auth";
 
 //fetching all projects belonging to an organization id is organization's id
 export const fetchTasksByOrg = async (id: string): Promise<Task[]> => {
   const res = await axios.get(`${apiBaseUrl}/tasks/org/${id}`, authHeader());
-  console.log(res.data);
   return res.data;
 };
 
@@ -23,13 +22,13 @@ export const fetchTask = async (id: string): Promise<Task> => {
 };
 
 // Create task
-export const createTask = async (data: Partial<Task>): Promise<Task> => {
+export const createTask = async (data: Partial<TaskPayload>): Promise<Task> => {
   const res = await axios.post(`${apiBaseUrl}/tasks`, data, authHeader());
   return res.data;
 };
 
 // Update task
-export const updateTask = async (id: string, data: Partial<Task>): Promise<Task> => {
+export const updateTask = async (id: string, data: Partial<TaskPayload>): Promise<Task> => {
   const res = await axios.patch(`${apiBaseUrl}/tasks/${id}`, data, authHeader());
   return res.data;
 };
