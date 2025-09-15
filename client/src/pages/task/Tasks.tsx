@@ -12,6 +12,8 @@ import { useAuth } from "../../context/AuthContext";
 
 type StatusFilter = "all" | TaskStatus;
 type PriorityFilter = "all" | TaskPriority;
+type DueDateFilter = "all" | "past30" | "past7" | "today" | "next7" | "next30";
+
 
 const Tasks: React.FC = () => {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ const Tasks: React.FC = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
+  const [dueDateFilter, setDueDateFilter] = useState<DueDateFilter>("all");
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
@@ -49,21 +52,55 @@ const Tasks: React.FC = () => {
   // Filter tasks
   useEffect(() => {
     let filtered = [...tasks];
-
+  
+    // Search in title + assigned users
     if (search.trim()) {
-      filtered = filtered.filter((t) =>
-        t.title.toLowerCase().includes(search.toLowerCase())
+      const query = search.toLowerCase();
+      filtered = filtered.filter(
+        (t) =>
+          t.title.toLowerCase().includes(query) ||
+          (t.assignedTo?.some((u) =>
+            (u.name || "").toLowerCase().includes(query)
+          ) ?? false)
       );
     }
+  
     if (statusFilter !== "all") {
       filtered = filtered.filter((t) => t.status === statusFilter);
     }
+  
     if (priorityFilter !== "all") {
       filtered = filtered.filter((t) => t.priority === priorityFilter);
     }
-
+  
+    if (dueDateFilter !== "all") {
+      const today = new Date().setHours(0, 0, 0, 0);
+    
+      filtered = filtered.filter((t) => {
+        if (!t.dueDate) return false;
+        const taskDate = new Date(t.dueDate).setHours(0, 0, 0, 0);
+  
+        if (dueDateFilter === "today") return taskDate === today;
+    
+        const diffDays = Math.floor(
+          (today - taskDate) / (1000 * 60 * 60 * 24)
+        );
+    
+        if (dueDateFilter === "past7") return diffDays >= 0 && diffDays <= 7;
+        if (dueDateFilter === "past30") return diffDays >= 0 && diffDays <= 30;
+        if (dueDateFilter === "next7")
+          return taskDate >= today && taskDate <= today + 7 * 24 * 60 * 60 * 1000;
+        if (dueDateFilter === "next30")
+          return taskDate >= today && taskDate <= today + 30 * 24 * 60 * 60 * 1000;
+    
+        return true;
+      });
+    }
+    
+  
     setFilteredTasks(filtered);
-  }, [search, statusFilter, priorityFilter, tasks]);
+  }, [search, statusFilter, priorityFilter, dueDateFilter, tasks]);
+  
 
   // Update task
   const handleUpdate = async (task: Task, updates: Partial<TaskPayload>) => {
@@ -108,10 +145,10 @@ const Tasks: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            placeholder="Search tasks..."
+            placeholder="Search by task or assignee..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="min-w-[250px] sm:min-w-[300px] border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <select
             value={statusFilter}
@@ -135,6 +172,19 @@ const Tasks: React.FC = () => {
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
+          <select
+            value={dueDateFilter}
+            onChange={(e) => setDueDateFilter(e.target.value as DueDateFilter)}
+            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="all">All Due Dates</option>
+            <option value="past7">Past 7 Days</option>
+            <option value="past30">Past 30 Days</option>
+            <option value="today">Today</option>
+            <option value="next7">Next 7 Days</option>
+            <option value="next30">Next 30 Days</option>
+          </select>
+
         </div>
       </div>
 

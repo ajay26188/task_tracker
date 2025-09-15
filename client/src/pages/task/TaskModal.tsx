@@ -192,28 +192,27 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 )}
 
                 {/* Selected users chips */}
-<div className="flex flex-wrap gap-2 mt-2">
-  {form.assignedTo.map((user) => (
-    <span
-      key={crypto.randomUUID()} // ✅ generates a unique key each render
-      className="flex items-center gap-1 px-2 py-1 bg-gray-200 rounded-full text-sm"
-    >
-      {user.name}
-      <button
-        type="button"
-        onClick={() => {
-          setForm({
-            ...form,
-            assignedTo: form.assignedTo.filter((u) => u.name !== user.name),
-          });
-        }}
-      >
-        ✕
-      </button>
-    </span>
-  ))}
-</div>
-
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {form.assignedTo.map((user) => (
+                    <span
+                      key={user.id}
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-200 rounded-full text-sm"
+                    >
+                      {user.name}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm({
+                            ...form,
+                            assignedTo: form.assignedTo.filter(u => u.id !== user.id),
+                          });
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </label>
 
               {/* Status & Priority */}
