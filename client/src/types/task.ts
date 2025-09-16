@@ -31,3 +31,10 @@ export interface TaskPayload {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface PaginatedTasks {
+  tasks: Task[];
+  total: number;
+  page: number;
+  pages: number;
+}

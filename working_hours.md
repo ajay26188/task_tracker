@@ -56,6 +56,8 @@
 | 15.09 | Fixed cold vercel start with uptime , updated task update flow to support multiple assignees, resolved due date bug, and migrated MongoDB data. | 2h |
 | 15.09  | TaskModal edit features fixed with assignee replacement, instant frontend update via populated task on backend. | 1.5h |
 | 15.09  | Added task search by assignee and dueDates filter in Tasks.tsx with improved placeholder UX and responsive input sizing. | 1h |
-| 15.09  | Built `Task.tsx` with styling added to existing pages to make them look modern and enhance UX. | 3.5h |
-| 15.09  | Total hours | 157.5h |
+| 16.09  | Built `Task.tsx` with styling added to existing pages to make them look modern and enhance UX. | 3.5h |
+| 16.09  | Added database seeding scripts for projects, users, and tasks with realistic data for demo purposes. | 4h |
+| 16.09  | Implemented backend + frontend pagination for tasks (org-wide and assigned tasks) to improve scalability and UX. | 3h |
+| 16.09  | Total hours | 164.5h |
 

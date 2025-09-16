@@ -1,17 +1,17 @@
 import axios from "axios";
-import type { Task, TaskPayload } from "../types/task";
+import type { PaginatedTasks, Task, TaskPayload } from "../types/task";
 import { apiBaseUrl } from "../constants";
 import { authHeader } from "../utils/auth";
 
 //fetching all projects belonging to an organization id is organization's id
-export const fetchTasksByOrg = async (id: string): Promise<Task[]> => {
-  const res = await axios.get(`${apiBaseUrl}/tasks/org/${id}`, authHeader());
+export const fetchTasksByOrg = async (id: string, page: number, limit: number): Promise<PaginatedTasks> => {
+  const res = await axios.get(`${apiBaseUrl}/tasks/org/${id}?page=${page}&limit=${limit}`, authHeader());
   return res.data;
 };
 
 //fetching tasks assigned to an user
-export const fetchTasksByUser = async (): Promise<Task[]> => {
-  const res = await axios.get(`${apiBaseUrl}/tasks/assigned`, authHeader());
+export const fetchTasksByUser = async (page: number, limit: number): Promise<PaginatedTasks> => {
+  const res = await axios.get(`${apiBaseUrl}/tasks/assigned?page=${page}&limit=${limit}`, authHeader());
   return res.data;
 };
 

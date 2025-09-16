@@ -6,7 +6,7 @@
 
 ## Project Status: In Progress
 
-- **Backend**: Development is well underway (~120 hours logged so far).  
+- **Backend**: Development is well underway (~165 hours logged so far).  
   - Authentication system implemented  
   - Organization-specific task/project APIs functional  
   - Role-based access control active  
@@ -32,6 +32,7 @@ You can track my development log here: [working_hours.md](./working_hours.md)
   - Healthcheck endpoint: [https://tasktracker-fr5h.onrender.com/ping](https://tasktracker-fr5h.onrender.com/ping) → returns `"pong"`  
 
 - **Frontend (Vercel):** [https://task-tracker-seven-green.vercel.app/](https://task-tracker-seven-green.vercel.app/)
+
 ---
 
 ## 🔧 Features Built So Far
@@ -41,6 +42,8 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Project creation APIs
 - Task creation routes
 - Query-based filtering (e.g., `GET /api/tasks?projectId=...`)
+- Pagination implemented for tasks (organization-wide and assigned tasks) to improve scalability and UX
+- Database seeding scripts added for projects, users, and tasks with realistic demo data
 - Zod validation schemas
 - Error handling & response conventions
 - Email verification: send verification link on signup, verify token to activate user
@@ -63,12 +66,14 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 ### Challenges & Learnings
 - Balancing API flexibility with consistent contracts.  
 - Ensuring organization-based isolation early for scalability.  
+- Implementing **pagination** for tasks: learned how to efficiently fetch and display data page by page, and integrate it smoothly with frontend state.  
+- Adding **database seeding scripts**: improved understanding of generating realistic demo data for users, projects, and tasks, which sped up testing and development.  
 - Using Zod schemas to enforce strict validation and reduce runtime errors.  
 - Designing CI/CD pipelines to simulate real-world team workflows.  
-- Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
-- Handling task edit flows in TaskModal, especially replacing assignees and ensuring immediate frontend updates.  
+- Debugging and fixing cold start issues on Vercel by introducing uptime strategies. 
 
 
-Built by **Ajay Sah**  
+
+
 
 

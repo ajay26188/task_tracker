@@ -1,4 +1,3 @@
-// src/pages/task/Tasks.tsx
 import { useEffect, useState } from "react";
 import {
   fetchTasksByOrg,
@@ -12,6 +11,7 @@ import type {
   TaskStatus,
   TaskPriority,
   TaskPayload,
+  PaginatedTasks,
 } from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
 import TaskDetailModal from "./Task";
@@ -26,26 +26,40 @@ const Tasks: React.FC = () => {
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // pagination
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 9; // tasks per page
+
+  // filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [dueDateFilter, setDueDateFilter] = useState<DueDateFilter>("all");
+
+  // modals
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
 
-  // Load tasks
+  // Load tasks with pagination
   useEffect(() => {
     const loadTasks = async () => {
       if (!user) return;
+      setLoading(true);
       try {
-        const data =
+        const data: PaginatedTasks =
           user.role === "admin"
-            ? await fetchTasksByOrg(user.organizationId)
-            : await fetchTasksByUser();
-        setTasks(data);
-        setFilteredTasks(data);
+            ? await fetchTasksByOrg(user.organizationId, page, limit)
+            : await fetchTasksByUser(page, limit);
+
+        setTasks(data.tasks);
+        setFilteredTasks(data.tasks);
+        setPages(data.pages);
+        setTotal(data.total);
       } catch {
         setError("Failed to fetch tasks. Please check your connection.");
       } finally {
@@ -53,9 +67,9 @@ const Tasks: React.FC = () => {
       }
     };
     loadTasks();
-  }, [user]);
+  }, [user, page]);
 
-  // Filter tasks
+  // Filter tasks (client-side, only on current page)
   useEffect(() => {
     let filtered = [...tasks];
 
@@ -219,7 +233,7 @@ const Tasks: React.FC = () => {
         </div>
       </div>
 
-      {/* Rest of component unchanged */}
+      {/* Task List */}
       {loading ? (
         renderSkeleton()
       ) : error ? (
@@ -227,17 +241,19 @@ const Tasks: React.FC = () => {
       ) : filteredTasks.length === 0 ? (
         <p className="text-gray-500">No tasks found.</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {filteredTasks.map((task) => (
-            <div
-              key={task.id}
-              className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden cursor-pointer"
-              onClick={() => {
-                setSelectedTask(task);
-                setShowTaskDetail(true);
-              }}              
-            >
-              <div className="mt-3">
+        <>
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {filteredTasks.map((task) => (
+              <div
+                key={task.id}
+                className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  setSelectedTask(task);
+                  setShowTaskDetail(true);
+                }}
+              >
+                {/* Task card content */}
+                <div className="mt-3">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xl font-bold text-gray-800">
@@ -345,11 +361,34 @@ const Tasks: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 mt-6">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="text-sm text-gray-600">
+              Page {page} of {pages} • {total} tasks
+            </span>
+            <button
+              disabled={page === pages}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
 
+      {/* Modals (Edit, Detail, Delete) */}
       {/* Task Modal */}
       {showTaskModal && selectedTask && (
         <TaskModal

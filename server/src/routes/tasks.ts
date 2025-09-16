@@ -9,34 +9,51 @@ import { addTask, fetchAssignedTasks, fetchSingleTask, fetchTasksByOrg, removeTa
 const router = express.Router();
 
 //fetch all tasks belonging to an organization. 'id' param is organization's ID
-router.get('/org/:id', adminStatus, userExtractor, async(req: AuthRequest, res, next) => {
-    try {
-
-        const result = await fetchTasksByOrg(req.params.id, req.user!);
-
-        if (result === 'unauthorized') {
-            return res.status(403).json({error: 'You are not allowed to view tasks for this organization.'});
+router.get("/org/:id", adminStatus, userExtractor, async (req: AuthRequest, res, next) => {
+      try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+  
+        const result = await fetchTasksByOrg(req.params.id, req.user!, page, limit);
+  
+        if (result === "unauthorized") {
+          return res
+            .status(403)
+            .json({ error: "You are not allowed to view tasks for this organization." });
         }
-        
-        if (result.length === 0) {
-            return res.status(404).json({ error: 'No tasks found for this organization.' });
+  
+        if (result.tasks.length === 0) {
+          return res.status(404).json({ error: "No tasks found for this organization." });
         }
-          
+  
         return res.json(result);
-    } catch (error) {
+      } catch (error) {
         return next(error);
+      }
     }
-});
+  );
+  
 
-// Fetch projects task to the authenticated user
+// Fetch tasks assigned to the authenticated user
 router.get("/assigned", userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const tasks = await fetchAssignedTasks(req.user!);
-      return res.json(tasks);
-    } catch (error) {
-      return next(error);
+      try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+  
+        const result = await fetchAssignedTasks(req.user!, page, limit);
+  
+        // If no tasks, return a friendly message instead of error
+        if (result.total === 0) {
+          return res.status(404).json({ error: "No tasks assigned to you." });
+        }
+  
+        return res.json(result);
+      } catch (error) {
+        return next(error);
+      }
     }
-});
+  );
+  
 
 // GET /api/tasks/:id
 // Viewing a single task and it's details

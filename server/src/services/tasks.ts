@@ -8,24 +8,57 @@ import Comment from '../models/comment';
 import Notification from "../models/notification";
 import { emitNewNotification, emitTaskStatusUpdate } from "..";
 
-export const fetchTasksByOrg = async(orgId: string, user: IUser & Document) => {
+export const fetchTasksByOrg = async (orgId: string, user: IUser & Document, page: number = 1, limit: number = 10
+  ) => {
     if (user.organizationId.toString() !== orgId) {
-        return 'unauthorized';
+      return 'unauthorized';
     }
-    const tasks = await Task.find({organizationId: orgId}).populate("assignedTo", "name email");
+  
+    const skip = (page - 1) * limit;
+  
+    const tasks = await Task.find({ organizationId: orgId })
+      .populate("assignedTo", "name email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+  
+    const total = await Task.countDocuments({ organizationId: orgId });
+  
+    return {
+      tasks,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    };
+  };
+  
 
-    return tasks;
-};
-
-// Fetch tasks that the user is assigned to
-export const fetchAssignedTasks = async (user: IUser & Document) => {
+// Fetch tasks that the user is assigned to with pagination
+export const fetchAssignedTasks = async (
+    user: IUser & Document,
+    page: number,
+    limit: number
+  ) => {
     const userId = user._id;
+    const skip = (page - 1) * limit;
   
-    // Find tasks assigned to the user
-    const tasks = await Task.find({ assignedTo: { $in: userId } }).populate("assignedTo", "name email");
+    const [tasks, total] = await Promise.all([
+      Task.find({ assignedTo: { $in: [userId] } }) // ensure array lookup
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Task.countDocuments({ assignedTo: { $in: [userId] } }),
+    ]);
   
-    return tasks;
-};
+    return {
+      tasks,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    };
+  };
+  
 
 //Fetching a single task 
 export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser & Document)) => {
