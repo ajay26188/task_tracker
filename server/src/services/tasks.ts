@@ -1,54 +1,77 @@
 import Project from "../models/project";
 import Task from "../models/task";
 import User from "../models/user";
-import { newTaskData, updateTaskData } from "../types/task";
+import { newTaskData, Priority, Status, updateTaskData } from "../types/task";
 import { IUser, Role } from "../types/user";
 import { Document, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
 import { emitNewNotification, emitTaskStatusUpdate } from "..";
 
-export const fetchTasksByOrg = async (orgId: string, user: IUser & Document, page: number = 1, limit: number = 10
+export const fetchTasksByOrg = async (
+    orgId: string,
+    user: IUser & Document,
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: Status,
+    priority?: Priority,
+    dueDate?: string // "past7", "past30", "today", "next7", "next30"
   ) => {
     if (user.organizationId.toString() !== orgId) {
-      return 'unauthorized';
+      return "unauthorized";
+    }
+  
+    const query: any = { organizationId: orgId };
+  
+    // Search by title
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+    }
+  
+    // Filter by status
+    if (status && status !== "all") {
+      query.status = status;
+    }
+  
+    // Filter by priority
+    if (priority && priority !== "all") {
+      query.priority = priority;
+    }
+  
+    // Filter by due date
+    if (dueDate && dueDate !== "all") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      switch (dueDate) {
+        case "today":
+          query.dueDate = { $eq: today };
+          break;
+        case "past7":
+          query.dueDate = { $gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), $lte: today };
+          break;
+        case "past30":
+          query.dueDate = { $gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), $lte: today };
+          break;
+        case "next7":
+          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) };
+          break;
+        case "next30":
+          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000) };
+          break;
+      }
     }
   
     const skip = (page - 1) * limit;
   
-    const tasks = await Task.find({ organizationId: orgId })
-      .populate("assignedTo", "name email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-  
-    const total = await Task.countDocuments({ organizationId: orgId });
-  
-    return {
-      tasks,
-      total,
-      page,
-      pages: Math.ceil(total / limit),
-    };
-  };
-  
-
-// Fetch tasks that the user is assigned to with pagination
-export const fetchAssignedTasks = async (
-    user: IUser & Document,
-    page: number,
-    limit: number
-  ) => {
-    const userId = user._id;
-    const skip = (page - 1) * limit;
-  
     const [tasks, total] = await Promise.all([
-      Task.find({ assignedTo: { $in: [userId] } }) // ensure array lookup
+      Task.find(query)
         .populate("assignedTo", "name email")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
-      Task.countDocuments({ assignedTo: { $in: [userId] } }),
+      Task.countDocuments(query),
     ]);
   
     return {
@@ -57,9 +80,68 @@ export const fetchAssignedTasks = async (
       page,
       pages: Math.ceil(total / limit),
     };
-  };
-  
+};
 
+// Fetch tasks that the user is assigned to with pagination
+export const fetchAssignedTasks = async (
+    user: IUser & Document,
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: Status,
+    priority?: Priority,
+    dueDate?: string
+  ) => {
+    const userId = user._id;
+  
+    const query: any = { assignedTo: { $in: [userId] } };
+  
+    if (search) query.title = { $regex: search, $options: "i" };
+    if (status && status !== "all") query.status = status;
+    if (priority && priority !== "all") query.priority = priority;
+  
+    if (dueDate && dueDate !== "all") {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      switch (dueDate) {
+        case "today":
+          query.dueDate = { $eq: today };
+          break;
+        case "past7":
+          query.dueDate = { $gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), $lte: today };
+          break;
+        case "past30":
+          query.dueDate = { $gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), $lte: today };
+          break;
+        case "next7":
+          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) };
+          break;
+        case "next30":
+          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000) };
+          break;
+      }
+    }
+  
+    const skip = (page - 1) * limit;
+  
+    const [tasks, total] = await Promise.all([
+      Task.find(query)
+        .populate("assignedTo", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Task.countDocuments(query),
+    ]);
+  
+    return {
+      tasks,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    };
+};
+  
 //Fetching a single task 
 export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser & Document)) => {
     const task = await Task.findById(taskId).populate("assignedTo", "name email");

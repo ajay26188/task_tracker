@@ -2,7 +2,7 @@
 
 import express, { Response, NextFunction } from 'express';
 import { adminStatus, AuthRequest, userExtractor } from '../middlewares/auth';
-import { newTaskData, updateTaskData } from '../types/task';
+import { newTaskData, Priority, Status, updateTaskData } from '../types/task';
 import { newTaskParser, updateTaskParser } from '../middlewares/validateRequest';
 import { addTask, fetchAssignedTasks, fetchSingleTask, fetchTasksByOrg, removeTask, updateTask } from '../services/tasks';
 
@@ -10,28 +10,42 @@ const router = express.Router();
 
 //fetch all tasks belonging to an organization. 'id' param is organization's ID
 router.get("/org/:id", adminStatus, userExtractor, async (req: AuthRequest, res, next) => {
-      try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string;
+      const status = req.query.status as Status;
+      const priority = req.query.priority as Priority;
+      const dueDate = req.query.dueDate as string;
   
-        const result = await fetchTasksByOrg(req.params.id, req.user!, page, limit);
+      const result = await fetchTasksByOrg(req.params.id, req.user!, page, limit, search, status, priority, dueDate);
   
-        if (result === "unauthorized") {
-          return res
-            .status(403)
-            .json({ error: "You are not allowed to view tasks for this organization." });
-        }
-  
-        if (result.tasks.length === 0) {
-          return res.status(404).json({ error: "No tasks found for this organization." });
-        }
-  
-        return res.json(result);
-      } catch (error) {
-        return next(error);
+      if (result === "unauthorized") {
+        return res.status(403).json({ error: "You are not allowed to view tasks for this organization." });
       }
+  
+      return res.json(result);
+    } catch (error) {
+      return next(error);
     }
-  );
+});
+  
+router.get("/assigned", userExtractor, async (req: AuthRequest, res, next) => {
+    try {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+      const search = req.query.search as string;
+      const status = req.query.status as Status;
+      const priority = req.query.priority as Priority;
+      const dueDate = req.query.dueDate as string;
+  
+      const result = await fetchAssignedTasks(req.user!, page, limit, search, status, priority, dueDate);
+  
+      return res.json(result);
+    } catch (error) {
+      return next(error);
+    }
+  });
   
 
 // Fetch tasks assigned to the authenticated user

@@ -3,17 +3,49 @@ import type { PaginatedTasks, Task, TaskPayload } from "../types/task";
 import { apiBaseUrl } from "../constants";
 import { authHeader } from "../utils/auth";
 
-//fetching all projects belonging to an organization id is organization's id
-export const fetchTasksByOrg = async (id: string, page: number, limit: number): Promise<PaginatedTasks> => {
-  const res = await axios.get(`${apiBaseUrl}/tasks/org/${id}?page=${page}&limit=${limit}`, authHeader());
+// Fetch all tasks for an organization with optional filters
+export const fetchTasksByOrg = async (
+  id: string,
+  page: number,
+  limit: number,
+  search?: string,
+  status?: string,
+  priority?: string,
+  dueDate?: string
+): Promise<PaginatedTasks> => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("limit", limit.toString());
+  if (search) params.append("search", search);
+  if (status) params.append("status", status);
+  if (priority) params.append("priority", priority);
+  if (dueDate) params.append("dueDate", dueDate);
+
+  const res = await axios.get(`${apiBaseUrl}/tasks/org/${id}?${params.toString()}`, authHeader());
   return res.data;
 };
 
-//fetching tasks assigned to an user
-export const fetchTasksByUser = async (page: number, limit: number): Promise<PaginatedTasks> => {
-  const res = await axios.get(`${apiBaseUrl}/tasks/assigned?page=${page}&limit=${limit}`, authHeader());
+// Fetch tasks assigned to the user with optional filters
+export const fetchTasksByUser = async (
+  page: number,
+  limit: number,
+  search?: string,
+  status?: string,
+  priority?: string,
+  dueDate?: string
+): Promise<PaginatedTasks> => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("limit", limit.toString());
+  if (search) params.append("search", search);
+  if (status) params.append("status", status);
+  if (priority) params.append("priority", priority);
+  if (dueDate) params.append("dueDate", dueDate);
+
+  const res = await axios.get(`${apiBaseUrl}/tasks/assigned?${params.toString()}`, authHeader());
   return res.data;
 };
+
 
 // Fetch single task
 export const fetchTask = async (id: string): Promise<Task> => {

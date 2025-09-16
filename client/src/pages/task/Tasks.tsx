@@ -6,6 +6,7 @@ import {
   deleteTask,
 } from "../../services/task";
 import TaskModal from "./TaskModal";
+import TaskDetailModal from "./Task";
 import type {
   Task,
   TaskStatus,
@@ -14,7 +15,6 @@ import type {
   PaginatedTasks,
 } from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
-import TaskDetailModal from "./Task";
 
 type StatusFilter = "all" | TaskStatus;
 type PriorityFilter = "all" | TaskPriority;
@@ -23,104 +23,67 @@ type DueDateFilter = "all" | "past30" | "past7" | "today" | "next7" | "next30";
 const Tasks: React.FC = () => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // pagination
+  // Pagination
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 9; // tasks per page
+  const limit = 9;
 
-  // filters
+  // Filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [dueDateFilter, setDueDateFilter] = useState<DueDateFilter>("all");
 
-  // modals
+  // Modals
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
 
-  // Load tasks with pagination
-  useEffect(() => {
-    const loadTasks = async () => {
-      if (!user) return;
-      setLoading(true);
-      try {
-        const data: PaginatedTasks =
-          user.role === "admin"
-            ? await fetchTasksByOrg(user.organizationId, page, limit)
-            : await fetchTasksByUser(page, limit);
+  // Load tasks from server with filters & pagination
+  const loadTasks = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const data: PaginatedTasks =
+        user.role === "admin"
+          ? await fetchTasksByOrg(
+              user.organizationId,
+              page,
+              limit,
+              search,
+              statusFilter !== "all" ? statusFilter : undefined,
+              priorityFilter !== "all" ? priorityFilter : undefined,
+              dueDateFilter !== "all" ? dueDateFilter : undefined
+            )
+          : await fetchTasksByUser(
+              page,
+              limit,
+              search,
+              statusFilter !== "all" ? statusFilter : undefined,
+              priorityFilter !== "all" ? priorityFilter : undefined,
+              dueDateFilter !== "all" ? dueDateFilter : undefined
+            );
 
-        setTasks(data.tasks);
-        setFilteredTasks(data.tasks);
-        setPages(data.pages);
-        setTotal(data.total);
-      } catch {
-        setError("Failed to fetch tasks. Please check your connection.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      setTasks(data.tasks);
+      setPages(data.pages);
+      setTotal(data.total);
+    } catch (err) {
+      setError("Failed to fetch tasks. Please check your connection.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch tasks whenever page or filters change
+  useEffect(() => {
     loadTasks();
-  }, [user, page]);
-
-  // Filter tasks (client-side, only on current page)
-  useEffect(() => {
-    let filtered = [...tasks];
-
-    // Search in title + assigned users
-    if (search.trim()) {
-      const query = search.toLowerCase();
-      filtered = filtered.filter(
-        (t) =>
-          t.title.toLowerCase().includes(query) ||
-          (t.assignedTo?.some((u) =>
-            (u.name || "").toLowerCase().includes(query)
-          ) ?? false)
-      );
-    }
-
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((t) => t.status === statusFilter);
-    }
-
-    if (priorityFilter !== "all") {
-      filtered = filtered.filter((t) => t.priority === priorityFilter);
-    }
-
-    if (dueDateFilter !== "all") {
-      const today = new Date().setHours(0, 0, 0, 0);
-
-      filtered = filtered.filter((t) => {
-        if (!t.dueDate) return false;
-        const taskDate = new Date(t.dueDate).setHours(0, 0, 0, 0);
-
-        if (dueDateFilter === "today") return taskDate === today;
-
-        const diffDays = Math.floor((today - taskDate) / (1000 * 60 * 60 * 24));
-
-        if (dueDateFilter === "past7") return diffDays >= 0 && diffDays <= 7;
-        if (dueDateFilter === "past30") return diffDays >= 0 && diffDays <= 30;
-        if (dueDateFilter === "next7")
-          return (
-            taskDate >= today && taskDate <= today + 7 * 24 * 60 * 60 * 1000
-          );
-        if (dueDateFilter === "next30")
-          return (
-            taskDate >= today && taskDate <= today + 30 * 24 * 60 * 60 * 1000
-          );
-
-        return true;
-      });
-    }
-
-    setFilteredTasks(filtered);
-  }, [search, statusFilter, priorityFilter, dueDateFilter, tasks]);
+  }, [user, page, search, statusFilter, priorityFilter, dueDateFilter]);
 
   // Update task
   const handleUpdate = async (task: Task, updates: Partial<TaskPayload>) => {
@@ -182,9 +145,7 @@ const Tasks: React.FC = () => {
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
               Tasks
             </h1>
-            <p className="text-sm text-gray-500">
-              Manage and track your tasks
-            </p>
+            <p className="text-sm text-gray-500">Manage and track your tasks</p>
           </div>
         </div>
 
@@ -238,12 +199,12 @@ const Tasks: React.FC = () => {
         renderSkeleton()
       ) : error ? (
         <p className="text-red-600">{error}</p>
-      ) : filteredTasks.length === 0 ? (
+      ) : tasks.length === 0 ? (
         <p className="text-gray-500">No tasks found.</p>
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {filteredTasks.map((task) => (
+            {tasks.map((task) => (
               <div
                 key={task.id}
                 className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden cursor-pointer"
@@ -254,118 +215,114 @@ const Tasks: React.FC = () => {
               >
                 {/* Task card content */}
                 <div className="mt-3">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xl font-bold text-gray-800">
-                    {task.title}
-                  </span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full w-fit ${
-                      task.priority === "high"
-                        ? "bg-red-100 text-red-700"
-                        : task.priority === "medium"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {task.priority || "-"}
-                  </span>
-                </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xl font-bold text-gray-800">
+                      {task.title}
+                    </span>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full w-fit ${
+                        task.priority === "high"
+                          ? "bg-red-100 text-red-700"
+                          : task.priority === "medium"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {task.priority || "-"}
+                    </span>
+                  </div>
 
-                {/* Meta info */}
-                <p className="text-sm text-gray-500 mb-1 capitalize">
-                  Status:{" "}
-                  <span
-                    className={
-                      task.status === "done"
-                        ? "text-green-600 font-semibold"
-                        : task.status === "in-progress"
-                        ? "text-blue-600 font-semibold"
-                        : "text-gray-600"
-                    }
-                  >
-                    {task.status}
-                  </span>
-                </p>
-                {task.dueDate && (
-                  <p className="text-sm text-gray-400 mb-1">
-                    Due: {task.dueDate.slice(0, 10)}
+                  <p className="text-sm text-gray-500 mb-1 capitalize">
+                    Status:{" "}
+                    <span
+                      className={
+                        task.status === "done"
+                          ? "text-green-600 font-semibold"
+                          : task.status === "in-progress"
+                          ? "text-blue-600 font-semibold"
+                          : "text-gray-600"
+                      }
+                    >
+                      {task.status}
+                    </span>
                   </p>
-                )}
+                  {task.dueDate && (
+                    <p className="text-sm text-gray-400 mb-1">
+                      Due: {task.dueDate.slice(0, 10)}
+                    </p>
+                  )}
 
-                {/* Assignees */}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {task.assignedTo && task.assignedTo.length > 0 ? (
-                    task.assignedTo.map((user, idx) => {
-                      const initials = user.name
-                        ? user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                        : "?";
-                      return (
-                        <div
-                          key={idx}
-                          className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold"
-                          title={user.name}
-                        >
-                          {initials}
-                        </div>
-                      );
-                    })
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {task.assignedTo && task.assignedTo.length > 0 ? (
+                      task.assignedTo.map((user, idx) => {
+                        const initials = user.name
+                          ? user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()
+                          : "?";
+                        return (
+                          <div
+                            key={idx}
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold"
+                            title={user.name}
+                          >
+                            {initials}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <span className="text-gray-400 text-sm">Unassigned</span>
+                    )}
+                  </div>
+
+                  {user?.role === "admin" ? (
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTask(task);
+                          setShowTaskModal(true);
+                        }}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTaskId(task.id);
+                        }}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   ) : (
-                    <span className="text-gray-400 text-sm">Unassigned</span>
+                    <div className="mt-3">
+                      <select
+                        value={task.status}
+                        onChange={(e) =>
+                          handleUpdate(task, {
+                            status: e.target.value as TaskStatus,
+                          })
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        className="border rounded px-2 py-1 text-sm"
+                      >
+                        <option value="todo">To Do</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="done">Done</option>
+                      </select>
+                    </div>
                   )}
                 </div>
-
-                {/* Actions */}
-                {user?.role === "admin" ? (
-                  <div className="flex gap-2 mt-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedTask(task);
-                        setShowTaskModal(true);
-                      }}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTaskId(task.id);
-                      }}
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ) : (
-                  <div className="mt-3">
-                    <select
-                      value={task.status}
-                      onChange={(e) =>
-                        handleUpdate(task, {
-                          status: e.target.value as TaskStatus,
-                        })
-                      }
-                      onClick={(e) => e.stopPropagation()}
-                      className="border rounded px-2 py-1 text-sm"
-                    >
-                      <option value="todo">To Do</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="done">Done</option>
-                    </select>
-                  </div>
-                )}
-              </div>
               </div>
             ))}
           </div>
 
-          {/* Pagination Controls */}
+          {/* Pagination */}
           <div className="flex justify-center items-center gap-4 mt-6">
             <button
               disabled={page === 1}
@@ -388,8 +345,7 @@ const Tasks: React.FC = () => {
         </>
       )}
 
-      {/* Modals (Edit, Detail, Delete) */}
-      {/* Task Modal */}
+      {/* Modals */}
       {showTaskModal && selectedTask && (
         <TaskModal
           task={selectedTask}
@@ -407,7 +363,6 @@ const Tasks: React.FC = () => {
         />
       )}
 
-      {/* TaskDetail Modal */}
       {showTaskDetail && selectedTask && (
         <TaskDetailModal
           task={selectedTask}
@@ -418,8 +373,6 @@ const Tasks: React.FC = () => {
         />
       )}
 
-
-      {/* Delete Confirmation Modal */}
       {deleteTaskId && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-transform duration-200 scale-95 animate-scale-in">

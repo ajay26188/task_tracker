@@ -3,12 +3,14 @@
 import { Types } from 'mongoose';
 
 export enum Status {
+    All = "all",
     ToDo = "todo",
     InProgress = "in-progress",
     Done = "done"
 };
 
 export enum Priority {
+    All = "all",
     Low = "low",
     Medium = "medium",
     High = "high"
