@@ -63,20 +63,27 @@ export const updateProject = async (projectId: string, updates: newProjectData, 
     return await project.save();
 };
 
-export const fetchProject = async(projectId: string, user: (IUser & Document)) => {
-    
+export const fetchProject = async (projectId: string, user: (IUser & Document)) => {
     const project = await Project.findById(projectId)
-    .populate("createdBy", "name")
-    .populate("tasks", "title status");
-
+      .populate("createdBy", "name")
+      .populate({
+        path: "tasks",
+        populate: {
+          path: "assignedTo",
+          select: "name email"
+        },
+        select: "title description status assignedTo"
+      });
+  
     if (!project) return null;
-
+  
     if (project.organizationId._id.toString() !== user.organizationId.toString()) {
-        return 'unauthorized';
-    } 
-
+      return "unauthorized";
+    }
+  
     return project;
-};
+  };
+  
 
 // Fetch projects that the user is assigned to through tasks
 export const fetchAssignedProjects = async (user: IUser & Document) => {

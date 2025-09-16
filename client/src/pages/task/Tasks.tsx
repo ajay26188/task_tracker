@@ -7,15 +7,21 @@ import {
   deleteTask,
 } from "../../services/task";
 import TaskModal from "./TaskModal";
-import type { Task, TaskStatus, TaskPriority, TaskPayload } from "../../types/task";
+import type {
+  Task,
+  TaskStatus,
+  TaskPriority,
+  TaskPayload,
+} from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 type StatusFilter = "all" | TaskStatus;
 type PriorityFilter = "all" | TaskPriority;
 type DueDateFilter = "all" | "past30" | "past7" | "today" | "next7" | "next30";
 
-
 const Tasks: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -52,7 +58,7 @@ const Tasks: React.FC = () => {
   // Filter tasks
   useEffect(() => {
     let filtered = [...tasks];
-  
+
     // Search in title + assigned users
     if (search.trim()) {
       const query = search.toLowerCase();
@@ -64,43 +70,43 @@ const Tasks: React.FC = () => {
           ) ?? false)
       );
     }
-  
+
     if (statusFilter !== "all") {
       filtered = filtered.filter((t) => t.status === statusFilter);
     }
-  
+
     if (priorityFilter !== "all") {
       filtered = filtered.filter((t) => t.priority === priorityFilter);
     }
-  
+
     if (dueDateFilter !== "all") {
       const today = new Date().setHours(0, 0, 0, 0);
-    
+
       filtered = filtered.filter((t) => {
         if (!t.dueDate) return false;
         const taskDate = new Date(t.dueDate).setHours(0, 0, 0, 0);
-  
+
         if (dueDateFilter === "today") return taskDate === today;
-    
-        const diffDays = Math.floor(
-          (today - taskDate) / (1000 * 60 * 60 * 24)
-        );
-    
+
+        const diffDays = Math.floor((today - taskDate) / (1000 * 60 * 60 * 24));
+
         if (dueDateFilter === "past7") return diffDays >= 0 && diffDays <= 7;
         if (dueDateFilter === "past30") return diffDays >= 0 && diffDays <= 30;
         if (dueDateFilter === "next7")
-          return taskDate >= today && taskDate <= today + 7 * 24 * 60 * 60 * 1000;
+          return (
+            taskDate >= today && taskDate <= today + 7 * 24 * 60 * 60 * 1000
+          );
         if (dueDateFilter === "next30")
-          return taskDate >= today && taskDate <= today + 30 * 24 * 60 * 60 * 1000;
-    
+          return (
+            taskDate >= today && taskDate <= today + 30 * 24 * 60 * 60 * 1000
+          );
+
         return true;
       });
     }
-    
-  
+
     setFilteredTasks(filtered);
   }, [search, statusFilter, priorityFilter, dueDateFilter, tasks]);
-  
 
   // Update task
   const handleUpdate = async (task: Task, updates: Partial<TaskPayload>) => {
@@ -141,11 +147,37 @@ const Tasks: React.FC = () => {
     <div className="p-6">
       {/* Header & Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-100 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-7 w-7 text-indigo-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-3-3v6m9-6a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+              Tasks
+            </h1>
+            <p className="text-sm text-gray-500">
+              Manage and track your tasks
+            </p>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            placeholder="Search by task or assignee..."
+            placeholder="🔍 Search tasks by title or assignee..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="min-w-[250px] sm:min-w-[300px] border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -184,11 +216,10 @@ const Tasks: React.FC = () => {
             <option value="next7">Next 7 Days</option>
             <option value="next30">Next 30 Days</option>
           </select>
-
         </div>
       </div>
 
-      {/* Loading & Empty States */}
+      {/* Rest of your component unchanged */}
       {loading ? (
         renderSkeleton()
       ) : error ? (
@@ -200,9 +231,11 @@ const Tasks: React.FC = () => {
           {filteredTasks.map((task) => (
             <div
               key={task.id}
-              className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden"
+              className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden cursor-pointer"
+              onClick={() => navigate(`/tasks/task/${task.id}`)}
             >
               <div className="mt-3">
+                {/* Header */}
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xl font-bold text-gray-800">
                     {task.title}
@@ -219,18 +252,60 @@ const Tasks: React.FC = () => {
                     {task.priority || "-"}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 mb-2">{task.status}</p>
+
+                {/* Meta info */}
+                <p className="text-sm text-gray-500 mb-1 capitalize">
+                  Status:{" "}
+                  <span
+                    className={
+                      task.status === "done"
+                        ? "text-green-600 font-semibold"
+                        : task.status === "in-progress"
+                        ? "text-blue-600 font-semibold"
+                        : "text-gray-600"
+                    }
+                  >
+                    {task.status}
+                  </span>
+                </p>
                 {task.dueDate && (
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-400 mb-1">
                     Due: {task.dueDate.slice(0, 10)}
                   </p>
                 )}
 
-                {/* Admin actions */}
+                {/* Assignees */}
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {task.assignedTo && task.assignedTo.length > 0 ? (
+                    task.assignedTo.map((user, idx) => {
+                      const initials = user.name
+                        ? user.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                        : "?";
+                      return (
+                        <div
+                          key={idx}
+                          className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold"
+                          title={user.name}
+                        >
+                          {initials}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <span className="text-gray-400 text-sm">Unassigned</span>
+                  )}
+                </div>
+
+                {/* Actions */}
                 {user?.role === "admin" ? (
                   <div className="flex gap-2 mt-4">
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedTask(task);
                         setShowTaskModal(true);
                       }}
@@ -239,14 +314,17 @@ const Tasks: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => setDeleteTaskId(task.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTaskId(task.id);
+                      }}
                       className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
                     >
                       Delete
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-2 mt-2">
+                  <div className="mt-3">
                     <select
                       value={task.status}
                       onChange={(e) =>
@@ -254,7 +332,8 @@ const Tasks: React.FC = () => {
                           status: e.target.value as TaskStatus,
                         })
                       }
-                      className="border rounded px-2 py-1"
+                      onClick={(e) => e.stopPropagation()}
+                      className="border rounded px-2 py-1 text-sm"
                     >
                       <option value="todo">To Do</option>
                       <option value="in-progress">In Progress</option>

@@ -98,18 +98,26 @@ const Projects: React.FC = () => {
     <div className="p-6">
       {/* Header & Search */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+        <div>
+          <h1 className="text-4xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
+            🚀 Projects
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Manage, track, and create projects with ease
+          </p>
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            placeholder="Search projects..."
+            placeholder="🔍 Search projects by name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[250px]"
           />
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StatusFilter )}
+            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
             className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="all">All</option>
@@ -117,19 +125,20 @@ const Projects: React.FC = () => {
             <option value="completed">Completed</option>
             <option value="upcoming">Upcoming</option>
           </select>
-          {user?.role === 'admin' && (
+          {user?.role === "admin" && (
             <button
               onClick={() => {
                 setSelectedProject(null);
                 setShowModal(true);
               }}
-              className="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition-colors shadow-md"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-full hover:opacity-90 transition shadow-md"
             >
               + New Project
             </button>
           )}
         </div>
       </div>
+
 
       {/* Loading & Empty States */}
       {loading ? (

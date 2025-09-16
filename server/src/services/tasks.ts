@@ -22,14 +22,14 @@ export const fetchAssignedTasks = async (user: IUser & Document) => {
     const userId = user._id;
   
     // Find tasks assigned to the user
-    const tasks = await Task.find({ assignedTo: { $in: userId } });
+    const tasks = await Task.find({ assignedTo: { $in: userId } }).populate("assignedTo", "name email");
   
     return tasks;
 };
 
 //Fetching a single task 
 export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser & Document)) => {
-    const task = await Task.findById(taskId);
+    const task = await Task.findById(taskId).populate("assignedTo", "name email");
 
     if (!task) return null;
 

@@ -16,6 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Projects from "./pages/project/Projects";
 import ProjectPage from "./pages/project/Project";
 import Tasks from "./pages/task/Tasks";
+import TaskPage from "./pages/task/Task";
 
 
 function App() {
@@ -82,6 +83,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Tasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks/task/:id"
+          element={
+            <ProtectedRoute>
+              <TaskPage />
             </ProtectedRoute>
           }
         />
