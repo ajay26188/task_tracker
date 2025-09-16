@@ -12,6 +12,7 @@ import {
   Folder,
   Plus,
   Search,
+  Building,
 } from "lucide-react";
 import TaskDetailModal from "../task/Task";
 
@@ -124,6 +125,13 @@ const ProjectPage: React.FC = () => {
                 {typeof project.createdBy === "object"
                   ? project.createdBy?.name
                   : "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Building className="w-4 h-4 text-gray-500" />
+              <span>
+                <strong>OrganizationID:</strong>{" "}
+                {project.organizationId}
               </span>
             </div>
             <div className="flex items-center gap-2">

@@ -120,7 +120,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl animate-fadeIn">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl animate-fadeIn relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+
         <FormLayout
           title={task ? "Edit Task" : "New Task"}
           onSubmit={handleSubmit}

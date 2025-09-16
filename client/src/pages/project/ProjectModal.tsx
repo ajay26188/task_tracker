@@ -150,6 +150,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 animate-fadeIn">
+        {/* Close Button */}
+        <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
         <FormLayout
           title={project ? "Edit Project" : "New Project"}
           fields={fields}
