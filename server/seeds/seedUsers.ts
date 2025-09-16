@@ -64,4 +64,4 @@ async function seedUsers() {
   }
 }
 
-seedUsers();
+void seedUsers();

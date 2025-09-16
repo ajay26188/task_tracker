@@ -187,4 +187,4 @@ async function seedTasks() {
   }
 }
 
-seedTasks();
+void seedTasks();

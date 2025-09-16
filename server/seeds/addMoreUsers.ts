@@ -52,4 +52,4 @@ async function addMoreUsers() {
   }
 }
 
-addMoreUsers();
+void addMoreUsers();

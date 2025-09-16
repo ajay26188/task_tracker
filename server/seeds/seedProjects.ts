@@ -74,4 +74,4 @@ async function seedProjects() {
   }
 }
 
-seedProjects();
+void seedProjects();
