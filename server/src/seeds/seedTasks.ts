@@ -1,10 +1,10 @@
 // backend/seeds/seedTasks.ts
 import { Types } from "mongoose";
 import dotenv from "dotenv";
-import Task from "../src/models/task";
-import connectDB from "../src/config/db";
-import { Status, Priority } from "../src/types/task";
-import Project from "../src/models/project";
+import Task from "../models/task";
+import connectDB from "../config/db";
+import { Status, Priority } from "../types/task";
+import Project from "../models/project";
 
 dotenv.config();
 

@@ -1,9 +1,9 @@
 // server/seeds/seedUsers.ts
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import User from "../src/models/user";
-import Organization from "../src/models/organization";
-import connectDB from "../src/config/db";
+import User from "../models/user";
+import Organization from "../models/organization";
+import connectDB from "../config/db";
 
 dotenv.config();
 

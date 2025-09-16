@@ -1,8 +1,8 @@
 // server/seeds/seedProjects.ts
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Project from "../src/models/project";
-import connectDB from "../src/config/db";
+import Project from "../models/project";
+import connectDB from "../config/db";
 
 dotenv.config();
 
