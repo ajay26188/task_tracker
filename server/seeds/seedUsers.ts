@@ -9,7 +9,7 @@ dotenv.config();
 
 async function seedUsers() {
   try {
-    await connectDB(); // reuse db connection function
+    await connectDB(); //reuse db connection function
     console.log("Connected to MongoDB");
 
     // Reset collections
