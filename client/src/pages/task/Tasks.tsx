@@ -45,45 +45,44 @@ const Tasks: React.FC = () => {
   const [showTaskDetail, setShowTaskDetail] = useState(false);
 
   // Load tasks from server with filters & pagination
-  const loadTasks = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const data: PaginatedTasks =
-        user.role === "admin"
-          ? await fetchTasksByOrg(
-              user.organizationId,
-              page,
-              limit,
-              search,
-              statusFilter !== "all" ? statusFilter : undefined,
-              priorityFilter !== "all" ? priorityFilter : undefined,
-              dueDateFilter !== "all" ? dueDateFilter : undefined
-            )
-          : await fetchTasksByUser(
-              page,
-              limit,
-              search,
-              statusFilter !== "all" ? statusFilter : undefined,
-              priorityFilter !== "all" ? priorityFilter : undefined,
-              dueDateFilter !== "all" ? dueDateFilter : undefined
-            );
-
-      setTasks(data.tasks);
-      setPages(data.pages);
-      setTotal(data.total);
-    } catch (err) {
-      setError("Failed to fetch tasks. Please check your connection.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch tasks whenever page or filters change
   useEffect(() => {
+    const loadTasks = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const data: PaginatedTasks =
+          user.role === "admin"
+            ? await fetchTasksByOrg(
+                user.organizationId,
+                page,
+                limit,
+                search,
+                statusFilter,
+                priorityFilter,
+                dueDateFilter
+              )
+            : await fetchTasksByUser(
+                page,
+                limit,
+                search,
+                statusFilter,
+                priorityFilter,
+                dueDateFilter
+              );
+  
+        setTasks(data.tasks);
+        setPages(data.pages);
+        setTotal(data.total);
+      } catch {
+        setError("Failed to fetch tasks. Please check your connection.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
     loadTasks();
   }, [user, page, search, statusFilter, priorityFilter, dueDateFilter]);
+  
 
   // Update task
   const handleUpdate = async (task: Task, updates: Partial<TaskPayload>) => {
@@ -152,7 +151,7 @@ const Tasks: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            placeholder="🔍 Search tasks by title or assignee..."
+            placeholder="🔍 Search tasks by title..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="min-w-[250px] sm:min-w-[300px] border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"

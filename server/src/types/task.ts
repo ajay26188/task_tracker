@@ -55,15 +55,7 @@ export interface ReturnedITask {
 };
 
 export type newTaskData = Omit<ITask, 'createdBy' | 'organizationId' >;
-
-// Raw query from req.query (always strings)
-export interface TaskQueryParams {
-    projectId?: string;
-    status?: string;
-    priority?: string;
-    assignedTo?: string;
-    dueDate?: string;
-}
+  
 
 // Mongo filter object (correct types for DB)
 export interface TaskFilter {

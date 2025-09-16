@@ -1,9 +1,9 @@
 import Project from "../models/project";
 import Task from "../models/task";
 import User from "../models/user";
-import { newTaskData, Priority, Status, updateTaskData } from "../types/task";
+import { ITask, newTaskData, Priority, Status, updateTaskData } from "../types/task";
 import { IUser, Role } from "../types/user";
-import { Document, Types } from "mongoose";
+import { Document, FilterQuery, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
 import { emitNewNotification, emitTaskStatusUpdate } from "..";
@@ -22,7 +22,7 @@ export const fetchTasksByOrg = async (
       return "unauthorized";
     }
   
-    const query: any = { organizationId: orgId };
+    const query: FilterQuery<ITask> = { organizationId: orgId };
   
     // Search by title
     if (search) {
@@ -30,38 +30,50 @@ export const fetchTasksByOrg = async (
     }
   
     // Filter by status
-    if (status && status !== "all") {
+    if (status && status !== Status.All) {
       query.status = status;
     }
   
     // Filter by priority
-    if (priority && priority !== "all") {
+    if (priority && priority !== Priority.All) {
       query.priority = priority;
     }
   
     // Filter by due date
     if (dueDate && dueDate !== "all") {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-  
-      switch (dueDate) {
-        case "today":
-          query.dueDate = { $eq: today };
-          break;
-        case "past7":
-          query.dueDate = { $gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), $lte: today };
-          break;
-        case "past30":
-          query.dueDate = { $gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), $lte: today };
-          break;
-        case "next7":
-          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) };
-          break;
-        case "next30":
-          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000) };
-          break;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+      
+        let fromDate: Date | undefined;
+        let toDate: Date | undefined;
+      
+        switch (dueDate) {
+          case "today":
+            query.dueDate = today;
+            break;
+          case "past7":
+            fromDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            toDate = today;
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "past30":
+            fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            toDate = today;
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "next7":
+            fromDate = today;
+            toDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "next30":
+            fromDate = today;
+            toDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+        }
       }
-    }
+      
   
     const skip = (page - 1) * limit;
   
@@ -94,34 +106,46 @@ export const fetchAssignedTasks = async (
   ) => {
     const userId = user._id;
   
-    const query: any = { assignedTo: { $in: [userId] } };
+    const query: FilterQuery<ITask> = { assignedTo: { $in: [userId] } };
   
     if (search) query.title = { $regex: search, $options: "i" };
-    if (status && status !== "all") query.status = status;
-    if (priority && priority !== "all") query.priority = priority;
+    if (status && status !== Status.All) query.status = status;
+    if (priority && priority !== Priority.All) query.priority = priority;
   
     if (dueDate && dueDate !== "all") {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-  
-      switch (dueDate) {
-        case "today":
-          query.dueDate = { $eq: today };
-          break;
-        case "past7":
-          query.dueDate = { $gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), $lte: today };
-          break;
-        case "past30":
-          query.dueDate = { $gte: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), $lte: today };
-          break;
-        case "next7":
-          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000) };
-          break;
-        case "next30":
-          query.dueDate = { $gte: today, $lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000) };
-          break;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+      
+        let fromDate: Date | undefined;
+        let toDate: Date | undefined;
+      
+        switch (dueDate) {
+          case "today":
+            query.dueDate = today;
+            break;
+          case "past7":
+            fromDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            toDate = today;
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "past30":
+            fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            toDate = today;
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "next7":
+            fromDate = today;
+            toDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+          case "next30":
+            fromDate = today;
+            toDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+            query.dueDate = { $gte: fromDate, $lte: toDate };
+            break;
+        }
       }
-    }
+      
   
     const skip = (page - 1) * limit;
   

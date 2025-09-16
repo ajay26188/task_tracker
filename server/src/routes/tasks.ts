@@ -66,7 +66,7 @@ router.get("/assigned", userExtractor, async (req: AuthRequest, res: Response, n
         return next(error);
       }
     }
-  );
+);
   
 
 // GET /api/tasks/:id
