@@ -7,7 +7,7 @@ export interface Project {
     organizationId: string;
     startDate: string;
     endDate: string;
-    tasks?: (string | Partial<Task>)[];
+    tasks?: (string | Task)[];
     createdBy: string | { name: string; email: string } | null;
     createdAt?: string;
     updatedAt?: string;

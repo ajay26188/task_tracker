@@ -1,8 +1,4 @@
-// src/pages/task/TaskPage.tsx
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { fetchTask } from "../../services/task";
-import type { Task } from "../../types/task";
 import {
   Calendar,
   Users,
@@ -11,65 +7,28 @@ import {
   RefreshCcw,
   Folder,
   Building,
-} from "lucide-react"; 
+} from "lucide-react";
+import type { Task } from "../../types/task";
 import type { Project } from "../../types/project";
 import { fetchProject } from "../../services/project";
 
-const TaskPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [task, setTask] = useState<Task | null>(null);
+type TaskDetailModalProps = {
+  task: Task;
+  onClose: () => void;
+};
+
+const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
   const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadTask = async () => {
-      if (!id) return;
-      try {
-        const data = await fetchTask(id);
-        setTask(data);
-
-        // Fetch related project
-        if (data.projectId) {
-            const projectData = await fetchProject(data.projectId);
-            setProject(projectData);
-          }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load task.");
-      } finally {
-        setLoading(false);
+    const loadProject = async () => {
+      if (task.projectId) {
+        const data = await fetchProject(task.projectId);
+        setProject(data);
       }
     };
-    loadTask();
-  }, [id]);
-
-  if (loading)
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="p-6 w-full max-w-lg bg-white rounded-2xl animate-pulse">
-          Loading...
-        </div>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="p-6 w-full max-w-lg bg-white rounded-2xl text-red-600">
-          {error}
-          <button
-            className="ml-4 px-3 py-1 bg-gray-200 rounded"
-            onClick={() => navigate(-1)}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-
-  if (!task) return null;
+    loadProject();
+  }, [task.projectId]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -77,7 +36,7 @@ const TaskPage: React.FC = () => {
         <div className="p-6 relative">
           {/* Close Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
           >
             ✕
@@ -127,6 +86,9 @@ const TaskPage: React.FC = () => {
           {/* Metadata */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm text-gray-700">
             <div className="flex items-center gap-2">
+              <strong>ID:</strong> {task.id}
+            </div>
+            <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
               <strong>Due:</strong>{" "}
               {task.dueDate ? task.dueDate.slice(0, 10) : "-"}
@@ -137,7 +99,7 @@ const TaskPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <Building className="w-4 h-4 text-gray-500" />
-              <strong>Organization:</strong> {task.organizationId}
+              <strong>OrganizationID:</strong> {task.organizationId}
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
@@ -180,4 +142,4 @@ const TaskPage: React.FC = () => {
   );
 };
 
-export default TaskPage;
+export default TaskDetailModal;

@@ -14,14 +14,13 @@ import type {
   TaskPayload,
 } from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import TaskDetailModal from "./Task";
 
 type StatusFilter = "all" | TaskStatus;
 type PriorityFilter = "all" | TaskPriority;
 type DueDateFilter = "all" | "past30" | "past7" | "today" | "next7" | "next30";
 
 const Tasks: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -34,6 +33,7 @@ const Tasks: React.FC = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+  const [showTaskDetail, setShowTaskDetail] = useState(false);
 
   // Load tasks
   useEffect(() => {
@@ -219,7 +219,7 @@ const Tasks: React.FC = () => {
         </div>
       </div>
 
-      {/* Rest of your component unchanged */}
+      {/* Rest of component unchanged */}
       {loading ? (
         renderSkeleton()
       ) : error ? (
@@ -232,7 +232,10 @@ const Tasks: React.FC = () => {
             <div
               key={task.id}
               className="relative block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-5 border border-gray-100 overflow-hidden cursor-pointer"
-              onClick={() => navigate(`/tasks/task/${task.id}`)}
+              onClick={() => {
+                setSelectedTask(task);
+                setShowTaskDetail(true);
+              }}              
             >
               <div className="mt-3">
                 {/* Header */}
@@ -364,6 +367,18 @@ const Tasks: React.FC = () => {
           }}
         />
       )}
+
+      {/* TaskDetail Modal */}
+      {showTaskDetail && selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={() => {
+            setShowTaskDetail(false);
+            setSelectedTask(null);
+          }}
+        />
+      )}
+
 
       {/* Delete Confirmation Modal */}
       {deleteTaskId && (

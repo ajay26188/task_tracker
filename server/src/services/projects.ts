@@ -72,7 +72,7 @@ export const fetchProject = async (projectId: string, user: (IUser & Document)) 
           path: "assignedTo",
           select: "name email"
         },
-        select: "title description status assignedTo"
+    
       });
   
     if (!project) return null;
