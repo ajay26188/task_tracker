@@ -6,7 +6,7 @@ import {
   Clock,
   RefreshCcw,
   Folder,
-  Building,
+  Hash,
 } from "lucide-react";
 import type { Task } from "../../types/task";
 import type { Project } from "../../types/project";
@@ -86,7 +86,8 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
           {/* Metadata */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm text-gray-700">
             <div className="flex items-center gap-2">
-              <strong>ID:</strong> {task.id}
+                <Hash className="w-4 h-4 text-gray-500" />
+                <strong>ID:</strong> {task.id}
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
@@ -98,9 +99,10 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
               <strong>Project:</strong> {project?.name}
             </div>
             <div className="flex items-center gap-2">
-              <Building className="w-4 h-4 text-gray-500" />
-              <strong>OrganizationID:</strong> {task.organizationId}
+                <span role="img" aria-label="building">🏢</span>
+                <strong>Organization:</strong> {task.organizationId}
             </div>
+
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
               <strong>Created:</strong>{" "}
