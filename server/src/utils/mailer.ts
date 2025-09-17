@@ -15,7 +15,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   const link = `${baseUrl}/verify-email/${token}`;
 
   const payload = {
-    sender: { name: "TaskTracker", email: process.env.EMAIL_FROM }, // must be a Brevo-verified sender
+    sender: { name: "TaskTracker", email: process.env.EMAIL_FROM },
     to: [{ email }],
     subject: "Verify your TaskTracker account",
     htmlContent: `
@@ -37,8 +37,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
       },
     });
     console.log(`Verification email sent to ${email}`);
-  } catch (error: any) {
-    console.error("Failed to send verification email:", error.response?.data || error.message);
+  } catch  {
     throw new Error("Email could not be sent");
   }
 };
@@ -55,7 +54,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
   const link = `${baseUrl}/reset-password/${token}`;
 
   const payload = {
-    sender: { name: "TaskTracker", email: process.env.EMAIL_FROM }, // must be a Brevo-verified sender
+    sender: { name: "TaskTracker", email: process.env.EMAIL_FROM },
     to: [{ email }],
     subject: "Reset your TaskTracker password",
     htmlContent: `
@@ -77,8 +76,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
       },
     });
     console.log(`Password reset email sent to ${email}`);
-  } catch (error: any) {
-    console.error("Failed to send password reset email:", error.response?.data || error.message);
+  } catch  {
     throw new Error("Email could not be sent");
   }
 };
