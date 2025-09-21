@@ -6,7 +6,7 @@ import { newCommentData } from '../types/comment';
 import { newCommentParser } from '../middlewares/validateRequest';
 import { addComment, fetchAllComments, removeComment } from '../services/comments';
 import { isValidObjectId } from 'mongoose';
-import { emitCommentAdded } from '..';
+import { emitCommentAdded, emitCommentDeleted } from '..';
 
 const router = express.Router();
 
@@ -73,6 +73,9 @@ router.delete('/:id', userExtractor, async(req: AuthRequest, res: Response, next
         if (result === 'unauthorized') {
             return res.status(403).json({error: 'Unauthorized to perform this operation.'});
         }
+
+        // Notify all users in the task room about the deleted comment
+        emitCommentDeleted(result.taskId.toString(), result._id.toString());
         return res.status(204).end();
         
         

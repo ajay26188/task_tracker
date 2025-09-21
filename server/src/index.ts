@@ -31,20 +31,24 @@ const httpServer = createServer(app);
 // Initialize Socket.IO
 const io = new Server(httpServer, {
     cors: {
-      origin: "*", // update this with frontend URL in production for security
+      origin: ['http://localhost:5173', 'https://task-tracker-seven-green.vercel.app'], // two origins for dev and prod 
       methods: ["GET", "POST"],
+      credentials: true,
     },
-  });
+    
+});
 
 //use void to silence lint warning as error is handled by connectDB function
 void connectDB();
 
 app.use(express.json());
 
+// health check endpoint
 app.get('/ping', (_req, res: Response) => {
     res.send('pong');
 });
 
+// another health check endpoint for render
 app.get('/', (_req, res: Response) => {
   res.send('TaskTracker server is running');
 });
@@ -64,12 +68,18 @@ app.use(errorHandler);
 
 // SOCKET.IO CONNECTION
 io.on('connection', (socket) => {
-    console.log('🔌 New client connected:', socket.id);
+    console.log('New client connected:', socket.id);
   
     // Join task room (so only viewers of that task get updates)
     socket.on('joinTask', (taskId: string) => {
       void socket.join(taskId); // `void` to ignore returned Promise
-      console.log(`User ${socket.id} joined task ${taskId}`);
+      console.log(`User ${socket.id} joined task ${taskId} line 76`);
+    });
+
+    // Leave task room
+    socket.on('leaveTask', (taskId: string) => {
+      void socket.leave(taskId);
+      console.log(`User ${socket.id} left task ${taskId}`);
     });
 
     // Join room to receive notifications
@@ -78,20 +88,25 @@ io.on('connection', (socket) => {
       console.log(`User ${socket.id} loggen in.`);
     });
 
-    // Join project dashboard where all tasks are seen in kaban form (so only viewers of that project get updates)
+    // Join project dashboard where all tasks are seen in kanban form (so only viewers of that project get updates)
     socket.on('joinProject', (projectId: string) => {
       void socket.join(projectId); // `void` to ignore returned Promise
       console.log(`User ${socket.id} joined project ${projectId}`);
     });
   
     socket.on('disconnect', () => {
-      console.log('❌ Client disconnected:', socket.id);
+      console.log('Client disconnected:', socket.id);
     });
 });
 
 //Helper function to emit comment updates
 export const emitCommentAdded = (taskId: string, comment: ReturnedIComment) => {
     io.to(taskId).emit('commentAdded', comment);
+};
+
+//Helper function to emit comment deletion
+export const emitCommentDeleted = (taskId: string, commentId: string) => {
+  io.to(taskId).emit('commentDeleted', commentId);
 };
 
 //Helper function to emit new notification

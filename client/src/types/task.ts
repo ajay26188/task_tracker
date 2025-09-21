@@ -1,3 +1,4 @@
+import type { Project } from "./project";
 import type { User } from "./user";
 
 
@@ -13,7 +14,7 @@ export interface Task {
   dueDate?: string;
   organizationId: string,     
   assignedTo?: User[];  
-  projectId: string; 
+  projectId: Project; 
   createdAt?: string;
   updatedAt?: string;
 }
@@ -32,9 +33,11 @@ export interface TaskPayload {
   updatedAt?: string;
 }
 
+
 export interface PaginatedTasks {
   tasks: Task[];
   total: number;
   page: number;
   pages: number;
 }
+

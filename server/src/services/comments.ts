@@ -20,6 +20,7 @@ export const fetchAllComments = async(taskId: string, authenticatedUser: (IUser 
 
     //fetching all comments in reverse chat-style newest first
     const comments = await Comment.find({ taskId })
+    .populate("userId", "name")
     .sort({ createdAt: 1 }); // oldest -> newest 
 
     return comments;
@@ -82,5 +83,10 @@ export const removeComment = async(id: string, authenticatedUser: (IUser & Docum
         return 'unauthorized';
     }
 
-    return await comment.deleteOne();
+    // Copy the comment object before deleting
+    const deletedComment = comment.toObject();
+
+    await comment.deleteOne();
+
+    return deletedComment; // return the full comment object for emit event
 };

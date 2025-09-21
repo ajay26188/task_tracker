@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import {
   Calendar,
   Users,
@@ -9,8 +9,6 @@ import {
   Hash,
 } from "lucide-react";
 import type { Task } from "../../types/task";
-import type { Project } from "../../types/project";
-import { fetchProject } from "../../services/project";
 
 type TaskDetailModalProps = {
   task: Task;
@@ -18,18 +16,6 @@ type TaskDetailModalProps = {
 };
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
-  const [project, setProject] = useState<Project | null>(null);
-
-  useEffect(() => {
-    const loadProject = async () => {
-      if (task.projectId) {
-        const data = await fetchProject(task.projectId);
-        setProject(data);
-      }
-    };
-    loadProject();
-  }, [task.projectId]);
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-y-auto max-h-[90vh]">
@@ -96,7 +82,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
             </div>
             <div className="flex items-center gap-2">
               <Folder className="w-4 h-4 text-gray-500" />
-              <strong>Project:</strong> {project?.name}
+              <strong>Project:</strong> {task.projectId.name}
             </div>
             <div className="flex items-center gap-2">
                 <span role="img" aria-label="building">🏢</span>

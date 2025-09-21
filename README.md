@@ -48,6 +48,7 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Error handling & response conventions
 - Email verification: send verification link on signup, verify token to activate user
 - Password reset: request reset link via email, reset password using secure token
+- **Real-time task comments**: add, view, and delete comments instantly using Socket.IO with auto-scroll and selected comment highlighting
 
 ---
 
@@ -70,7 +71,8 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Adding **database seeding scripts**: improved understanding of generating realistic demo data for users, projects, and tasks, which sped up testing and development.  
 - Using Zod schemas to enforce strict validation and reduce runtime errors.  
 - Designing CI/CD pipelines to simulate real-world team workflows.  
-- Debugging and fixing cold start issues on Vercel by introducing uptime strategies. 
+- Debugging and fixing cold start issues on Vercel by introducing uptime strategies.
+- Midway, Render’s free tier blocked SMTP emails — solved it by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
 
 
 

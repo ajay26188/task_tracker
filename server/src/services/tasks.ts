@@ -3,7 +3,7 @@ import Task from "../models/task";
 import User from "../models/user";
 import { ITask, newTaskData, Priority, Status, updateTaskData } from "../types/task";
 import { IUser, Role } from "../types/user";
-import { Document, FilterQuery, Types } from "mongoose";
+import mongoose, { Document, FilterQuery, Types } from "mongoose";
 import Comment from '../models/comment';
 import Notification from "../models/notification";
 import { emitNewNotification, emitTaskStatusUpdate } from "..";
@@ -24,9 +24,18 @@ export const fetchTasksByOrg = async (
   
     const query: FilterQuery<ITask> = { organizationId: orgId };
   
-    // Search by title
+    // Search by title or _id
     if (search) {
-      query.title = { $regex: search, $options: "i" };
+      const conditions: { title?: { $regex: string; $options: string }; _id?: mongoose.Types.ObjectId }[] = [
+          { title: { $regex: search, $options: "i" } }
+      ];
+  
+      // If search looks like a valid ObjectId, also search by _id
+      if (mongoose.Types.ObjectId.isValid(search)) {
+          conditions.push({ _id: new mongoose.Types.ObjectId(search) });
+      }
+  
+      query.$or = conditions;
     }
   
     // Filter by status
@@ -80,6 +89,7 @@ export const fetchTasksByOrg = async (
     const [tasks, total] = await Promise.all([
       Task.find(query)
         .populate("assignedTo", "name email")
+        .populate("projectId", "name")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -108,7 +118,20 @@ export const fetchAssignedTasks = async (
   
     const query: FilterQuery<ITask> = { assignedTo: { $in: [userId] } };
   
-    if (search) query.title = { $regex: search, $options: "i" };
+    // Search by title or _id
+    if (search) {
+      const conditions: { title?: { $regex: string; $options: string }; _id?: mongoose.Types.ObjectId }[] = [
+          { title: { $regex: search, $options: "i" } }
+      ];
+  
+      // If search looks like a valid ObjectId, also search by _id
+      if (mongoose.Types.ObjectId.isValid(search)) {
+          conditions.push({ _id: new mongoose.Types.ObjectId(search) });
+      }
+  
+      query.$or = conditions;
+    }
+
     if (status && status !== Status.All) query.status = status;
     if (priority && priority !== Priority.All) query.priority = priority;
   
@@ -152,6 +175,7 @@ export const fetchAssignedTasks = async (
     const [tasks, total] = await Promise.all([
       Task.find(query)
         .populate("assignedTo", "name email")
+        .populate("projectId", "name")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -168,7 +192,7 @@ export const fetchAssignedTasks = async (
   
 //Fetching a single task 
 export const fetchSingleTask = async(taskId: string, authenticatedUser: (IUser & Document)) => {
-    const task = await Task.findById(taskId).populate("assignedTo", "name email");
+    const task = await Task.findById(taskId).populate("assignedTo", "name email").populate("projectId", "name");
 
     if (!task) return null;
 

@@ -6,7 +6,6 @@ import {
   FolderKanban,
   CheckSquare,
   MessageSquare,
-  BarChart3,
   Settings,
   Bell,
   LogOut
@@ -49,14 +48,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       { label: "Projects", icon: <FolderKanban size={18} />, href: "/projects" },
       { label: "Tasks", icon: <CheckSquare size={18} />, href: "/tasks" },
       { label: "Comments", icon: <MessageSquare size={18} />, href: "/comments" },
-      { label: "Reports", icon: <BarChart3 size={18} />, href: "/reports" },
     ]
   : [
       { label: "Dashboard", icon: <LayoutDashboard size={18} />, href: "/dashboard" },
       { label: "My Tasks", icon: <CheckSquare size={18} />, href: "/tasks" },
       { label: "My Projects", icon: <FolderKanban size={18} />, href: "/projects" },
       { label: "Comments", icon: <MessageSquare size={18} />, href: "/comments" },
-      { label: "Reports", icon: <BarChart3 size={18} />, href: "/reports" },
     ];
 
 

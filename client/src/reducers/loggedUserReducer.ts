@@ -3,6 +3,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export type User = {
+  id: string,
   name: string;
   email: string;
   role: "admin" | "user";

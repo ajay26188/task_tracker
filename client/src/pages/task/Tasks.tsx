@@ -151,7 +151,7 @@ const Tasks: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            placeholder="🔍 Search tasks by title..."
+            placeholder="🔍 Search tasks by title or id..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="min-w-[250px] sm:min-w-[300px] border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -348,7 +348,7 @@ const Tasks: React.FC = () => {
       {showTaskModal && selectedTask && (
         <TaskModal
           task={selectedTask}
-          projectId={selectedTask.projectId}
+          projectId={selectedTask.projectId.id}
           orgId={selectedTask.organizationId}
           onClose={() => {
             setShowTaskModal(false);
