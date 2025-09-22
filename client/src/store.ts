@@ -3,11 +3,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import alertMessageReducer from "./reducers/alertMessageReducer";
 import loggedUserReducer from "./reducers/loggedUserReducer";
+import notificationReducer  from "./reducers/notificationReducer";
 
 const store = configureStore({
     reducer: {
         alertMessage: alertMessageReducer,
-        user: loggedUserReducer
+        user: loggedUserReducer,
+        notifications: notificationReducer
     }
 })
 

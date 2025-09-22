@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
     // Join room to receive notifications
     socket.on('loggedInUser', (userId: string) => {
       void socket.join(userId); // `void` to ignore returned Promise
-      console.log(`User ${socket.id} loggen in.`);
+      console.log(`User ${socket.id} logged in. line 88`);
     });
 
     // Join project dashboard where all tasks are seen in kanban form (so only viewers of that project get updates)

@@ -8,8 +8,10 @@ const router = express.Router();
 
 // GET /api/notifications – List user’s notifications
 router.get('/', userExtractor, async(req: AuthRequest, res: Response, next: NextFunction) => {
+    const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
     try {
-        const result = await fetchAllNotifications(req.user!);
+        const result = await fetchAllNotifications(req.user!, page, limit);
         
         return res.status(200).json(result);
     } catch (error) {

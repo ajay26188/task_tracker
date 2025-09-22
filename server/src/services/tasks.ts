@@ -303,27 +303,53 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
         };
         
         if (Array.isArray(assignedTo)) {
-            // validate all new assignees first
-            for (const userId of assignedTo) {
-              const assignedToUser = await User.findById(userId);
-              if (!assignedToUser) continue; // skip invalid users
-          
-              if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
-                return 'unauthorized';
-              }
+          // validate all new assignees first
+          for (const userId of assignedTo) {
+            const assignedToUser = await User.findById(userId);
+            if (!assignedToUser) continue;
+        
+            if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
+              return 'unauthorized';
             }
-          
-            // Replace the array instead of pushing
-            task.assignedTo = assignedTo;
-          
-            // Notify all assignees about the updated assignment list
-            assignedTo.forEach(uid => {
+          }
+        
+          const oldAssignees = task.assignedTo.map(uid => uid.toString());
+          const newAssignees = assignedTo.map(uid => uid.toString());
+        
+          // Find differences
+          const added = newAssignees.filter(uid => !oldAssignees.includes(uid));
+          const removed = oldAssignees.filter(uid => !newAssignees.includes(uid));
+        
+          // Update task
+          task.assignedTo = assignedTo;
+        
+          // Notify added users
+          added.forEach(uid => {
+            notifications.push({
+              message: `You have been assigned to task "${task.title}".`,
+              userId: uid,
+            });
+          });
+        
+          // Notify removed users
+          removed.forEach(uid => {
+            notifications.push({
+              message: `You have been removed from task "${task.title}".`,
+              userId: uid,
+            });
+          });
+        
+          // Optional: Notify everyone else that the assignees list changed
+          newAssignees.forEach(uid => {
+            if (!added.includes(uid)) {
               notifications.push({
                 message: `Task "${task.title}" assignees have been updated.`,
-                userId: uid.toString()
+                userId: uid,
               });
-            });
-          }
+            }
+          });
+        }
+        
           
            
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PaginatedTasks, Task } from "../../types/task";
 import { useAuth } from "../../context/AuthContext";
 import { fetchTasksByOrg, fetchTasksByUser } from "../../services/task";
@@ -15,6 +15,7 @@ const Comments = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const limit = 9;
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   const loadTasks = useCallback(
     async (currentPage: number, append = false) => {
@@ -23,7 +24,12 @@ const Comments = () => {
       try {
         const data: PaginatedTasks =
           user.role === "admin"
-            ? await fetchTasksByOrg(user.organizationId, currentPage, limit, search)
+            ? await fetchTasksByOrg(
+                user.organizationId,
+                currentPage,
+                limit,
+                search
+              )
             : await fetchTasksByUser(currentPage, limit, search);
 
         setTasks((prev) => (append ? [...prev, ...data.tasks] : data.tasks));
@@ -41,30 +47,39 @@ const Comments = () => {
     setPage(1);
     loadTasks(1);
   }, [loadTasks]);
-  
+
   // Auto-select first task when tasks are loaded
   useEffect(() => {
     if (tasks.length > 0 && !selectedTask) {
       setSelectedTask(tasks[0]);
     }
   }, [tasks, selectedTask]);
-  
 
-  const handleLoadMore = () => {
-    if (page < pages) {
+  const handleLoadMore = async () => {
+    if (page < pages && listRef.current) {
+      const prevScroll = listRef.current.scrollTop;
+      const prevHeight = listRef.current.scrollHeight;
+
       const nextPage = page + 1;
       setPage(nextPage);
-      loadTasks(nextPage, true);
+      await loadTasks(nextPage, true);
+
+      requestAnimationFrame(() => {
+        if (listRef.current) {
+          const newHeight = listRef.current.scrollHeight;
+          listRef.current.scrollTop = prevScroll + (newHeight - prevHeight);
+        }
+      });
     }
   };
 
   return (
     <div className="flex h-screen">
-      {/* LEFT: Task List */}
+      {/* LEFT: Task List (for comments) */}
       <aside className="w-96 flex flex-col bg-gray-50 border-r shadow-inner">
         <div className="p-5 border-b bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex flex-col gap-3">
           <h2 className="text-2xl font-bold">Comments</h2>
-          <p className="text-sm opacity-90">Stay connected with your tasks</p>
+          <p className="text-sm opacity-90">Find tasks and view discussions</p>
           <input
             type="text"
             placeholder="🔍 Search tasks by title or ID..."
@@ -74,7 +89,10 @@ const Comments = () => {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div
+          ref={listRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
           {loading &&
             [...Array(5)].map((_, i) => (
               <div
@@ -92,33 +110,34 @@ const Comments = () => {
             <p className="text-gray-400 text-sm">No tasks found.</p>
           )}
 
-        {!loading &&
-        tasks.map((task) => {
-            const isSelected = selectedTask?.id === task.id;
-            return (
-            <div
-                key={task.id}
-                onClick={() => setSelectedTask(task)}
-                className={`p-4 rounded-lg shadow-sm border-l-4 cursor-pointer transition hover:shadow-md
-                ${task.status === "done" ? "border-green-400" :
-                    task.status === "in-progress" ? "border-blue-400" :
-                    "border-gray-300"}
-                ${isSelected ? "bg-indigo-100 border-indigo-500" : "bg-white"}
-                `}
-            >
-                <h4 className="text-gray-800 font-semibold">{task.title}</h4>
-                <p className="text-xs text-gray-500 mt-1">ID: {task.id}</p>
-            </div>
-            );
-        })}
-
+          {!loading &&
+            tasks.map((task) => {
+              const isSelected = selectedTask?.id === task.id;
+              return (
+                <div
+                  key={task.id}
+                  onClick={() => setSelectedTask(task)}
+                  className={`p-4 rounded-lg shadow-sm border-l-4 cursor-pointer transition hover:shadow-md
+                    ${task.status === "done"
+                      ? "border-green-400"
+                      : task.status === "in-progress"
+                      ? "border-blue-400"
+                      : "border-gray-300"}
+                    ${isSelected ? "bg-indigo-100 border-indigo-500" : "bg-white"}
+                  `}
+                >
+                  <h4 className="text-gray-800 font-semibold">{task.title}</h4>
+                  <p className="text-xs text-gray-500 mt-1">ID: {task.id}</p>
+                </div>
+              );
+            })}
 
           {!loading && page < pages && tasks.length > 0 && (
             <button
               onClick={handleLoadMore}
               className="w-full py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition"
             >
-              Load More Tasks
+              Load More
             </button>
           )}
         </div>

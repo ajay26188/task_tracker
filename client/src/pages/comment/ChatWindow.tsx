@@ -40,6 +40,7 @@ const ChatWindow = ({ task }: ChatWindowProps) => {
   // Socket listeners
   useEffect(() => {
     socket.on("commentAdded", (newComment: Comment) => {
+      console.log("📩 Got new notification raw:", newComment);
       if (newComment.taskId === task.id) {
         setComments((prev) => [
           ...prev,

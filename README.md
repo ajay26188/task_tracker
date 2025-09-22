@@ -4,23 +4,11 @@
 
 ---
 
-## Project Status: In Progress
+## 📌 Project Status: In Progress (~175 hours logged so far)
 
-- **Backend**: Development is well underway (~165 hours logged so far).  
-  - Authentication system implemented  
-  - Organization-specific task/project APIs functional  
-  - Role-based access control active  
-  - Project creation/updating with start/end date validation, past date prevention, and robust error handling
-
-- **Frontend**: Live and integrated with backend authentication.  
-  - Secure login enabled  
-  - Users can access backend data through the UI
-  - Admins can create/update projects with fields, validations, loading states, and Redux alert messages  
-
+- **Backend**: Completed.  
+- **Frontend**: Live and integrated with backend authentication. In progress.. 
 - **CI/CD**: Automated pipelines configured.  
-  - Backend deployed on **Render**  
-  - Frontend deployed on **Vercel**  
-  - Deployments only trigger after successful CI checks
 
 You can track my development log here: [working_hours.md](./working_hours.md)
 
@@ -37,45 +25,69 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ## 🔧 Features Built So Far
 
-- Auth system with JWT + role-based middleware
-- Organizations: data isolation per company
-- Project creation APIs
-- Task creation routes
-- Query-based filtering (e.g., `GET /api/tasks?projectId=...`)
-- Pagination implemented for tasks (organization-wide and assigned tasks) to improve scalability and UX
-- Database seeding scripts added for projects, users, and tasks with realistic demo data
-- Zod validation schemas
-- Error handling & response conventions
-- Email verification: send verification link on signup, verify token to activate user
-- Password reset: request reset link via email, reset password using secure token
-- **Real-time task comments**: add, view, and delete comments instantly using Socket.IO with auto-scroll and selected comment highlighting
+### **Frontend (React + Redux Toolkit + TypeScript)**  
+- Secure login with JWT auth flow  
+- Role-based UI (admins can create/update projects)  
+- Project creation & update forms with:  
+  - Validation  
+  - Loading states  
+  - Redux-powered alert messages  
+- **Real-time notifications**:  
+  - Socket.IO listener integrated into Redux via thunks  
+  - Bell icon indicator with unread badge  
+  - Mark single/all as read  
+  - Pagination for notification history  
+- Task pagination (organization-wide & assigned tasks)  
+- Real-time comments on tasks with auto-scroll and highlight  
+
+### **Backend (Node.js + Express + MongoDB + Mongoose)**  
+- Auth system with JWT + role-based middleware  
+- Organization-based isolation of data  
+- Project APIs with start/end date validation, past-date prevention  
+- Task APIs with query-based filtering (`?projectId=...`) and pagination  
+- **Notification system (real-time)**:  
+  - Triggered on task updates (status, title, priority, due date, assignee changes)  
+  - Personalized messages (*“You were removed from task X”*, *“Priority changed to High”*, etc.)  
+  - Stored in MongoDB for persistence  
+- Database seeding for users, projects, tasks with realistic demo data  
+- Email verification (signup) + password reset (via secure token links)  
+- Zod validation schemas for all critical endpoints  
+- Centralized error middleware with consistent JSON responses  
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React + TypeScript  
-- **State Management:** Redux Toolkit (typed store, slices, and a global notification system for login/signup)  
-- **Backend:** Node.js, Express  
-- **Database:** MongoDB + Mongoose  
-- **Validation:** Zod (schema-based input validation on signup/login)  
-- **Authentication:** JWT (with access control for protected routes)  
-- **Email Service:** Nodemailer (for sending verification and password reset emails)  
-- **Error Handling:** Centralized backend error middleware + Redux-powered frontend alerts  
+- **Frontend:** React + TypeScript, Redux Toolkit (slices, thunks, reducers)  
+- **Backend:** Node.js, Express, MongoDB, Mongoose  
+- **Real-Time:** Socket.IO (comments + notifications)  
+- **Validation:** Zod  
+- **Auth:** JWT with role-based middleware  
+- **Email Service:** Nodemailer + Brevo (for verification & password reset)  
+- **CI/CD:** GitHub Actions → Render (backend), Vercel (frontend)  
 - **Dev Tools:** ESLint, TypeScript, Nodemon  
 
-### Challenges & Learnings
+---
+
+## 📚 Challenges & Learnings
 - Balancing API flexibility with consistent contracts.  
 - Ensuring organization-based isolation early for scalability.  
 - Implementing **pagination** for tasks: learned how to efficiently fetch and display data page by page, and integrate it smoothly with frontend state.  
 - Adding **database seeding scripts**: improved understanding of generating realistic demo data for users, projects, and tasks, which sped up testing and development.  
 - Using Zod schemas to enforce strict validation and reduce runtime errors.  
 - Designing CI/CD pipelines to simulate real-world team workflows.  
-- Debugging and fixing cold start issues on Vercel by introducing uptime strategies.
-- Midway, Render’s free tier blocked SMTP emails — solved it by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
+- Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
+- Render’s free tier blocked SMTP emails midway — solved by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
 
+---
 
+## 📍 Roadmap (Upcoming Features)
 
+- Drag-and-drop **Kanban board** for tasks  
+- File upload support in tasks/projects  
+- Dashboard with analytics and progress charts  
+- Dark mode toggle  
+- User profile settings  
+- Advanced role management  
 
-
-
+---

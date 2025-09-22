@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { createTask, updateTask } from "../../services/task";
-import type { Task } from "../../types/task";
+import type { Task, TaskPayload } from "../../types/task";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store";
@@ -94,29 +94,56 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+  
     try {
-      const payload = {
-        ...form,
-        assignedTo: form.assignedTo.map(u => u.id), // send only IDs to backend
-        projectId,
-      };
-
-      const saved = task
-        ? await updateTask(task.id, payload)
-        : await createTask(payload);
-
-      onSuccess(saved);
+      if (task) {
+        // --- EDIT TASK (PATCH) ---
+        const payload: Partial<TaskPayload> = {};
+  
+        if (form.title !== task.title) payload.title = form.title;
+        if (form.description !== task.description) payload.description = form.description;
+        if (form.status !== task.status) payload.status = form.status;
+        if (form.priority !== task.priority) payload.priority = form.priority;
+        if (form.dueDate !== task.dueDate?.slice(0, 10)) payload.dueDate = form.dueDate;
+        if (
+          JSON.stringify(form.assignedTo.map(u => u.id)) !==
+          JSON.stringify(task.assignedTo!.map(u => u.id))
+        ) {
+          payload.assignedTo = form.assignedTo.map(u => u.id);
+        }
+  
+        // Only send payload if there's any change
+        if (Object.keys(payload).length > 0) {
+          const updated = await updateTask(task.id, payload);
+          onSuccess(updated);
+        }
+  
+      } else {
+        // --- CREATE NEW TASK ---
+        const payload = {
+          ...form,
+          assignedTo: form.assignedTo.map(u => u.id),
+          projectId,
+        };
+  
+        const created = await createTask(payload);
+        onSuccess(created);
+      }
+  
       onClose();
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         dispatch(
           alertMessageHandler({ message: error.response.data.error, type: "error" }, 5)
         );
+      } else {
+        console.error("Unknown error:", error);
       }
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">

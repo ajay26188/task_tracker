@@ -25,6 +25,7 @@ export const loginService = async(email: string, password: string) => {
     const token = jwt.sign(userForToken, SECRET);
 
     return {
+        id: user._id.toString(),
         email: user.email, 
         name: user.name, 
         role: user.role,

@@ -60,6 +60,8 @@
 | 16.09  | Added database seeding scripts for projects, users, and tasks with realistic data for demo purposes. | 4h |
 | 16.09  | Implemented backend + frontend pagination for tasks (org-wide and assigned tasks) to improve scalability and UX. | 3h |
 | 17.09 | Switched Brevo integration from SMTP to HTTPS to stay compatible with Render’s free tier. | 1h |
-| 17.09 | Added real-time comments for tasks using Socket.IO with add/delete functionality, auto-scroll, and selected comment highlighting. | 5h |
-| 21.09  | Total hours | 170.5h |
+| 21.09 | Added real-time comments for tasks using Socket.IO with add/delete functionality, auto-scroll, and selected comment highlighting. | 5h |
+| 22.09 | Implemented real-time notifications feature with notificationReducer and bell icon badge. | 5h |
+| 22.09 | Debugging real-time notifications sicket.io issues. | 2h |
+| 21.09  | Total hours | 177.5h |
 
