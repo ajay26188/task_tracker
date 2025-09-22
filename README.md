@@ -1,13 +1,13 @@
 # TaskTracker 🗂️
 
-**TaskTracker** is a modern, full-stack project management app designed for teams to collaborate, assign tasks, and track progress — built with a focus on scalability and clean architecture.
+**TaskTracker** is a modern, full-stack project management app designed for teams to collaborate, assign tasks, and track progress.
 
 ---
 
 ## 📌 Project Status: In Progress (~175 hours logged so far)
 
 - **Backend**: Completed.  
-- **Frontend**: Live and integrated with backend authentication. In progress.. 
+- **Frontend**: In progress.. 
 - **CI/CD**: Automated pipelines configured.  
 
 You can track my development log here: [working_hours.md](./working_hours.md)
@@ -78,16 +78,5 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Designing CI/CD pipelines to simulate real-world team workflows.  
 - Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
 - Render’s free tier blocked SMTP emails midway — solved by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
-
----
-
-## 📍 Roadmap (Upcoming Features)
-
-- Drag-and-drop **Kanban board** for tasks  
-- File upload support in tasks/projects  
-- Dashboard with analytics and progress charts  
-- Dark mode toggle  
-- User profile settings  
-- Advanced role management  
 
 ---

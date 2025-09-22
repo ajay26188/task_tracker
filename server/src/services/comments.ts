@@ -63,7 +63,13 @@ export const addComment = async(data: newCommentData, authenticatedUser: (IUser 
             userId: uid.toString()
           });
         }
-      });      
+      });   
+      
+      //Also notify admins
+      notifications.push({
+        message: `A new message received in Task "${task.title}".`,
+        userId: task.createdBy.toString()
+      });
 
     // Save + emit notifications
     for (const notif of notifications) {
