@@ -85,7 +85,52 @@ const Users = () => {
     }
   };
 
-  if (loading) return <p className="p-6">Loading users...</p>;
+  if (loading)
+  return (
+    <div className="p-6 max-w-9xl mx-auto animate-pulse">
+      {/* Heading Skeleton */}
+      <div className="h-10 bg-gray-200 rounded w-1/4 mb-6"></div>
+
+      {/* Search Box Skeleton */}
+      <div className="h-10 bg-gray-200 rounded w-full max-w-md mb-6"></div>
+
+      {/* Table Skeleton */}
+      <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200 w-full">
+        <table className="w-full">
+          <thead>
+            <tr>
+              {Array(5)
+                .fill(0)
+                .map((_, idx) => (
+                  <th
+                    key={idx}
+                    className="px-8 py-4 bg-gray-100 rounded text-left text-base font-bold text-gray-300"
+                  >
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  </th>
+                ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array(5)
+              .fill(0)
+              .map((_, rowIdx) => (
+                <tr key={rowIdx} className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  {Array(5)
+                    .fill(0)
+                    .map((_, colIdx) => (
+                      <td key={colIdx} className="px-8 py-5">
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      </td>
+                    ))}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
 
   // Sorting: first by first name, then by last name
   const sortedUsers = [...users].sort((a, b) => {
