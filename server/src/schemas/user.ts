@@ -18,10 +18,15 @@ export const createUserSchema = z.object({
     organizationId: z.string().regex(objectIdRegex, 'Invalid organizationId format.'),
 });
 
-export const updateUserSchema = z.object({
-    name: z.string(),
-    email: z.email('Invalid email format.'),
-    password: z
+export const updatePasswordSchema = z.object({
+    oldPassword: z
+        .string()
+        .min(6, { message: "Password must be at least 6 characters long." })
+        .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must include upper, lower, number'
+        ),
+    newPassword: z
         .string()
         .min(6, { message: "Password must be at least 6 characters long." })
         .regex(

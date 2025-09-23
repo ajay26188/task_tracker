@@ -17,7 +17,7 @@ export const getAllUsers = async (orgId: string, search?: string): Promise<IUser
     query.name = { $regex: search, $options: "i" }; // contains search, case-insensitive
   }
 
-  return await User.find(query).select("id name email");
+  return await User.find(query).select("id name email role");
 };
 
 export const addUser = async(data: newUserData) => {
@@ -69,32 +69,43 @@ export const verifyUserEmail = async (token: string) => {
     return user;
   };
 
-export const removeUser = async(id: string) => {
+  export const removeUser = async (
+    id: string, 
+    authenticatedUser: (IUser & Document)
+  ) => {
     const user = await User.findById(id);
-
+  
     if (!user) return null;
 
-    return await user.deleteOne();
-};
-
-export const updateUser = async (user: (IUser & Document), updates: {
-    name?: string;
-    email?: string;
-    password?: string;
-  }) => {
-    const { name, email, password } = updates;
-  
-    if (name) user.name = name;
-    if (email) user.email = email;
-  
-    if (password) {
-      const saltRounds = 10;
-      user.password = await bcrypt.hash(password, saltRounds);
+    if (authenticatedUser.role !== Role.Admin && authenticatedUser.id === user.id) {
+      await user.deleteOne();
+      return "deleted";
     }
+  
+    if (authenticatedUser.role === Role.Admin) {
+      await user.deleteOne();
+      return "deleted";
+    }
+  
+    return "unauthorized";
+  };
+  
+
+  export const updatePassword = async (
+    user: IUser & Document,
+    updates: { oldPassword: string; newPassword?: string }
+  ) => {
+    const { oldPassword, newPassword } = updates;
+  
+    const correctPassword = await bcrypt.compare(oldPassword, user.password);
+    if (!correctPassword) return "incorrect password";
+  
+    const saltRounds = 10;
+    user.password = await bcrypt.hash(newPassword!, saltRounds);
   
     return await user.save();
 };
-
+  
 export const updateRoleOfUser = async (id: string, updates: {
     role: Role
   }, admin: (IUser & Document)) => {

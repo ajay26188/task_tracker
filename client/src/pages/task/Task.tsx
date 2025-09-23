@@ -16,6 +16,7 @@ type TaskDetailModalProps = {
 };
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ task, onClose }) => {
+  console.log(task);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-y-auto max-h-[90vh]">

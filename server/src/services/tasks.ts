@@ -339,7 +339,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
             });
           });
         
-          // Optional: Notify everyone else that the assignees list changed
+          // Notify everyone else that the assignees list changed
           newAssignees.forEach(uid => {
             if (!added.includes(uid)) {
               notifications.push({
@@ -350,9 +350,6 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
           });
         }
         
-          
-           
-
         if (priority) {
             task.priority = priority;
             task.assignedTo.forEach(uid => {

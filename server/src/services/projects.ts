@@ -64,16 +64,22 @@ export const updateProject = async (projectId: string, updates: newProjectData, 
 };
 
 export const fetchProject = async (projectId: string, user: (IUser & Document)) => {
-    const project = await Project.findById(projectId)
-      .populate("createdBy", "name")
-      .populate({
-        path: "tasks",
-        populate: {
-          path: "assignedTo",
-          select: "name email"
-        },
-    
-      });
+  const project = await Project.findById(projectId)
+  .populate("createdBy", "name")
+  .populate({
+    path: "tasks",
+    populate: [
+      {
+        path: "assignedTo",
+        select: "name email",
+      },
+      {
+        path: "projectId", // populate the project reference from task
+        select: "name",   // only fetch project name
+      },
+    ],
+  });
+
   
     if (!project) return null;
   

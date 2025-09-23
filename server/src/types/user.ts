@@ -38,7 +38,10 @@ export interface LoginData {
   password: string;
 }
 
-export type updateUserData = Omit<IUser, "role" | "organizationId">;
+export interface updatePasswordData {
+  oldPassword: string,
+  newPassword: string
+}
 
 export interface updateRole {
   role: Role;

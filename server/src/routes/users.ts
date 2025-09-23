@@ -1,9 +1,9 @@
 // /routes/users.ts
 
 import express, {NextFunction, Request, Response} from 'express';
-import { newUserParser, passwordResetParser, updateRoleParser, updateUserParser } from './../middlewares/validateRequest';
-import { newUserData, updateUserData, updateRole, emailVerification, resetPassword } from '../types/user';
-import { addUser, getAllUsers, removeUser, updateRoleOfUser, updateUser, verifyUserEmail } from '../services/users';
+import { newUserParser, passwordResetParser, updatePasswordParser, updateRoleParser } from './../middlewares/validateRequest';
+import { newUserData, updateRole, emailVerification, resetPassword, updatePasswordData } from '../types/user';
+import { addUser, getAllUsers, removeUser, updatePassword, updateRoleOfUser, verifyUserEmail } from '../services/users';
 import { Types } from 'mongoose';
 import { adminStatus, userExtractor } from '../middlewares/auth';
 import { AuthRequest } from '../middlewares/auth';
@@ -65,34 +65,51 @@ router.get("/verify/:token", async (req: Request, res: Response, next: NextFunct
   }
 });
 
-// Deleting a user only possible by the admin
-router.delete('/:id', adminStatus, async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const result = await removeUser(req.params.id);
+// Deleting all users possible by admin but normal users can only delete themselves
+router.delete('/:id', userExtractor, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const result = await removeUser(req.params.id, req.user!);
 
-        if (!result) {
-            return res.status(404).json({error: 'User not found.'});
-        }
-        return res.status(204).end();
-    } catch (error) {
-        return next(error);
+    if (result === null) {
+      return res.status(404).json({ error: 'User not found.' });
     }
+
+    if (result === "unauthorized") {
+      return res.status(403).json({ error: 'Unauthorized action.' });
+    }
+
+    return res.status(204).end();
+  } catch (error) {
+    return next(error);
+  }
 });
 
-//updating user's info as an user
-router.put('/:id', userExtractor, updateUserParser, async(req: AuthRequest<updateUserData>, res: Response, next: NextFunction) => {
+
+//updating user's password
+router.patch(
+  "/:id",
+  userExtractor,
+  updatePasswordParser,
+  async (req: AuthRequest<updatePasswordData>, res: Response, next: NextFunction) => {
     try {
+      // User can only change their own password
       if (req.user?.id !== req.params.id) {
-        return res.status(403).json({ error: 'Unauthorized to perform this operation.' });
+        return res.status(403).json({ error: "Unauthorized to perform this operation." });
       }
-  
-      const updatedUser = await updateUser(req.user, req.body);
-      return res.json(updatedUser);
-      
+
+      const result = await updatePassword(req.user, req.body);
+
+      if (result === "incorrect password") {
+        return res.status(403).json({ error: "Old password is incorrect." });
+      }
+
+      return res.json({ message: "Password updated successfully." });
     } catch (error) {
       return next(error);
     }
-});
+  }
+);
+
 
 //To change role of an user
 // PATCH /api/users/:id/role

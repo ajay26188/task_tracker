@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import { createOrganizationSchema } from "../schemas/organization";
-import { createUserSchema, passwordResetSchema, updateRoleSchema, updateUserSchema } from "../schemas/user";
+import { createUserSchema, passwordResetSchema, updateRoleSchema, updatePasswordSchema } from "../schemas/user";
 import { loginSchema } from "../schemas/login";
 import { createProjectSchema } from "../schemas/project";
 import { createTaskSchema, updateTaskSchema } from "../schemas/task";
@@ -26,9 +26,9 @@ export const newUserParser = (req: Request, _res: Response, next: NextFunction) 
     }
 };
 
-export const updateUserParser = (req: Request, _res: Response, next: NextFunction) => {
+export const updatePasswordParser = (req: Request, _res: Response, next: NextFunction) => {
     try {
-        updateUserSchema.parse(req.body);
+        updatePasswordSchema.parse(req.body);
         next();
     } catch (error: unknown) {
         next(error);

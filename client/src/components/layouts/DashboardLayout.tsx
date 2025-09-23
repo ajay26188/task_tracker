@@ -6,7 +6,6 @@ import {
   FolderKanban,
   CheckSquare,
   MessageSquare,
-  Settings,
   Bell,
   LogOut,
 } from "lucide-react";
@@ -16,6 +15,7 @@ import { clearUser } from "../../reducers/loggedUserReducer";
 import { useNavigate } from "react-router-dom";
 import Notifications from "../Notifications";
 import { loadNotifications } from "../../reducers/notificationReducer";
+import PersonalProfileModal from "../../pages/PersonalProfile";
 
 type NavItem = {
   label: string;
@@ -30,6 +30,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const [active, setActive] = useState("Dashboard");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   // fetch notifications once when dashboard mounts
   useEffect(() => {
@@ -168,18 +169,16 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 mt-2 w-48 bg-white border shadow rounded-lg overflow-hidden"
                   >
-                    <a href="#" className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                      <Users size={16} /> Profile
-                    </a>
-                    <a href="#" className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                      <Settings size={16} /> Account Settings
-                    </a>
-                    <button className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100">
-                      🌙 Theme
-                    </button>
-                    <a href="#" className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                      ❓ Help
-                    </a>
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      // open profile modal
+                      setProfileModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <Users size={16} /> Profile
+                  </button>
                     <button
                       onClick={handleLogOut}
                       className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
@@ -190,6 +189,10 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 )}
               </AnimatePresence>
             </div>
+            <PersonalProfileModal
+                    isOpen={profileModalOpen}
+                    onClose={() => setProfileModalOpen(false)}
+                  />
           </div>
         </header>
 

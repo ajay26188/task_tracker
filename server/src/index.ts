@@ -111,7 +111,6 @@ export const emitCommentDeleted = (taskId: string, commentId: string) => {
 
 //Helper function to emit new notification
 export const emitNewNotification = (userId: string, notification: ReturnedINotification) => {
-  console.log(userId);
   io.to(userId).emit('newNotification', notification);
 };
 

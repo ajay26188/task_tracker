@@ -17,6 +17,7 @@ import Projects from "./pages/project/Projects";
 import ProjectPage from "./pages/project/Project";
 import Tasks from "./pages/task/Tasks";
 import Comments from "./pages/comment/Comments";
+import Users from "./pages/Users";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -90,6 +91,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Comments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Users />
             </ProtectedRoute>
           }
         />

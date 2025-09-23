@@ -91,7 +91,7 @@ const ProjectPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto space-y-10">
+      <div className="max-w-9xl mx-auto space-y-10">
         {/* Project Overview Card */}
         <div className="bg-white rounded-2xl shadow p-6 border border-gray-100">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
