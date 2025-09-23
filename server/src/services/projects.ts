@@ -8,7 +8,8 @@ import { IUser } from "../types/user";
 import { Document, Types } from "mongoose";
 
 export const fetchProjectsByOrg = async(orgId: string) => {
-    const projects = await Project.find({organizationId: orgId});
+    const projects = await Project.find({organizationId: orgId})
+    .populate("tasks", "status");
 
     return projects;
 };
@@ -104,7 +105,8 @@ export const fetchAssignedProjects = async (user: IUser & Document) => {
     if (projectIds.length === 0) return [];
   
     // Fetch only those projects
-    const projects = await Project.find({ _id: { $in: projectIds } });
+    const projects = await Project.find({ _id: { $in: projectIds } })
+    .populate("tasks", "status");
   
     return projects;
 };

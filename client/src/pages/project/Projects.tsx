@@ -85,6 +85,18 @@ const Projects: React.FC = () => {
     return <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">Active</span>;
   };
 
+  const getProjectProgress = (project: Project) => {
+    if (!project.tasks || project.tasks.length === 0) return 0;
+  
+    const doneTasks = project.tasks.filter(
+      (t) => typeof t !== "string" && t.status === "done"
+    ).length;
+    const totalTasks = project.tasks.length;
+  
+    return Math.round((doneTasks / totalTasks) * 100);
+  };
+  
+
   // Skeleton loader
   const renderSkeleton = () => (
     <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -163,6 +175,20 @@ const Projects: React.FC = () => {
                   {getStatusBadge(project)}
                 </div>
                 <p className="text-sm text-gray-500 line-clamp-3">{project.description}</p>
+
+                {/* Progress bar */}
+                <div className="mt-3">
+                  <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="h-2 bg-indigo-600 rounded-full transition-all"
+                      style={{ width: `${getProjectProgress(project)}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {getProjectProgress(project)}% completed
+                  </p>
+                </div>
+
                 <div className="mt-3 text-sm text-gray-400 flex justify-between">
                   <span>📅 {project.startDate?.slice(0, 10) || "-"}</span>
                   <span>⏰ {project.endDate?.slice(0, 10) || "-"}</span>
