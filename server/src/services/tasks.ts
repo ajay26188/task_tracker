@@ -399,7 +399,7 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
           }
       }
   } else {
-    return 'not allowed'
+    return 'not allowed';
   }
   
   await task.save();
