@@ -33,11 +33,17 @@ export interface TaskPayload {
   updatedAt?: string;
 }
 
-
 export interface PaginatedTasks {
   tasks: Task[];
   total: number;
   page: number;
   pages: number;
+}
+
+//for kanban board view
+export interface groupedTasks {
+  todo: Task[],
+  "in-progress": Task[],
+  done: Task[]
 }
 

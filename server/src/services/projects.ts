@@ -126,24 +126,26 @@ export const groupedTasks = async(projectId: string, user: (IUser & Document)) =
     // Fetch all tasks for this project
     const tasks = await Task.find({
         projectId
-    });
+    })
+    .select('status title description')
+    .populate("assignedTo", "name");
       
-
     // Group tasks by status
     const grouped: {
         todo: ReturnedITask[];
-        inProgress: ReturnedITask[];
+        "in-progress": ReturnedITask[];
         done: ReturnedITask[];
       } = {
         todo: [],
-        inProgress: [],
+        "in-progress": [],
         done: [],
       };
       
 
     for (const task of tasks) {
         if (task.status === Status.ToDo) grouped.todo.push(task);
-        else if (task.status === Status.InProgress) grouped.inProgress.push(task);
+        else if (task.status === Status.InProgress) grouped["in-progress"].push(task);
+
         else if (task.status === Status.Done) grouped.done.push(task);
     }
 

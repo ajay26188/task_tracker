@@ -4,6 +4,7 @@ import axios from "axios";
 import type { Project } from "../types/project";
 import { apiBaseUrl } from "../constants"; 
 import { authHeader } from "../utils/auth";
+import type { groupedTasks } from "../types/task";
 
 // Fetch all projects for organization (admin)
 export const fetchProjectsByOrg = async (orgId: string): Promise<Project[]> => {
@@ -38,7 +39,15 @@ export const fetchProject = async (id: string): Promise<Project> => {
   // Delete project
   export const deleteProject = async (id: string): Promise<void> => {
     await axios.delete(`${apiBaseUrl}/projects/${id}`, authHeader());
-  };
+};
+
+// Fetching tasks grouped by status (todo, in-progress, done) for a given project
+//'id' is project's id
+// kanband board view
+export const groupedTasksByProject = async (id: string): Promise<groupedTasks> => {
+  const res = await axios.get(`${apiBaseUrl}/projects/${id}/kanban`, authHeader());
+  return res.data;
+};
   
 
 

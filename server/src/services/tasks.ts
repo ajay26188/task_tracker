@@ -259,163 +259,165 @@ export const addTask = async(authenticatedUser: (IUser & Document), data: newTas
 };
 
 export const updateTask = async (user: (IUser & Document), updates: updateTaskData, taskId: string) => {
-    const task = await Task.findById(taskId);
+  const task = await Task.findById(taskId);
 
-    if (!task) return null;
+  if (!task) return null;
 
-    if (user.organizationId.toString() !== task.organizationId.toString()) {
-        return 'unauthorized';
-    }
+  if (user.organizationId.toString() !== task.organizationId.toString()) {
+      return 'unauthorized';
+  }
 
-    const { title, description, assignedTo, status, priority, dueDate } = updates;
+  const { title, description, assignedTo, status, priority, dueDate } = updates;
 
-    // If user is not admin but tries to update admin-only fields → reject early
-    if (user.role !== Role.Admin && (title || description || assignedTo || priority || dueDate)) {
-        return 'forbidden'; 
-    }
+  // If user is not admin but tries to update admin-only fields → reject early
+  if (user.role !== Role.Admin && (title || description || assignedTo || priority || dueDate)) {
+      return 'forbidden'; 
+  }
 
-    // Notifications list to send
-    const notifications: { message: string; userId: string }[] = [];
+  // Notifications list to send
+  const notifications: { message: string; userId: string }[] = [];
 
-    if (user.role === Role.Admin) {
+  if (user.role === Role.Admin) {
 
-        if (title) {
-            const oldTitle = task.title; // store old title
-            task.title = title;
-        
-            task.assignedTo.forEach(uid => {
-                notifications.push({
-                  message: `Task "${oldTitle}" has been renamed to "${title}".`,
-                  userId: uid.toString()
-                });
-            });
-        }
-         
-
-        if (description) {
-            task.description = description;
-            task.assignedTo.forEach(uid => {
-                notifications.push({
-                  message: `Task ${task.title} description has been updated.`,
-                  userId: uid.toString()
-                });
-            });
-        };
-        
-        if (Array.isArray(assignedTo)) {
-          // validate all new assignees first
-          for (const userId of assignedTo) {
-            const assignedToUser = await User.findById(userId);
-            if (!assignedToUser) continue;
-        
-            if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
-              return 'unauthorized';
-            }
-          }
-        
-          const oldAssignees = task.assignedTo.map(uid => uid.toString());
-          const newAssignees = assignedTo.map(uid => uid.toString());
-        
-          // Find differences
-          const added = newAssignees.filter(uid => !oldAssignees.includes(uid));
-          const removed = oldAssignees.filter(uid => !newAssignees.includes(uid));
-        
-          // Update task
-          task.assignedTo = assignedTo;
-        
-          // Notify added users
-          added.forEach(uid => {
-            notifications.push({
-              message: `You have been assigned to task "${task.title}".`,
-              userId: uid,
-            });
-          });
-        
-          // Notify removed users
-          removed.forEach(uid => {
-            notifications.push({
-              message: `You have been removed from task "${task.title}".`,
-              userId: uid,
-            });
-          });
-        
-          // Notify everyone else that the assignees list changed
-          newAssignees.forEach(uid => {
-            if (!added.includes(uid)) {
+      if (title) {
+          const oldTitle = task.title; // store old title
+          task.title = title;
+      
+          task.assignedTo.forEach(uid => {
               notifications.push({
-                message: `Task "${task.title}" assignees have been updated.`,
-                userId: uid,
-              });
-            }
-          });
-        }
-        
-        if (priority) {
-            task.priority = priority;
-            task.assignedTo.forEach(uid => {
-              notifications.push({
-                message: `Task "${task.title}" priority changed to ${priority}.`,
+                message: `Task "${oldTitle}" has been renamed to "${title}".`,
                 userId: uid.toString()
               });
-            });
-        };
-        
-        if (dueDate) {
-            const parsedDate = new Date(dueDate); // Ensure it's a Date object
-            task.dueDate = parsedDate;
-          
-            task.assignedTo.forEach(uid => {
+          });
+      }
+       
+
+      if (description) {
+          task.description = description;
+          task.assignedTo.forEach(uid => {
               notifications.push({
-                message: `Task "${task.title}" due date changed to ${parsedDate.toDateString()}.`,
+                message: `Task ${task.title} description has been updated.`,
                 userId: uid.toString()
               });
+          });
+      };
+      
+      if (Array.isArray(assignedTo)) {
+        // validate all new assignees first
+        for (const userId of assignedTo) {
+          const assignedToUser = await User.findById(userId);
+          if (!assignedToUser) continue;
+      
+          if (assignedToUser.organizationId.toString() !== user.organizationId.toString()) {
+            return 'unauthorized';
+          }
+        }
+      
+        const oldAssignees = task.assignedTo.map(uid => uid.toString());
+        const newAssignees = assignedTo.map(uid => uid.toString());
+      
+        // Find differences
+        const added = newAssignees.filter(uid => !oldAssignees.includes(uid));
+        const removed = oldAssignees.filter(uid => !newAssignees.includes(uid));
+      
+        // Update task
+        task.assignedTo = assignedTo;
+      
+        // Notify added users
+        added.forEach(uid => {
+          notifications.push({
+            message: `You have been assigned to task "${task.title}".`,
+            userId: uid,
+          });
+        });
+      
+        // Notify removed users
+        removed.forEach(uid => {
+          notifications.push({
+            message: `You have been removed from task "${task.title}".`,
+            userId: uid,
+          });
+        });
+      
+        // Notify everyone else that the assignees list changed
+        newAssignees.forEach(uid => {
+          if (!added.includes(uid)) {
+            notifications.push({
+              message: `Task "${task.title}" assignees have been updated.`,
+              userId: uid,
             });
           }
-          
-
-    }
-
-    let statusChanged = false;
-
-    if (task.assignedTo.some(uid => String(uid) === String(user.id)) || user.role === Role.Admin) {
-
-        if (status) {
-            task.status = status;
-            statusChanged = true;
-
-            task.assignedTo.forEach(uid => {
-                if (uid.toString() !== user.id) {
-                    notifications.push({
-                        message: `Task "${task.title}" status changed to ${status}.`,
-                        userId: uid.toString()
-                    });
-                }
+        });
+      }
+      
+      if (priority) {
+          task.priority = priority;
+          task.assignedTo.forEach(uid => {
+            notifications.push({
+              message: `Task "${task.title}" priority changed to ${priority}.`,
+              userId: uid.toString()
             });
-            if (user.role !== Role.Admin) {
-                notifications.push({
-                    message: `Task "${task.title}" status changed to ${status}.`,
-                    userId: task.createdBy.toString()
-                });
-            }
+          });
+      };
+      
+      if (dueDate) {
+          const parsedDate = new Date(dueDate); // Ensure it's a Date object
+          task.dueDate = parsedDate;
+        
+          task.assignedTo.forEach(uid => {
+            notifications.push({
+              message: `Task "${task.title}" due date changed to ${parsedDate.toDateString()}.`,
+              userId: uid.toString()
+            });
+          });
         }
-    };
-    
-    await task.save();
+        
 
-    // Emit only if status was changed for kanban board
-    if (statusChanged) {
-        emitTaskStatusUpdate(task.projectId.toString(), task);
-    }
+  }
 
-    // Save + emit notifications
-    for (const notif of notifications) {
-        const savedNotification = await Notification.create(notif);
-        emitNewNotification(notif.userId, savedNotification);
-    }
+  let statusChanged = false;
 
-    //Return populated task
-    const populatedTask = await task.populate("assignedTo", "name email");
-    return populatedTask;
+  if (task.assignedTo.some(uid => String(uid) === String(user.id)) || user.role === Role.Admin) {
+
+      if (status) {
+          task.status = status;
+          statusChanged = true;
+
+          task.assignedTo.forEach(uid => {
+              if (uid.toString() !== user.id) {
+                  notifications.push({
+                      message: `Task "${task.title}" status changed to ${status}.`,
+                      userId: uid.toString()
+                  });
+              }
+          });
+          if (user.role !== Role.Admin) {
+              notifications.push({
+                  message: `Task "${task.title}" status changed to ${status}.`,
+                  userId: task.createdBy.toString()
+              });
+          }
+      }
+  } else {
+    return 'not allowed'
+  }
+  
+  await task.save();
+
+  // Emit only if status was changed for kanban board
+  if (statusChanged) {
+      emitTaskStatusUpdate(task.projectId.toString(), task);
+  }
+
+  // Save + emit notifications
+  for (const notif of notifications) {
+      const savedNotification = await Notification.create(notif);
+      emitNewNotification(notif.userId, savedNotification);
+  }
+
+  //Return populated task
+  const populatedTask = await task.populate("assignedTo", "name email");
+  return populatedTask;
 };
 
 export const removeTask = async(id: string, authenticatedUser: (IUser & Document)) => {

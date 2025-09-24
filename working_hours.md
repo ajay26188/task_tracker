@@ -64,5 +64,6 @@
 | 22.09 | Implemented real-time notifications feature with notificationReducer and bell icon badge. | 5h |
 | 22.09 | Debugging real-time notifications sicket.io issues. | 2h |
 | 23.09 | `Users.tsx` created for admins to manage users (change roles between 'member' and 'admin', delete users). `PersonalProfile.tsx` modal created for viewing personal information with update password and delete account features implemented. | 4h |
-| 23.09  | Total hours | 181.5h |
+| 23.09 | Developed the initial dashboard featuring a Kanban-style board with drag-and-drop functionality for managing tasks efficiently. | 5h |
+| 24.09  | Total hours | 186.5h |
 
