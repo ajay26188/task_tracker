@@ -104,7 +104,7 @@ export const emitCommentAdded = (taskId: string, comment: ReturnedIComment) => {
     io.to(taskId).emit('commentAdded', comment);
 };
 
-//Helper function to emit comment deletion
+//Helper function to emit comments deletion
 export const emitCommentDeleted = (taskId: string, commentId: string) => {
   io.to(taskId).emit('commentDeleted', commentId);
 };
