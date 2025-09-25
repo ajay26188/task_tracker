@@ -32,16 +32,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const [showNotifications, setShowNotifications] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
-  // fetch notifications once when dashboard mounts
+  // Load notifications once
   useEffect(() => {
     dispatch(loadNotifications());
   }, [dispatch]);
 
   const notifications = useSelector((state: RootState) => state.notifications.notifications);
-
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   if (!currentUser) return <p>Loading...</p>;
-
 
   const initials = currentUser.name
     .split(" ")
@@ -73,9 +71,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md flex flex-col">
+      <aside className="w-64 bg-white shadow-md flex-shrink-0 flex flex-col h-full">
         <div className="p-6 border-b flex items-center gap-2">
           <span className="text-indigo-500">
             <svg
@@ -93,7 +91,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
           </h1>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => (
             <button
               key={item.label}
@@ -112,9 +110,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex items-center justify-between bg-white shadow px-6 py-4">
+        <header className="flex items-center justify-between bg-white shadow px-6 py-4 flex-shrink-0">
           <h1 className="text-xl font-semibold">{active}</h1>
 
           <div className="flex items-center gap-4 relative">
@@ -129,9 +127,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               >
                 <Bell size={20} />
                 {notifications!.some(n => !n.isRead) && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
-
               </button>
 
               <AnimatePresence>
@@ -167,18 +164,17 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -5 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-48 bg-white border shadow rounded-lg overflow-hidden"
+                    className="absolute right-0 mt-2 w-48 bg-white border shadow rounded-lg overflow-hidden z-50"
                   >
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      // open profile modal
-                      setProfileModalOpen(true);
-                    }}
-                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    <Users size={16} /> Profile
-                  </button>
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setProfileModalOpen(true);
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      <Users size={16} /> Profile
+                    </button>
                     <button
                       onClick={handleLogOut}
                       className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
@@ -190,14 +186,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               </AnimatePresence>
             </div>
             <PersonalProfileModal
-                    isOpen={profileModalOpen}
-                    onClose={() => setProfileModalOpen(false)}
-                  />
+              isOpen={profileModalOpen}
+              onClose={() => setProfileModalOpen(false)}
+            />
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
   );

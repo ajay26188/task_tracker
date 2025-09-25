@@ -7,8 +7,12 @@ const config: Config = {
   ],
   theme: {
     extend: {},
+    corePlugins: {
+      preflight: true,
+    },
   },
   plugins: [],
 };
 
 export default config;
+

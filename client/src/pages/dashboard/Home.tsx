@@ -14,6 +14,8 @@ import { alertMessageHandler } from "../../reducers/alertMessageReducer";
 import AlertMessage from "../../components/AlertMessage";
 import type { Project } from "../../types/project";
 import { socket } from "../../socket";
+import TaskModal from "../task/TaskModal";
+import { Plus } from "lucide-react";
 
 const COLUMNS = {
   todo: "To Do",
@@ -30,7 +32,10 @@ const Home = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null);
-const [showProjects, setShowProjects] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
+
+  //For adding new task
+  const [showTaskModal, setShowTaskModal] = useState(false);
 
   // Load projects
   useEffect(() => {
@@ -121,6 +126,8 @@ const [showProjects, setShowProjects] = useState(false);
       </DashboardLayout>
     );
   }
+
+  if (!user) return <p>Loading...</p>;
   
   if (!projects.length) {
     return (
@@ -145,44 +152,54 @@ const [showProjects, setShowProjects] = useState(false);
   const handleDragEnd = async (result: DropResult) => {
     if (!tasks) return;
     const { source, destination } = result;
-  
     if (!destination) return;
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
-  
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
     const startCol = source.droppableId as TaskStatus;
     const endCol = destination.droppableId as TaskStatus;
-  
-    // Deep copy: clone arrays so we don’t mutate state directly
+
+    // Copy for local state
     const newTasks: groupedTasks = {
       todo: [...tasks.todo],
       "in-progress": [...tasks["in-progress"]],
       done: [...tasks.done],
     };
-  
-    // snapshot for rollback
+
     const prevTasks = tasks;
-  
-    // remove from start
+
+    // Remove from start
     const [movedTask] = newTasks[startCol].splice(source.index, 1);
-    
-  
-    // update status locally
-    movedTask.status = endCol;
-  
-    // add to destination
-    newTasks[endCol].splice(destination.index, 0, movedTask);
-  
-    // optimistic UI
+
+    // Optimistic update: update status locally
+    const optimisticTask = { ...movedTask, status: endCol };
+    newTasks[endCol].splice(destination.index, 0, optimisticTask);
     setTasks(newTasks);
-  
+
     try {
-      // persist to backend
-      await updateTask(movedTask.id, { status: endCol });
+      // Persist to backend and get fully populated task
+      const updatedTask = await updateTask(movedTask.id, { status: endCol });
+      if (!updatedTask) throw new Error("Failed to update task");
+
+      // Replace task in state with fully populated one
+      setTasks((prev) => {
+        if (!prev) return prev;
+        const replacedTasks: groupedTasks = {
+          todo: [...prev.todo],
+          "in-progress": [...prev["in-progress"]],
+          done: [...prev.done],
+        };
+
+        // Remove old task wherever it is
+        Object.keys(replacedTasks).forEach((col) => {
+          replacedTasks[col as TaskStatus] = replacedTasks[col as TaskStatus].filter(
+            (t) => t.id !== updatedTask.id
+          );
+        });
+
+        // Add updated task to its new column
+        replacedTasks[updatedTask.status].splice(destination.index, 0, updatedTask as Task);
+        return replacedTasks;
+      });
     } catch (error: unknown) {
       // rollback if API fails
       setTasks(prevTasks);
@@ -204,6 +221,7 @@ const [showProjects, setShowProjects] = useState(false);
       }
     }
   };
+  
   return (
     <DashboardLayout>
       {/* Header */}
@@ -217,17 +235,30 @@ const [showProjects, setShowProjects] = useState(false);
       </div>
 
       {/* Project Selector */}
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-indigo-700">
+      <div className="flex items-center gap-4 mb-6 flex-wrap md:flex-nowrap">
+        <h3 className="text-2xl md:text-3xl font-extrabold text-indigo-700 flex-1 min-w-0 truncate">
           {projects.find(p => p.id === selectedProjectId)?.name || "Your Project"}
         </h3>
+
+        {user?.role === 'admin' && (
+          <button
+            className="flex items-center gap-2 px-3 py-1.5 text-sm md:text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow transition"
+            onClick={() => setShowTaskModal(true)}
+          >
+            <Plus className="w-4 h-4 md:w-5 md:h-5" />
+            Add Task
+          </button>
+        )}
+
         <button
           onClick={() => setShowProjects(!showProjects)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
+          className="ml-auto px-4 py-2 text-sm md:text-base bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
         >
           {showProjects ? "Hide Projects" : "View Projects"}
         </button>
       </div>
+
+
 
       {showProjects && (
         <div className="mb-6 p-4 rounded-lg shadow bg-white border">
@@ -340,11 +371,34 @@ const [showProjects, setShowProjects] = useState(false);
               })}
             </DragDropContext>
           </div>
+          {showTaskModal && selectedProjectId && (
+                <TaskModal
+                task={null}
+                projectId={selectedProjectId}
+                orgId={user.organizationId}
+                onClose={() => {
+                  setShowTaskModal(false);
+                }}
+                onSuccess={(newTask) => {
+                  // update Kanban state
+                  setTasks(prev => {
+                    if (!prev) return prev;
+                    const newTasks = { ...prev };
+                    newTasks[newTask.status] = [
+                      ...newTasks[newTask.status].filter(t => t.id !== newTask.id),
+                      newTask,
+                    ];
+                    return newTasks;
+                  });
+                  
+                }}
+              />
+              
+                )}
         </div>
       )}
-
-
     </DashboardLayout>
+    
   );
   
   

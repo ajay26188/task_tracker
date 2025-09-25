@@ -9,6 +9,9 @@ import Organization from "../models/organization";
 import { sendVerificationEmail } from "../utils/mailer";
 import jwt from "jsonwebtoken";
 import { sendPasswordResetEmail } from "../utils/mailer";
+import Task from "../models/task";
+import Comment from "../models/comment";
+import Notification from "../models/notification";
 
 export const getAllUsers = async (orgId: string, search?: string): Promise<IUser[]> => {
   const query: FilterQuery<IUser> = { organizationId: new Types.ObjectId(orgId) };
@@ -69,7 +72,7 @@ export const verifyUserEmail = async (token: string) => {
     return user;
   };
 
-  export const removeUser = async (
+export const removeUser = async (
     id: string, 
     authenticatedUser: (IUser & Document)
   ) => {
@@ -78,12 +81,32 @@ export const verifyUserEmail = async (token: string) => {
     if (!user) return null;
 
     if (authenticatedUser.role !== Role.Admin && authenticatedUser.id === user.id) {
-      await user.deleteOne();
+      await Promise.all([
+        user.deleteOne(),
+        Comment.deleteMany({ userId: new Types.ObjectId(id) }),
+        Notification.deleteMany({ userId: new Types.ObjectId(id) }),
+        Task.updateMany(
+          { assignedTo: id },
+          { $pull: { assignedTo: id } }
+        )
+      ]);
+      
+      
       return "deleted";
     }
   
     if (authenticatedUser.role === Role.Admin) {
-      await user.deleteOne();
+      await Promise.all([
+        user.deleteOne(),
+        Comment.deleteMany({ userId: new Types.ObjectId(id) }),
+        Notification.deleteMany({ userId: new Types.ObjectId(id) }),
+        Task.updateMany(
+          { assignedTo: id },
+          { $pull: { assignedTo: id } }
+        )
+      ]);
+      
+      
       return "deleted";
     }
   

@@ -4,10 +4,10 @@
 
 ---
 
-## 📌 Project Status: In Progress (~185 hours logged so far)
+## 📌 Project Status: In Progress (~190 hours logged so far)
 
 - **Backend**: Completed.  
-- **Frontend**: In progress.. 
+- **Frontend**: In progress.  
 - **CI/CD**: Automated pipelines configured.  
 
 You can track my development log here: [working_hours.md](./working_hours.md)
@@ -23,7 +23,7 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ---
 
-## 🔧 Features Built So Far
+## 🔧 Features
 
 ### **Frontend (React + Redux Toolkit + TypeScript)**  
 - Secure login with JWT auth flow  
@@ -39,6 +39,32 @@ You can track my development log here: [working_hours.md](./working_hours.md)
   - Pagination for notification history  
 - Task pagination (organization-wide & assigned tasks)  
 - Real-time comments on tasks with auto-scroll and highlight  
+
+### 🗂️ **Kanban Board Features**
+- **Drag & Drop Tasks**  
+  - Move tasks between **To Do**, **In Progress**, and **Done** columns effortlessly.  
+  - Optimistic UI updates for instant feedback; fully synced with backend.  
+
+- **Real-Time Updates**  
+  - Tasks moved by any user are instantly reflected across all team members’ dashboards via **Socket.IO**.  
+  - Assignee avatars (initials) and task status update in real-time without page refresh.  
+
+- **Task Details**  
+  - Quick view of **task title**, **ID**, and **assigned users**.    
+
+- **Add & Manage Tasks**  
+  - Admins can add tasks via a **shortcut button** in the dashboard.  
+  - Tasks can be assigned to multiple team members with instant notification.  
+
+- **Visual Enhancements**  
+  - Column-specific color schemes for better differentiation.  
+  - Smooth animations for drag-and-drop interactions using **Framer Motion**.  
+  - Hover effects and responsive layout for optimal UX across devices.  
+
+- **Optimistic + Reliable State Management**  
+  - Tasks update locally instantly for fluid interaction.  
+  - Backend updates ensure the database remains consistent.  
+  - Rollback mechanism if API fails to prevent desync.  
 
 ### **Backend (Node.js + Express + MongoDB + Mongoose)**  
 - Auth system with JWT + role-based middleware  
@@ -60,7 +86,7 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 - **Frontend:** React + TypeScript, Redux Toolkit (slices, thunks, reducers)  
 - **Backend:** Node.js, Express, MongoDB, Mongoose  
-- **Real-Time:** Socket.IO (comments + notifications)  
+- **Real-Time:** Socket.IO (comments + notifications + kanban drag & drop status updates)  
 - **Validation:** Zod  
 - **Auth:** JWT with role-based middleware  
 - **Email Service:** Nodemailer + Brevo (for verification & password reset)  
@@ -78,5 +104,3 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Designing CI/CD pipelines to simulate real-world team workflows.  
 - Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
 - Render’s free tier blocked SMTP emails midway — solved by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
-
----

@@ -417,6 +417,10 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
 
   //Return populated task
   const populatedTask = await task.populate("assignedTo", "name email");
+  // Emit only if status was changed for kanban board
+  if (statusChanged) {
+    emitTaskStatusUpdate(task.projectId.toString(), task);
+}
   return populatedTask;
 };
 
