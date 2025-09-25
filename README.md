@@ -7,7 +7,7 @@
 ## 📌 Project Status: In Progress (~190 hours logged so far)
 
 - **Backend**: Completed.  
-- **Frontend**: In progress.  
+- **Frontend**: Completed.  
 - **CI/CD**: Automated pipelines configured.  
 
 You can track my development log here: [working_hours.md](./working_hours.md)
