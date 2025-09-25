@@ -126,7 +126,7 @@ router.patch('/:id', userExtractor,  updateTaskParser, async (req: AuthRequest<u
       }
 
       if (result === 'not allowed') {
-        return res.status(403).json({error: 'You are not allowed to update status of tasks that you are assigned to.'});
+        return res.status(403).json({error: 'You are not allowed to update status of tasks that you not are assigned to.'});
       }
 
       return res.json(result);

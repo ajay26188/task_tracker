@@ -12,7 +12,6 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store";
 import { alertMessageHandler } from "../../reducers/alertMessageReducer";
-import AlertMessage from "../../components/AlertMessage";
 import type { Project } from "../../types/project";
 import { socket } from "../../socket";
 import TaskModal from "../task/TaskModal";
@@ -207,14 +206,14 @@ const Home = () => {
         dispatch(
           alertMessageHandler(
             { message: error.response.data.error, type: "error" },
-            5
+            3
           )
         );
       } else {
         dispatch(
           alertMessageHandler(
             { message: "Update task status failed", type: "error" },
-            5
+            3
           )
         );
       }
@@ -223,6 +222,18 @@ const Home = () => {
   
   return (
     <DashboardLayout>
+      {/* Fixed alert container */}
+      {alertMessage.message && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <p className={`font-medium ${alertMessage.type === "error" ? "text-red-600" : "text-green-600"}`}>
+              {alertMessage.message}
+            </p>
+          </div>
+        </div>
+      )}
+
+
       {/* Header */}
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-extrabold text-gray-800">
@@ -278,8 +289,11 @@ const Home = () => {
         </div>
       )}
 
+      <p className="text-sm text-gray-500 mb-2 text-center">
+        💡 Tip: Drag and drop tasks between columns to update their status
+      </p>
+
       {/* Kanban Board */}
-      {alertMessage.message && <AlertMessage {...alertMessage} />}
       {selectedProjectId && tasks && (
         <div className="flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full">

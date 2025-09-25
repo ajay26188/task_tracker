@@ -97,7 +97,7 @@ export const fetchAssignedProjects = async (user: IUser & Document) => {
     const userId = user._id;
   
     // Find tasks assigned to the user
-    const tasks = await Task.find({ assignedTo: userId }).select("projectId");
+    const tasks = await Task.find({ assignedTo: userId });
   
     // Extract unique projectIds
     const projectIds = [...new Set(tasks.map((t) => t.projectId.toString()))];

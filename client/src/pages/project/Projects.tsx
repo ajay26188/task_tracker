@@ -237,18 +237,22 @@ const Projects: React.FC = () => {
       {/* Project Modal */}
       {showModal && (
         <ProjectModal
-          project={selectedProject}
-          onClose={() => setShowModal(false)}
-          onSuccess={(p) => {
-            if (selectedProject) {
-              setProjects((prev) =>
-                prev.map((proj) => (proj.id === p.id ? p : proj))
-              );
-            } else {
-              setProjects((prev) => [...prev, p]);
-            }
-          }}
-        />
+        project={selectedProject}
+        onClose={() => setShowModal(false)}
+        onSuccess={(p) => {
+          if (selectedProject) {
+            // merge tasks from existing project if missing
+            setProjects((prev) =>
+              prev.map((proj) =>
+                proj.id === p.id ? { ...p, tasks: proj.tasks ?? [] } : proj
+              )
+            );
+          } else {
+            setProjects((prev) => [p, ...prev]);
+          }
+        }}
+      />
+      
       )}
 
       {/* Delete Confirmation Modal */}
