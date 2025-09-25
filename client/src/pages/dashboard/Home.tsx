@@ -289,13 +289,14 @@ const Home = () => {
         </div>
       )}
 
-      <p className="text-sm text-gray-500 mb-2 text-center">
-        💡 Tip: Drag and drop tasks between columns to update their status
-      </p>
+      
 
       {/* Kanban Board */}
       {selectedProjectId && tasks && (
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center">
+          <p className="text-sm text-gray-500 mb-2 text-center">
+            💡 Tip: Drag and drop tasks between columns to update their status
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full">
             <DragDropContext onDragEnd={handleDragEnd}>
               {Object.entries(COLUMNS).map(([key, title]) => {
