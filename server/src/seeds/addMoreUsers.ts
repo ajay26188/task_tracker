@@ -1,4 +1,5 @@
 // server/seeds/addMoreUsers.ts
+
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import User from "../models/user";

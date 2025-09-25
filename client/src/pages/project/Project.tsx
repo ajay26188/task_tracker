@@ -92,34 +92,43 @@ const ProjectPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-9xl mx-auto space-y-10">
-        {/* Project Overview Card */}
-        <div className="bg-white rounded-2xl shadow p-6 border border-gray-100">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            {project.name}
-          </h1>
-          <p className="text-gray-600 mb-6">{project.description}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+       {/* Project Overview Card */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          {/* Hero Header */}
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-white/20 text-white text-2xl font-bold shadow-inner">
+                {project.name.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold text-white">{project.name}</h1>
+                <p className="text-indigo-100">{project.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Project Details */}
+          <div className="p-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <Folder className="w-4 h-4 text-gray-500" />
-              <span>
-                <strong>ID:</strong> {project.id}
+              <Folder className="w-4 h-4 text-indigo-500" />
+              <span className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium">
+                Project ID: {project.id}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
+              <Calendar className="w-4 h-4 text-green-500" />
               <span>
-                <strong>Start:</strong>{" "}
-                {project.startDate?.slice(0, 10) || "-"}
+                <strong>Start:</strong> {project.startDate?.slice(0, 10) || "-"}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-500" />
+              <Clock className="w-4 h-4 text-red-500" />
               <span>
                 <strong>End:</strong> {project.endDate?.slice(0, 10) || "-"}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-gray-500" />
+              <Users className="w-4 h-4 text-blue-500" />
               <span>
                 <strong>Created By:</strong>{" "}
                 {typeof project.createdBy === "object"
@@ -128,25 +137,26 @@ const ProjectPage: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Building className="w-4 h-4 text-gray-500" />
+              <Building className="w-4 h-4 text-gray-600" />
               <span>
-                <strong>OrganizationID:</strong>{" "}
-                {project.organizationId}
+                <strong>Organization:</strong> {project.organizationId}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-600" />
-              <strong>Created At:</strong>
-              <span>{project.createdAt?.slice(0, 10) || "-"}</span>
+              <Calendar className="w-4 h-4 text-purple-500" />
+              <span>
+                <strong>Created:</strong> {project.createdAt?.slice(0, 10) || "-"}
+              </span>
             </div>
-
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-600" />
-              <strong>Updated At:</strong>
-              <span>{project.updatedAt?.slice(0, 10) || "-"}</span>
+              <Clock className="w-4 h-4 text-orange-500" />
+              <span>
+                <strong>Updated:</strong> {project.updatedAt?.slice(0, 10) || "-"}
+              </span>
             </div>
           </div>
         </div>
+ 
 
         {/* Task Section */}
         <div className="bg-white rounded-2xl shadow p-6 border border-gray-100">
@@ -199,14 +209,20 @@ const ProjectPage: React.FC = () => {
                 ) : (
                   <li
                     key={task.id || index}
-                    className="p-5 border border-gray-200 rounded-xl bg-gradient-to-r from-gray-50 to-white hover:shadow-lg transition cursor-pointer"
+                    className={`p-5 border rounded-xl bg-white shadow-sm transition cursor-pointer hover:shadow-xl hover:scale-[1.01] border-l-4 ${
+                      task.status === "done"
+                        ? "border-green-500"
+                        : task.status === "in-progress"
+                        ? "border-yellow-500"
+                        : "border-gray-400"
+                    }`}
                     onClick={() => {
                       setSelectedTask(task);
                       setShowTaskDetail(true);
                     }}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-indigo-600 hover:underline text-lg">
+                      <span className="font-semibold text-indigo-700 hover:underline text-lg">
                         {task.title}
                       </span>
                       <span
@@ -225,6 +241,7 @@ const ProjectPage: React.FC = () => {
                       {task.description}
                     </p>
                   </li>
+
                 )
               )}
             </ul>

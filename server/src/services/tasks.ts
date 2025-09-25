@@ -404,11 +404,6 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
   
   await task.save();
 
-  // Emit only if status was changed for kanban board
-  if (statusChanged) {
-      emitTaskStatusUpdate(task.projectId.toString(), task);
-  }
-
   // Save + emit notifications
   for (const notif of notifications) {
       const savedNotification = await Notification.create(notif);
@@ -417,10 +412,12 @@ export const updateTask = async (user: (IUser & Document), updates: updateTaskDa
 
   //Return populated task
   const populatedTask = await task.populate("assignedTo", "name email");
+
   // Emit only if status was changed for kanban board
   if (statusChanged) {
     emitTaskStatusUpdate(task.projectId.toString(), task);
-}
+  }
+  
   return populatedTask;
 };
 

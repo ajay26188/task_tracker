@@ -42,7 +42,6 @@ commentSchema.set('toJSON', {
     }
 });
   
-
 const Comment = model<IComment>('Comment', commentSchema);
 
 export default Comment;

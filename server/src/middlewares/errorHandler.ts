@@ -56,7 +56,6 @@ export const errorHandler = (
     return res.status(400).json({ error: "Invalid ID format (not a valid ObjectId)." });
   }
 
-
   // 6. Handle plain Error (custom validation, etc.)
   if (error instanceof Error) {
     return res.status(400).json({ error: error.message });
