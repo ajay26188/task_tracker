@@ -1,4 +1,5 @@
-// src/pages/Home.tsx
+// src/pages/dashboard/Home.tsx
+
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
@@ -147,8 +148,6 @@ const Home = () => {
     );
   }
   
-  
-
   const handleDragEnd = async (result: DropResult) => {
     if (!tasks) return;
     const { source, destination } = result;
@@ -257,8 +256,6 @@ const Home = () => {
           {showProjects ? "Hide Projects" : "View Projects"}
         </button>
       </div>
-
-
 
       {showProjects && (
         <div className="mb-6 p-4 rounded-lg shadow bg-white border">
@@ -397,11 +394,8 @@ const Home = () => {
                 )}
         </div>
       )}
-    </DashboardLayout>
-    
+    </DashboardLayout> 
   );
-  
-  
 };
 
 export default Home;

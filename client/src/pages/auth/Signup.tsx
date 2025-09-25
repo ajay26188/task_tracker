@@ -114,7 +114,7 @@ const Signup = () => {
             </button>
           </div>
 
-          {/* Org ID input */}
+          {/* Organization ID input */}
           <div className="flex flex-col">
             <input
               type="text"

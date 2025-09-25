@@ -1,4 +1,5 @@
 // /reducers/notificationReducer.ts
+
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { Notification } from "../types/notification";
@@ -43,10 +44,10 @@ export const {
 
 export default notificationSlice.reducer;
 
-// 🔥 Thunk to load notifications (typed)
+// Thunk to load notifications (typed)
 export const loadNotifications =
   (page = 1, limit = 9) => async (dispatch: AppDispatch) => {
     const data = await fetchNotifications(page, limit);
     dispatch(setNotifications(data.notifications));
     return data;
-  };
+};

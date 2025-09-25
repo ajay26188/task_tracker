@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const handleNewNotification = (newNotification: Notification) => {
       if (String(newNotification.userId) === String(user.id)) {
-        dispatch(addNotification(newNotification)); // ✅ update Redux
+        dispatch(addNotification(newNotification)); // update Redux
       }
     };
 

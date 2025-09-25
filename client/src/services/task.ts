@@ -46,7 +46,6 @@ export const fetchTasksByUser = async (
   return res.data;
 };
 
-
 // Fetch single task
 export const fetchTask = async (id: string): Promise<Task> => {
   const res = await axios.get(`${apiBaseUrl}/tasks/task/${id}`, authHeader());

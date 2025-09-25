@@ -66,5 +66,6 @@
 | 23.09 | `Users.tsx` created for admins to manage users (change roles between 'member' and 'admin', delete users). `PersonalProfile.tsx` modal created for viewing personal information with update password and delete account features implemented. | 4h |
 | 24.09 | Developed the initial dashboard featuring a Kanban-style board with drag-and-drop functionality for managing tasks efficiently. | 5h |
 | 25.09 | Added a new shortcut for quickly adding tasks directly from the dashboard, along with extra UI polishing for a smoother user experience. | 2.5h |
-| 25.09 | Total hours | 189h |
+| 25.09 | Cleaning up client's side code for project submission. | 0.5h |
+| 25.09 | Total hours | 189.5h |
 

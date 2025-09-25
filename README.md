@@ -28,6 +28,7 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 ### **Frontend (React + Redux Toolkit + TypeScript)**  
 - Secure login with JWT auth flow  
 - Role-based UI (admins can create/update projects)  
+- Authentication handled via React Context API (AuthProvider)
 - Project creation & update forms with:  
   - Validation  
   - Loading states  

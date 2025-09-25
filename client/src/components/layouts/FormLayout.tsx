@@ -1,4 +1,5 @@
 // src/components/FormLayout.tsx
+
 import type { ReactNode } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
@@ -32,7 +33,7 @@ const FormLayout = ({
     );
   }
 
-  // fallback → full page (default layout)
+  // fallback - full page (default layout)
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
       <div className="flex flex-col items-center space-y-6">

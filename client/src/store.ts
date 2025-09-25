@@ -13,8 +13,6 @@ const store = configureStore({
     }
 })
 
-//console.log(store.getState());
-
 export default store;
 
 // Infer types for dispatch and state

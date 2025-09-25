@@ -110,6 +110,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             required
           />
         </label>
+        
         <label className="flex flex-col w-1/2">
           <span className="mb-1 text-sm font-medium text-gray-700">
             End Date

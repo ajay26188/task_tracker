@@ -24,7 +24,7 @@ interface TaskForm {
   status: "todo" | "in-progress" | "done";
   priority?: "low" | "medium" | "high";
   dueDate?: string;
-  assignedTo: User[]; // full objects now
+  assignedTo: User[]; 
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -43,7 +43,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     status: task?.status || "todo",
     priority: task?.priority || "medium",
     dueDate: task?.dueDate?.slice(0, 10) || "",
-    assignedTo: task?.assignedTo || [], // now full User[]
+    assignedTo: task?.assignedTo || [],
   });
 
   const [loading, setLoading] = useState(false);
@@ -75,15 +75,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
           authHeader()
         );
         setUsers(res.data);
-      } catch (err) {
-        console.error("Failed to load users", err);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response) {
+          dispatch(
+            alertMessageHandler(
+              { message: error.response.data.error, type: "error" },
+              5
+            )
+          );
+        } 
       } finally {
         setUserLoading(false);
       }
     };
 
     fetchUsers();
-  }, [search, orgId]);
+  }, [search, orgId, dispatch]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -136,15 +143,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         dispatch(
           alertMessageHandler({ message: error.response.data.error, type: "error" }, 5)
         );
-      } else {
-        console.error("Unknown error:", error);
-      }
+      } 
     } finally {
       setLoading(false);
     }
   };
   
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl animate-fadeIn relative">

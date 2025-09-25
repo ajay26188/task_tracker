@@ -40,7 +40,6 @@ function App() {
     </div>
   }
   
-
   return (
     <div>
       <Routes>
@@ -53,7 +52,7 @@ function App() {
         <Route path="/request-reset" element={<RequestReset />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         
-        {/* Protect dashboard */}
+        {/* Protect routes which requires logging in */}
         <Route
           path="/dashboard"
           element={

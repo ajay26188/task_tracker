@@ -285,7 +285,6 @@ const Projects: React.FC = () => {
               >
                 Delete
               </button>
-
             </div>
           </div>
         </div>

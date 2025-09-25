@@ -33,8 +33,6 @@ const AddOrganization = () => {
             5
           )
         );
-      } else {
-        console.error("Unexpected error:", error);
       }
     }
   };
@@ -78,7 +76,7 @@ const AddOrganization = () => {
     );
   }
 
-  // 🚀 Creation form wrapped with FormLayout
+  // Creation form wrapped with FormLayout
   return (
     <FormLayout
       title="Create Organization"

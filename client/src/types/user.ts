@@ -4,9 +4,9 @@ export interface User {
     name: string;
     email: string;
     role: "admin" | "member";
-  }
+}
 
-  export interface updatePasswordData {
+export interface updatePasswordData {
     oldPassword: string,
     newPassword: string
-  }
+}
