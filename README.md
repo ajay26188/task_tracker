@@ -108,11 +108,11 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 ## 📸 Screenshots
 
-### Dashboard  
-![Dashboard Screenshot](./screenshots_project/Dashboard.jpg)
-
 ### Landing Page  
 ![Landing Page Screenshot](./screenshots_project/Landing.jpg)
+
+### Dashboard  
+![Dashboard Screenshot](./screenshots_project/Dashboard.jpg)
 
 ### Users Management  
 ![Users Screenshot](./screenshots_project/Users.jpg)
