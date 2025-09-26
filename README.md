@@ -21,7 +21,22 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 
 - **Frontend (Vercel):** [https://task-tracker-seven-green.vercel.app/](https://task-tracker-seven-green.vercel.app/)
 
+## 🔑 Demo Login (quick try)
+
+Use these demo accounts to explore the app without signing up:
+
+- **Admin (demo)**  
+  Email: `admin@example.com`  
+  Password: `AdminPass123!`
+
+- **Member (demo)**  
+  Email: `membera@example.com`  
+  Password: `MemberPass123!`
+
+> 🔒 Note: These are demo-only accounts (created for showcasing the app). They use `@example.com` and bypass email verification so recruiters can jump straight in. I used my personal account only for verification/testing and removed it from demo credentials.
+
 ---
+
 
 ## 🔧 Features
 
