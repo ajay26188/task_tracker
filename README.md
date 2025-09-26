@@ -105,3 +105,30 @@ You can track my development log here: [working_hours.md](./working_hours.md)
 - Designing CI/CD pipelines to simulate real-world team workflows.  
 - Debugging and fixing cold start issues on Vercel by introducing uptime strategies.  
 - Render’s free tier blocked SMTP emails midway — solved by switching Brevo integration to HTTPS, ensuring notifications still worked without extra cost.  
+
+## 📸 Screenshots
+
+### Dashboard  
+![Dashboard Screenshot](./screenshots_project/Dashboard.jpg)
+
+### Landing Page  
+![Landing Page Screenshot](./screenshots_project/Landing.jpg)
+
+### Users Management  
+![Users Screenshot](./screenshots_project/Users.jpg)
+
+### Projects Page  
+![Projects Screenshot](./screenshots_project/Projects.jpg)
+
+### Single Project View  
+![Project Screenshot](./screenshots_project/Project.jpg)
+
+### Tasks List  
+![Tasks Screenshot](./screenshots_project/Tasks.jpg)
+
+### Task Details  
+![Task Screenshot](./screenshots_project/Task.jpg)
+
+### Real-Time Comments  
+![Comments Screenshot](./screenshots_project/Comments.jpg)
+
