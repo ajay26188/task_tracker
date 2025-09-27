@@ -59,7 +59,7 @@ const Home = () => {
           setSelectedProjectId(defaultProjectId);
 
           // fetch tasks in parallel
-          const [_, taskData] = await Promise.all([
+          const [, taskData] = await Promise.all([
             Promise.resolve(activeProjects),
             groupedTasksByProject(defaultProjectId),
           ]);
