@@ -17,9 +17,7 @@ router.get('/org/:id', adminStatus, userExtractor, async(req: AuthRequest, res, 
 
         const projects = await fetchProjectsByOrg(req.params.id);
         
-        if (projects.length === 0) {
-            return res.status(404).json({ error: 'No projects found for this organization.' });
-        }
+       
           
         return res.json(projects);
     } catch (error) {

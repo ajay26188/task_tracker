@@ -20,6 +20,7 @@ import type { Project } from "../../types/project";
 import { socket } from "../../socket";
 import TaskModal from "../task/TaskModal";
 import { Plus } from "lucide-react";
+import ProjectModal from "../project/ProjectModal";
 
 const COLUMNS = {
   todo: "To Do",
@@ -38,39 +39,40 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [showProjects, setShowProjects] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [showModal, setShowModal] = useState(false); //project modal
 
   // Load projects + first project tasks in parallel
   useEffect(() => {
     const loadProjectsAndTasks = async () => {
       try {
+        setLoadingProjects(true);
         const now = new Date();
         const data =
           user?.role === "admin"
             ? await fetchProjectsByOrg(user?.organizationId)
             : await fetchAssignedProjects();
-
+  
         const activeProjects = data.filter(
           (p) => new Date(p.startDate) < now && new Date(p.endDate) > now
         );
         setProjects(activeProjects);
-
+  
         if (activeProjects.length > 0) {
           const defaultProjectId = activeProjects[0].id;
           setSelectedProjectId(defaultProjectId);
-
-          // fetch tasks in parallel
-          const [, taskData] = await Promise.all([
-            Promise.resolve(activeProjects),
-            groupedTasksByProject(defaultProjectId),
-          ]);
+          const taskData = await groupedTasksByProject(defaultProjectId);
           setTasks(taskData);
         }
       } catch {
         setError("Failed to fetch projects. Please check your connection.");
+      } finally {
+        setLoadingProjects(false);
       }
     };
     loadProjectsAndTasks();
   }, [user]);
+  
 
   // Load tasks when selectedProjectId changes
   useEffect(() => {
@@ -124,9 +126,7 @@ const Home = () => {
     );
   }
 
-  if (!user) return <p>Loading...</p>;
-
-  if (!projects.length) {
+  if (loadingProjects) {
     return (
       <DashboardLayout>
         <div className="space-y-4">
@@ -143,6 +143,55 @@ const Home = () => {
       </DashboardLayout>
     );
   }
+
+  if (!user) return <p>Loading...</p>;
+  
+  if (!projects.length) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-[70vh] px-4">
+          <div className="bg-white shadow-xl rounded-2xl p-10 max-w-lg w-full text-center border border-gray-200">
+            
+  
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              No projects available
+            </h2>
+  
+            {/* Description */}
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              Once a project is created, it will appear here so your team can start
+              collaborating 🚀
+            </p>
+  
+            {/* CTA for Admins */}
+            {user?.role === "admin" && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-full shadow-lg hover:opacity-90 hover:scale-105 transform transition"
+              >
+                + Create your first project
+              </button>
+            )}
+  
+            {/* Project Modal */}
+            {showModal && (
+              <ProjectModal
+                project={null}
+                onClose={() => setShowModal(false)}
+                onSuccess={(p) => {
+                  setProjects((prev) => [p, ...prev]);
+                  setSelectedProjectId(p.id);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+  
+  
 
   const handleDragEnd = async (result: DropResult) => {
     if (!tasks) return;

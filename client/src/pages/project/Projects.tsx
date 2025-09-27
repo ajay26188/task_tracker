@@ -252,7 +252,6 @@ const Projects: React.FC = () => {
           }
         }}
       />
-      
       )}
 
       {/* Delete Confirmation Modal */}
