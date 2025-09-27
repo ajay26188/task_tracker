@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
-import { fetchAssignedProjects, fetchProjectsByOrg, groupedTasksByProject } from "../../services/project";
+import {
+  fetchAssignedProjects,
+  fetchProjectsByOrg,
+  groupedTasksByProject,
+} from "../../services/project";
 import type { groupedTasks, Task, TaskStatus } from "../../types/task";
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -27,45 +31,54 @@ const Home = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const alertMessage = useSelector((state: RootState) => state.alertMessage);
-  const [tasks, setTasks] = useState<groupedTasks | null>(null);
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<groupedTasks | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showProjects, setShowProjects] = useState(false);
-
-  //For adding new task
   const [showTaskModal, setShowTaskModal] = useState(false);
 
-  // Load projects
+  // Load projects + first project tasks in parallel
   useEffect(() => {
-    const loadProjects = async () => {
+    const loadProjectsAndTasks = async () => {
       try {
-        const data = user?.role === 'admin'
-          ? await fetchProjectsByOrg(user?.organizationId)
-          : await fetchAssignedProjects();
-        console.log(data);
-
         const now = new Date();
-        
-        //only show active projects
-        setProjects(data.filter(p => (new Date(p.startDate)) < now && (new Date(p.endDate)) > now));
+        const data =
+          user?.role === "admin"
+            ? await fetchProjectsByOrg(user?.organizationId)
+            : await fetchAssignedProjects();
+
+        const activeProjects = data.filter(
+          (p) => new Date(p.startDate) < now && new Date(p.endDate) > now
+        );
+        setProjects(activeProjects);
+
+        if (activeProjects.length > 0) {
+          const defaultProjectId = activeProjects[0].id;
+          setSelectedProjectId(defaultProjectId);
+
+          // fetch tasks in parallel
+          const [_, taskData] = await Promise.all([
+            Promise.resolve(activeProjects),
+            groupedTasksByProject(defaultProjectId),
+          ]);
+          setTasks(taskData);
+        }
       } catch {
         setError("Failed to fetch projects. Please check your connection.");
       }
     };
-    loadProjects();
+    loadProjectsAndTasks();
   }, [user]);
 
-
+  // Load tasks when selectedProjectId changes
   useEffect(() => {
-    console.log("hi");
-    if (!selectedProjectId) return; 
+    if (!selectedProjectId) return;
     const fetchTasks = async () => {
       try {
-        setTasks(null); // reset before loading
+        setTasks(null);
         const data = await groupedTasksByProject(selectedProjectId);
-        console.log(data);
         setTasks(data);
       } catch {
         setError("Failed to fetch tasks for this project.");
@@ -75,49 +88,33 @@ const Home = () => {
     socket.emit("joinProject", selectedProjectId);
   }, [selectedProjectId]);
 
-  // Pick first project as default
-  useEffect(() => {
-    if (projects.length && !selectedProjectId) {
-      setSelectedProjectId(projects[0].id);
-    }
-  }, [projects, selectedProjectId]);
-
-  //socket listener
+  // Socket listener
   useEffect(() => {
     if (!selectedProjectId) return;
-  
+
     const handleTaskStatusUpdate = (updatedTask: Task) => {
       setTasks((prev) => {
         if (!prev) return prev;
-  
-        // Find which column it was in
         const newTasks = { ...prev };
         const allColumns = Object.keys(newTasks) as TaskStatus[];
-  
-        // Remove task from current column
+
         for (const col of allColumns) {
-          const index = newTasks[col].findIndex(t => t.id === updatedTask.id);
+          const index = newTasks[col].findIndex((t) => t.id === updatedTask.id);
           if (index > -1) {
             newTasks[col].splice(index, 1);
             break;
           }
         }
-  
-        // Add task to new column based on its updated status
         newTasks[updatedTask.status].push(updatedTask);
-  
         return newTasks;
       });
     };
-  
+
     socket.on("taskStatusUpdated", handleTaskStatusUpdate);
-  
     return () => {
       socket.off("taskStatusUpdated", handleTaskStatusUpdate);
     };
   }, [selectedProjectId]);
-  
-  
 
   if (error) {
     return (
@@ -128,7 +125,7 @@ const Home = () => {
   }
 
   if (!user) return <p>Loading...</p>;
-  
+
   if (!projects.length) {
     return (
       <DashboardLayout>
@@ -146,17 +143,20 @@ const Home = () => {
       </DashboardLayout>
     );
   }
-  
+
   const handleDragEnd = async (result: DropResult) => {
     if (!tasks) return;
     const { source, destination } = result;
     if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
 
     const startCol = source.droppableId as TaskStatus;
     const endCol = destination.droppableId as TaskStatus;
 
-    // Copy for local state
     const newTasks: groupedTasks = {
       todo: [...tasks.todo],
       "in-progress": [...tasks["in-progress"]],
@@ -164,21 +164,15 @@ const Home = () => {
     };
 
     const prevTasks = tasks;
-
-    // Remove from start
     const [movedTask] = newTasks[startCol].splice(source.index, 1);
-
-    // Optimistic update: update status locally
     const optimisticTask = { ...movedTask, status: endCol };
     newTasks[endCol].splice(destination.index, 0, optimisticTask);
     setTasks(newTasks);
 
     try {
-      // Persist to backend and get fully populated task
       const updatedTask = await updateTask(movedTask.id, { status: endCol });
       if (!updatedTask) throw new Error("Failed to update task");
 
-      // Replace task in state with fully populated one
       setTasks((prev) => {
         if (!prev) return prev;
         const replacedTasks: groupedTasks = {
@@ -186,22 +180,20 @@ const Home = () => {
           "in-progress": [...prev["in-progress"]],
           done: [...prev.done],
         };
-
-        // Remove old task wherever it is
         Object.keys(replacedTasks).forEach((col) => {
-          replacedTasks[col as TaskStatus] = replacedTasks[col as TaskStatus].filter(
-            (t) => t.id !== updatedTask.id
-          );
+          replacedTasks[col as TaskStatus] = replacedTasks[
+            col as TaskStatus
+          ].filter((t) => t.id !== updatedTask.id);
         });
-
-        // Add updated task to its new column
-        replacedTasks[updatedTask.status].splice(destination.index, 0, updatedTask as Task);
+        replacedTasks[updatedTask.status].splice(
+          destination.index,
+          0,
+          updatedTask as Task
+        );
         return replacedTasks;
       });
     } catch (error: unknown) {
-      // rollback if API fails
       setTasks(prevTasks);
-  
       if (axios.isAxiosError(error) && error.response) {
         dispatch(
           alertMessageHandler(
@@ -219,22 +211,30 @@ const Home = () => {
       }
     }
   };
-  
+
+  // Kanban skeleton loader (when tasks are null)
+  const renderTaskSkeleton = () => (
+    <div className="rounded-lg p-4 mb-3 shadow-md border bg-gray-200 animate-pulse h-20"></div>
+  );
+
   return (
     <DashboardLayout>
-      {/* Fixed alert container */}
       {alertMessage.message && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full text-center">
-            <p className={`font-medium ${alertMessage.type === "error" ? "text-red-600" : "text-green-600"}`}>
+            <p
+              className={`font-medium ${
+                alertMessage.type === "error"
+                  ? "text-red-600"
+                  : "text-green-600"
+              }`}
+            >
               {alertMessage.message}
             </p>
           </div>
         </div>
       )}
 
-
-      {/* Header */}
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-extrabold text-gray-800">
           Welcome back, {user?.name}!
@@ -247,10 +247,11 @@ const Home = () => {
       {/* Project Selector */}
       <div className="flex items-center gap-4 mb-6 flex-wrap md:flex-nowrap">
         <h3 className="text-2xl md:text-3xl font-extrabold text-indigo-700 flex-1 min-w-0 truncate">
-          {projects.find(p => p.id === selectedProjectId)?.name || "Your Project"}
+          {projects.find((p) => p.id === selectedProjectId)?.name ||
+            "Your Project"}
         </h3>
 
-        {user?.role === 'admin' && (
+        {user?.role === "admin" && (
           <button
             className="flex items-center gap-2 px-3 py-1.5 text-sm md:text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow transition"
             onClick={() => setShowTaskModal(true)}
@@ -289,10 +290,8 @@ const Home = () => {
         </div>
       )}
 
-      
-
       {/* Kanban Board */}
-      {selectedProjectId && tasks && (
+      {selectedProjectId && (
         <div className="flex flex-col items-center">
           <p className="text-sm text-gray-500 mb-2 text-center">
             💡 Tip: Drag and drop tasks between columns to update their status
@@ -318,63 +317,74 @@ const Home = () => {
                             : columnColors[key as TaskStatus]
                         }`}
                       >
-                        {/* Column Header */}
                         <div className="flex justify-between items-center mb-4 border-b pb-2">
-                          <h3 className="text-lg font-bold text-gray-800">{title}</h3>
-                          
+                          <h3 className="text-lg font-bold text-gray-800">
+                            {title}
+                          </h3>
                         </div>
 
-                        {/* Tasks */}
-                        {(tasks?.[key as TaskStatus] ?? []).map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`rounded-lg p-4 mb-3 shadow-md border bg-white transition transform ${
-                                  snapshot.isDragging
-                                    ? "bg-indigo-200 border-indigo-500 scale-105"
-                                    : "hover:shadow-lg hover:scale-[1.01]"
-                                }`}
-                              >
-                               <p className="font-semibold text-gray-900">{task.title}</p>
+                        {/* Show skeletons if tasks are still loading */}
+                        {!tasks
+                          ? [1, 2, 3].map((i) => (
+                              <div key={i}>{renderTaskSkeleton()}</div>
+                            ))
+                          : (tasks?.[key as TaskStatus] ?? []).map(
+                              (task, index) => (
+                                <Draggable
+                                  key={task.id}
+                                  draggableId={task.id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`rounded-lg p-4 mb-3 shadow-md border bg-white transition transform ${
+                                        snapshot.isDragging
+                                          ? "bg-indigo-200 border-indigo-500 scale-105"
+                                          : "hover:shadow-lg hover:scale-[1.01]"
+                                      }`}
+                                    >
+                                      <p className="font-semibold text-gray-900">
+                                        {task.title}
+                                      </p>
+                                      <span className="inline-block mt-1 px-2 py-0.5 text-[12px] font-mono font-semibold rounded bg-gray-100 text-gray-600 border border-gray-300">
+                                        #{task.id}
+                                      </span>
 
-                              <span className="inline-block mt-1 px-2 py-0.5 text-[12px] font-mono font-semibold rounded bg-gray-100 text-gray-600 border border-gray-300">
-                                #{task.id} 
-                              </span>
-
-                                {/* Assigned users initials */}
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                  {task.assignedTo && task.assignedTo.length > 0 ? (
-                                    task.assignedTo.map((user, idx) => {
-                                      const initials = user.name
-                                        ? user.name
-                                            .split(" ")
-                                            .map((n) => n[0])
-                                            .join("")
-                                            .toUpperCase()
-                                        : "?";
-                                      return (
-                                        <div
-                                          key={idx}
-                                          className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold"
-                                          title={user.name}
-                                        >
-                                          {initials}
-                                        </div>
-                                      );
-                                    })
-                                  ) : (
-                                    <span className="text-gray-400 text-sm">
-                                      Unassigned
-                                    </span>
+                                      <div className="flex flex-wrap gap-2 mt-2">
+                                        {task.assignedTo &&
+                                        task.assignedTo.length > 0 ? (
+                                          task.assignedTo.map((user, idx) => {
+                                            const initials = user.name
+                                              ? user.name
+                                                  .split(" ")
+                                                  .map((n) => n[0])
+                                                  .join("")
+                                                  .toUpperCase()
+                                              : "?";
+                                            return (
+                                              <div
+                                                key={idx}
+                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold"
+                                                title={user.name}
+                                              >
+                                                {initials}
+                                              </div>
+                                            );
+                                          })
+                                        ) : (
+                                          <span className="text-gray-400 text-sm">
+                                            Unassigned
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
                                   )}
-                                </div>
-                              </div>
+                                </Draggable>
+                              )
                             )}
-                          </Draggable>
-                        ))}
                         {provided.placeholder}
                       </div>
                     )}
@@ -383,35 +393,32 @@ const Home = () => {
               })}
             </DragDropContext>
           </div>
+
           {showTaskModal && selectedProjectId && (
-                <TaskModal
-                task={null}
-                projectId={selectedProjectId}
-                orgId={user.organizationId}
-                onClose={() => {
-                  setShowTaskModal(false);
-                }}
-                onSuccess={(newTask) => {
-                  // update Kanban state
-                  setTasks(prev => {
-                    if (!prev) return prev;
-                    const newTasks = { ...prev };
-                    newTasks[newTask.status] = [
-                      ...newTasks[newTask.status].filter(t => t.id !== newTask.id),
-                      newTask,
-                    ];
-                    return newTasks;
-                  });
-                  
-                }}
-              />
-              
-                )}
+            <TaskModal
+              task={null}
+              projectId={selectedProjectId}
+              orgId={user.organizationId}
+              onClose={() => setShowTaskModal(false)}
+              onSuccess={(newTask) => {
+                setTasks((prev) => {
+                  if (!prev) return prev;
+                  const newTasks = { ...prev };
+                  newTasks[newTask.status] = [
+                    ...newTasks[newTask.status].filter(
+                      (t) => t.id !== newTask.id
+                    ),
+                    newTask,
+                  ];
+                  return newTasks;
+                });
+              }}
+            />
+          )}
         </div>
       )}
-    </DashboardLayout> 
+    </DashboardLayout>
   );
 };
 
 export default Home;
-

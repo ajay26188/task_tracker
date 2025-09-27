@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 Project Status: In Progress (~190 hours logged so far)
+## 📌 Project Status: Complete (190 hours logged)
 
 - **Backend**: Completed.  
 - **Frontend**: Completed.  
